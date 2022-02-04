@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "timc:block/graphics_turtle_block"
+    }
+  }
+}
