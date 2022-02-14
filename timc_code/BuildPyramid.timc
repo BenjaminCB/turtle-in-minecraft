@@ -1,0 +1,23 @@
+BuildPyramid DIRT 5
+
+function BuildPyramid block size do
+    ACTIVE_BLOCK = block 
+    While size > 1 do
+        BuildSquare size
+        size -= 2
+        PLACING = false
+        forward 1
+        turn right
+        forward 1
+        turn left
+        up 1
+    end
+end
+
+function BuildSquare size do
+    PLACING = true
+    repeat 4 do
+        forward (size - 1)   
+        turn right
+    end
+end
