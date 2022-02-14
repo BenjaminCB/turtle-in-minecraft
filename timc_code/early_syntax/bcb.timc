@@ -1,0 +1,226 @@
+def pyramid n do
+    current_block = block
+    block = SAND_STONE
+
+    _pyramid n
+
+    block = current_block
+end
+
+def _pyramid n do
+    if n == 1 do
+        square 1
+    elseif n == 2 do
+        square 2
+    else
+        square n
+        up 1
+        forward 1
+        turn_left
+        forward 1
+        turn_right
+    end
+end
+
+def square n do
+    current_shit = shit
+    current_pos = position
+    current_eat = eat
+    current_dir = direction
+
+    shit = true
+    eat = true
+
+    _square n
+
+    shit = false
+    eat = false
+
+    -- could be build in but fell like it shouldnt
+    goto current_pos
+    turnto current_dir
+end
+
+
+def _square 1 do
+    up 1
+end
+
+def _square 2 do
+    repeat 2 do
+        forward 1
+        turn_left
+    end
+
+    forward 1
+    up 1
+end
+
+def _square n do
+    repeat 3 do
+        forward (n - 1)
+        turn_left
+    end
+
+    forward (n - 2)
+    turn_left
+    forward 1
+    square (n - 2)
+end
+
+def square_from_center 1 do
+    forward 1
+end
+
+def square_from_center do
+    square (n - 1)
+    repeat 2 do
+        turn_right
+        forward (n - 1)
+    end
+    forward 1
+end
+
+-- filter : (a -> Bool) -> [a] -> [a]
+-- example use
+-- filter (\a -> a > 3) [1..10]
+-- or the easier to implement
+-- filter pred [1,2,3,4,5]
+-- where pred is a defined function
+def filter f xs do
+    res = []
+
+    for x in xs:
+        if f x:
+            res = res ++ [x]
+
+    return res
+end
+
+-- or with pattern matching
+def filter' _ [] do
+    return []
+end
+
+def filter' f [x:xs] do
+    if f x do
+        return $ x : filter f xs
+    else
+        return $ filter f xs
+    end
+end
+
+-- fold : (b -> a -> b) -> b -> [a] -> b
+def fold f base xs do
+    acc = base
+
+    for x in xs do
+        acc = f acc x
+    end
+
+    return acc
+end
+
+-- or with pattern matching
+def fold' _ acc [] do
+    return acc
+end
+
+def fold' f acc [x:xs] do
+    return $ fold f (f acc x) xs
+end
+
+-- sum : [Int] -> Int
+def sum [] do
+    return 0
+end
+
+def sum' [x:xs] do
+    return $ x + sum xs
+end
+
+-- or imperitive
+def sum' xs do
+    acc = 0
+
+    for x in xs do
+        acc += x
+    end
+
+    return acc
+end
+
+-- or using fold
+def sum'' xs do
+    return $ fold (\a b -> a + b) 0 xs
+end
+
+-- length : [a] -> Int
+def length xs do
+    return $ fold (\a _ -> a + 1) 0 xs
+end
+
+-- movement keywords
+-- turn_left
+-- turn_right
+-- up : Int -> ()
+-- down : Int -> ()
+-- forward : Int -> ()
+-- backward : Int -> ()
+
+-- turtle settings
+-- eat : Bool
+-- shit : Bool
+-- block : Block
+-- direction : Direction
+-- position : Position
+
+-- turtle operations
+-- look_up : Block
+-- look_down : Block
+-- look_right : Block
+-- look_left : Block
+-- look_forward : Block
+-- look_backward : Block
+
+-- general keywords
+-- maybe a let statement, that way everything line that doesnt start with a keyword is a function application
+-- def
+-- do
+-- end
+-- if
+-- elseif
+-- else
+-- repeat
+-- for in (if we implement pattern matching on lists we do not need this, nor repeat, we can implement them as functions in the language)
+-- and
+-- or
+-- not
+
+-- data types
+-- Int
+-- List
+-- Block
+-- Direction
+-- Position
+-- Bool
+-- () or Nothing
+-- functions
+-- Double
+
+-- operators
+-- standard python operators
+-- maybe use <- instead of = and = instead of ==
+-- ++ should be used for concatanation and not +
+-- .. for generating lists
+-- maybe also $
+
+-- general features
+-- pattern matching
+-- if no return statement is given or if void function () is automatically returned
+-- recursion
+-- higher order functions
+-- lambda expressions
+-- ability to make infix functions (operators)
+-- ability to create your own product types and sum types
+-- would be nice to have typeclasses especially if we have product and sum types

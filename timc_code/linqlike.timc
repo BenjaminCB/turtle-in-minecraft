@@ -1,0 +1,229 @@
+functions definition
+functions are defined with the function keyword, and can be placed wherever.
+
+function filter pred xs do
+   ...
+end
+
+function application
+print "hello"
+
+pattern match?
+Nice to have.
+
+lambda
+We want this, but nice to have.
+
+filter (fn a b -> a + b) 2
+
+%filter ( a b -> a + b) 2
+%filter (a b -> a + b) 2
+%filter (\a b -> a + b) 2
+% */-+´`^¨*'<>\:;,.-_!"@#£¤$%&$€|~
+
+
+if else
+Needs a END keyword to end the clause, and a DO to begin the clause. Takes a predicate, and if it evaluates to true, execute the code in the clause.
+
+if pred and not pred1 or pred3 do
+    ...
+else if ... do
+    ...
+else
+    ...
+end
+
+
+repeat loop
+Repeat loop begins with a repeat keyword, then a expresion that evaluates to an int, and then a do keyword to begin the code that should be executed iterativly, and an end to end the clause.
+
+repeat int do
+   ...
+end
+
+
+for loop
+foreach x in xs do
+   ...
+end
+
+
+While loop
+
+while predicate do
+   ...
+end
+
+
+comments
+We use // or /*..*/ to make comments.
+
+
+keywords:
+They are always one word. There can be only one...
+break
+function
+fn
+do
+end
+if
+else
+foreach
+while
+repeat
+in
+and
+or
+not
+
+
+operators
++
+-
+*
+/
+%
+^
+<
+>
+==
+=
+>=
+<=
++=
+-=
+*=
+^=
+/=
+++
+
+built-in functions
+forward : Int (default = 1)-> Nothing
+backward : Int (default = 1) -> Nothing
+up : Int (default = 1) -> Nothing
+down : Int (default = 1) -> Nothing
+look : RelativeDirection -> Block
+turn : RelativeDirection | AbsoluteDirection -> Nothing
+print : String -> Nothing
+facing : AbsoluteDirection
+position : Position
+getX : Position -> Int
+getY : Position -> Int
+getZ : Position -> Int
+setX : Position, Int -> Position
+setY : Position, Int -> Position
+setZ : Position, Int -> Position
+
+
+nice to have:
+skip : Int (default = 1) -> Nothing
+
+
+built-in-variables
+pooping
+eating
+placing
+
+
+nice to have
+collision
+replace
+%place
+%destroying
+
+
+
+standard library
+goto : Position -> Nothing
+forwardUntilBlock : Block -> Position
+clear : Position, Position -> Nothing
+fill : Position, Position -> Nothing
+
+
+fun to have
+blowUp : Nothing
+
+
+
+types
+Types are dynamic, meaning you do not need to name the type you store in a variable, and they can change at run-time The types we want are:
+Blocks
+Lists
+Integers
+RelativeDirection
+    right
+    left
+    up
+    down
+    front
+    back
+
+AbsoluteDirection
+    north
+    south
+    east
+    west
+
+Position
+Strings
+Functions
+Booleans
+
+Nice to have types:
+Doubles
+Make-your-own-types
+    class
+    struct/record types
+    sum and product type
+    typeclass/interface
+
+general features (maybe to early)
+
+
+
+function map f xs do
+    ys = []
+    for x in xs do
+        ys = ys ++ [f x]
+    end
+    return ys
+end
+
+functino filter f xs do
+    ys = []
+    for x in xs do
+        if f x do
+            ys = ys ++ [x]
+        end
+    end
+    return ys
+end
+
+// make foldr and foldl
+function fold f base xs do
+    acc = base
+    for x in xs do
+        acc = f x acc
+    end
+    return acc
+end
+
+length = fn xs -> fold (fn a b -> b + 1) 0 xs
+sum = fn xs -> fold (fn a b -> a + b) 0 xs
+
+// make take and drop
+function take n xs do
+    i = n
+    ys = []
+
+    for x in xs do
+        if i > 0 do
+            ys = ys ++ [x]
+        end
+    end
+
+    return ys
+end
+
+reverse = fn xs -> fold (fn a b -> [a] ++ b) [] xs
+
