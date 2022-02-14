@@ -89,24 +89,26 @@ They are always one word. There can be only one...
 - not
 
 ## Operators
-- +
-- -
-- *
-- /
-- %
-- ^
-- <
-- >
-- ==
-- =
-- >=
-- <=
-- +=
-- -=
-- *=
-- ^=
-- /=
-- ++
+```
++
+-
+*
+/
+%
+^
+<
+>
+==
+=
+>=
+<=
++=
+-=
+*=
+^=
+/=
+++
+```
 
 ## Built-In Functions
 ```
