@@ -1,0 +1,21 @@
+speed = 1
+eat = true
+block ChosenBlock = minecraft:dirt
+function makeRect(int size, block block)
+	ActiveBlock(block) 
+	shit(true)
+	move(size-1)
+	turn(right)
+	move(size-1)
+	turn(right)
+	move(size-1)
+	turn(right)
+	move(size-2)
+	up(1)
+	shit(false)
+int rectSize = 7
+While rectSize > 2
+	makeRect(rectSize, ChosenBlock)
+	rectSize = rectSize-2
+	turn(right)
+	move(1)
