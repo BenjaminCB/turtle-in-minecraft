@@ -1,0 +1,19 @@
+function counter(n) do
+    count = n - 1
+
+    return function () do
+        count += 1
+        return count
+    ond
+end
+
+counter1 = counter(1)
+counter10 = counter(10)
+
+counter1() // => 1
+counter1() // => 2
+counter1() // => 3
+
+counter10() // => 10
+counter10() // => 11
+counter10() // => 12
