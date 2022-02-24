@@ -1,0 +1,55 @@
+BuildHouse WOOD 20 10 6 //(20*10*6)
+
+// Builds house of the given dimentions, walkable space is -2 in every dimention/direction
+// ^^The total space used is described in the given dimentions.
+function BuildHouse block length width hight do
+	ACTIVE_BLOCK = block
+	TurtleStart = position
+	Direction = facing
+	Floor block length width
+	up
+	repeat 2 do
+		Wall block length hight
+		faceing = Direction
+		forward length-1
+		turn right
+		Wall block width hight
+		faceing = Direction
+		turn right
+		forward width-1
+		turn right
+	end
+	goto TurtleStart
+	PLACEING = false
+	up hight
+	PLACEING = true
+	Floor block length width
+	goto TurtleStart
+end
+
+
+function Floor block length width
+	StartPosition = position
+	Faceing = faceing
+	while length > 0 do
+		forward length-1
+		turn right
+		forward width
+		goto StartPosition
+		turn left
+		length -= 1
+	end
+	
+end
+
+
+function Wall block length hight do
+	StartingPoint = position
+	repeat hight do
+		forward length-1
+		up
+		turn right
+		turn right
+	end
+	goto StartingPoint
+end
