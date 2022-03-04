@@ -6,7 +6,7 @@ This project is for our 4th semester group project. In this project we have to m
 functions are defined with the function keyword, and can be placed wherever.
 
 ```
-function filter pred xs do
+function filter(pred, xs) do
    ...
 end
 ```
