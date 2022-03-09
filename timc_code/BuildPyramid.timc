@@ -1,8 +1,8 @@
-BuildPyramid DIRT 5
+BuildPyramid(DIRT, 5)
 
-function BuildPyramid block size do
-    ACTIVE_BLOCK = block 
-    While size > 1 do
+function BuildPyramid(block, size) do
+    ACTIVE_BLOCK = block
+    while size > 1 do
         BuildSquare size
         size -= 2
         PLACING = false
@@ -14,10 +14,10 @@ function BuildPyramid block size do
     end
 end
 
-function BuildSquare size do
+function BuildSquare(size) do
     PLACING = true
     repeat 4 do
-        forward (size - 1)   
+        forward (size - 1)
         turn right
     end
 end

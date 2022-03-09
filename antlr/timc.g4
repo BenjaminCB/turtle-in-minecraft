@@ -19,6 +19,7 @@ list   : '[' (constant (',' constant)*)* ']' ;
 statements  : statement statements? ;
 statement   : assignment
             | expression
+            | function
             | function_application
             | control_structure
             | 'return' expression
@@ -42,15 +43,20 @@ power           : (unary '^')* unary ;
 unary           : ( ( 'not' | '-' ) )* primary ;
 primary         : ID | function_application | '(' expression ')' | constant ;
 constant        : NUMBER | BOOL | STRING | BLOCK | list | anonymous_function ;
+
 assignment      : ID ( '=' | '+=' | '-=' | '*=' | '^=' | '%=' ) expression ;
+
 function        : 'function' ID '(' parameters? ')' 'do'  statements 'end'
                 | anonymous_function
                 ;
+
 anonymous_function  : 'function' '(' parameters? ')' 'do' statements 'end'
                     | 'fn' ID* '->' expression
                     ;
+
 function_application : ID '(' arguments? ')'
                      | '(' anonymous_function ')' '(' arguments? ')'
                      ;
+
 parameters  : ID (',' ID)* ;
 arguments   : expression (',' expression)* ;
