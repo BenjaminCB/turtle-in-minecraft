@@ -33,16 +33,17 @@ control_structure : 'if' expression 'do' statements? ('else' 'if' expression 'do
        'end')* ('default' 'do' statements 'end')? 'end'
      ;
 
-expression      : and_expression ('or' and_expression)* ;
-and_expression  : equality ('and' equality)* ;
-equality        : comparison ( ( '==' | '!=' ) comparison )* ;
-comparison      : term ( ( '<' | '<=' | '>' | '>=' ) term )* ;
-term            : factor ( ( '+' | '-' | '++' ) factor )* ;
-factor          : power ( ( '*' | '/' | '%' ) power )* ;
-power           : (unary '^')* unary ;
-unary           : ( ( 'not' | '-' ) )* primary ;
-primary         : ID | function_application | '(' expression ')' | constant ;
-constant        : NUMBER | BOOL | STRING | BLOCK | list | anonymous_function ;
+expression  : expression 'or' expression
+            | expression 'and' expression
+            | expression ('==' | '!=') expression
+            | expression ( '<' | '<=' | '>' | '>=' ) expression
+            | expression ( '+' | '-' | '++' ) expression
+            | expression ( '*' | '/' | '%' ) expression
+            | expression '^'<assoc=right> expression
+            | ( 'not'<assoc=right> | '-'<assoc=right> ) expression
+            | ID | function_application | '(' expression ')' | constant
+            ;
+constant    : NUMBER | BOOL | STRING | BLOCK | list | anonymous_function ;
 
 assignment      : ID ( '=' | '+=' | '-=' | '*=' | '^=' | '%=' ) expression ;
 
