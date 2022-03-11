@@ -27,7 +27,7 @@ statement:
 	| function
 	| function_application
 	| control_structure
-	| 'return' expression (',' expression)* ;
+	| 'return' expression? (',' expression)* ;
 
 control_structure:
 	'if' expression 'do' statements? (
