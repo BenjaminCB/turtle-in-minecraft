@@ -1,6 +1,9 @@
 grammar timc;
 
 WS: [ \t\r\n]* -> skip;
+LINE_COMMENT : '//' .*? '\r'? '\n' -> skip ;
+COMMENT : '/*' .*? '*/' -> skip ;
+
 
 NUMBER: '-'? [1-9][0-9]*;
 BOOL: 'true' | 'false';
