@@ -1,7 +1,0 @@
-add(doubleNumber(2))
-function add(x) do
-	x++
-end
-function doubleNumber(n) do
-	return n*2
-end
