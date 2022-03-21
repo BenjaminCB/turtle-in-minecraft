@@ -1,13 +1,14 @@
 grammar timc;
 
 WS: [ \t\r\n]* -> skip;
-LINE_COMMENT : '//' .*? '\r'? '\n' -> skip ;
-COMMENT : '/*' .*? '*/' -> skip ;
+LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
+COMMENT: '/*' .*? '*/' -> skip;
 
-
-NUMBER: '-'? [1-9][0-9]*;
+NUMBER: [0-9]+;
 BOOL: 'true' | 'false';
 STRING: '"' [^"]* '"';
+ID: [a-zA-Z_][0-9a-zA-Z_]*;
+
 BLOCK:
 	'DIRT'
 	| 'SAND'
@@ -16,18 +17,19 @@ BLOCK:
 	| 'GLASS'
 	| 'WOOD'
 	| 'PLANK';
-ID: [a-zA-Z_][0-9a-zA-Z_]*;
+RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
+ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 
 list: '[' (constant (',' constant)*)* ']';
 
-statements: statement statements?;
+statements: statement+;
 statement:
 	assignment
 	| expression
 	| function
 	| function_application
 	| control_structure
-	| 'return' expression? (',' expression)* ;
+	| 'return' expression? (',' expression)*;
 
 control_structure:
 	'if' expression 'do' statements? (
@@ -62,6 +64,8 @@ constant:
 	| BOOL
 	| STRING
 	| BLOCK
+	| RELDIR
+	| ABSDIR
 	| list
 	| anonymous_function;
 
