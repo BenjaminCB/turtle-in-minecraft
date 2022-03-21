@@ -1,0 +1,4 @@
+Parser((fn a -> a*2)(2))
+Parser(x)do
+	x++
+end
