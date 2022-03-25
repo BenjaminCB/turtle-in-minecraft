@@ -1,41 +1,58 @@
 block = WOOD
 length = 20
 width = 10
-hight = 6
+height = 6
 
-BuildHouse(block, length, width, hight)
+BuildHouse(block, length, width, height)
 BuildHouse(WOOD, 20, 10, 6)
+
+function turn(direction) do
+end
+function goto(position) do
+end
+function forward(amount) do
+end
+function up() do
+end
+function up_(height) do
+end
+function position() do
+    return 1;
+end
+function facing() do
+    return 1;
+end
 
 //Build 4 identical houses side by side
 repeat 4 do
 	TurtleStart = position()
-	StartDirection = faceing()
-	BuildHouse(block, length, width, hight)
+	StartDirection = facing()
+	BuildHouse(block, length, width, height)
 	goto(TurtleStart)
 	turn(StartDirection)
 	turn(right)
-	forward(width)  //width+NUM to make spaceing in between
+	forward(width)  //width+NUM to make spacing in between
 	turn(left)
 end
 
 // Builds house of the given dimentions, walkable space will be -2 in every direction
 // ^^The total space used is described by the given dimentions.
-function BuildHouse(block, length, width, hight) do
+function BuildHouse(block, length, width, height) do
 	ACTIVE_BLOCK = block
 	TurtleStart = position()		//type: Position
-	StartDirection = faceing()		//type: AbsoluteDirection
+	StartDirection = facing()		//type: AbsoluteDirection
 
 	Floor(block, length, width)
 
 	up()
 	repeat 2 do
-		Wall(block, length, hight)
-		faceing = StartDirection
+		Wall(block, length, height)
+		turn(StartDirection)
 		forward(length-1)
 		turn(right)
 
-		Wall(block, width, hight)
-		faceing = StartDirection
+		Wall(block, width, height)
+		trun(StartDirection)
 		turn(right)
 		forward(width-1)
 		turn(right)
@@ -43,7 +60,7 @@ function BuildHouse(block, length, width, hight) do
 
 	goto(TurtleStart)
 	placing = false
-	up(hight)
+	up(height)
 	placing = true
 
 	Floor(block, length, width)
@@ -51,10 +68,10 @@ function BuildHouse(block, length, width, hight) do
 	goto(TurtleStart)
 end
 
-//function Floor(block, length, width, hight) to make it more consistent
+//function Floor(block, length, width, height) to make it more consistent
 function Floor(block, length, width)
 	StartPosition = position()
-	StartDirection = faceing()
+	StartDirection = facing()
 	while length > 0 do
 		forward(length-1)
 		turn(right)
@@ -67,9 +84,9 @@ function Floor(block, length, width)
 end
 
 
-function Wall(block, length, hight) do
+function Wall(block, length, height) do
 	StartingPoint = position()
-	repeat hight do
+	repeat height do
 		forward(length-1)
 		up()
 		turn(right)
