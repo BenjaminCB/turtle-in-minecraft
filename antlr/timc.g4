@@ -58,6 +58,23 @@ expression: '(' expression ')'										# ParenExpr
 		  | ID														# IdExpr
 		  ;
 
+NOT    : 'not' ;
+SUB    : '-'   ;
+POWER  : '^'   ;
+MULT   : '*'   ;
+DIV    : '/'   ;
+MOD    : '%'   ;
+ADD    : '+'   ;
+CONCAT : '++'  ;
+LT     : '<'   ;
+LTEQ   : '<='  ;
+GT     : '>'   ;
+GTEQ   : '>='  ;
+EQ     : '=='  ;
+NEQ    : '!='  ;
+AND    : 'and' ;
+OR     : 'or'  ;
+
 constant: NUMBER				# NumberConst
 		| BOOL					# BoolConst
 		| STRING				# StringConst
