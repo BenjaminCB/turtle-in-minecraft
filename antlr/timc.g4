@@ -16,70 +16,70 @@ BLOCK:
 	| 'BRICK'
 	| 'GLASS'
 	| 'WOOD'
-	| 'PLANK';
+	| 'PLANK'
+	;
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 
 list: '[' (constant (',' constant)*)* ']';
 
 statements: statement+;
-statement:
-	assignment
-	| expression
-	| function
-	| function_application
-	| control_structure
-	| 'return' expression? (',' expression)*;
+statement: assignment
+		 | expression
+		 | function
+		 | function_application
+		 | control_structure
+		 | 'return' expression? (',' expression)*
+		 ;
 
-control_structure:
-	'if' expression 'do' statements? (
-		'else' 'if' expression 'do' statements
-	)* ('else' 'do' statements)? 'end'
-	| 'while' expression 'do' statements 'end'
-	| 'repeat' expression 'do' statements 'end'
-	| 'foreach' ID 'in' expression 'do' statements 'end'
-	| 'switch' expression 'do' (
-		'case' expression 'do' statements 'end'
-	)* ('default' 'do' statements 'end')? 'end';
+control_structure: 'if' expression 'do' statements? (
+				   'else' 'if' expression 'do' statements
+				   )* ('else' 'do' statements)? 'end'
+				 | 'while' expression 'do' statements 'end'
+				 | 'repeat' expression 'do' statements 'end'
+				 | 'foreach' ID 'in' expression 'do' statements 'end'
+				 | 'switch' expression 'do' (
+				   'case' expression 'do' statements 'end'
+				   )* ('default' 'do' statements 'end')? 'end'
+				 ;
 
-assignment:
-	ID ('=' | '+=' | '-=' | '*=' | '^=' | '%=') expression;
+assignment: ID ('=' | '+=' | '-=' | '*=' | '^=' | '%=') expression;
 
-expression:
-	'(' expression ')'
-	| function_application
-	| <assoc = right> ('not' | '-') expression
-	| <assoc = right> expression '^' expression
-	| expression ( '*' | '/' | '%') expression
-	| expression ( '+' | '-' | '++') expression
-	| expression ( '<' | '<=' | '>' | '>=') expression
-	| expression ('==' | '!=') expression
-	| expression 'and' expression
-	| expression 'or' expression
-	| constant
-	| ID;
+expression: '(' expression ')'
+		  | function_application
+		  | <assoc = right> ('not' | '-') expression
+		  | <assoc = right> expression '^' expression
+		  | expression ( '*' | '/' | '%') expression
+		  | expression ( '+' | '-' | '++') expression
+		  | expression ( '<' | '<=' | '>' | '>=') expression
+		  | expression ('==' | '!=') expression
+		  | expression 'and' expression
+		  | expression 'or' expression
+		  | constant
+		  | ID
+		  ;
 
-constant:
-	NUMBER
-	| BOOL
-	| STRING
-	| BLOCK
-	| RELDIR
-	| ABSDIR
-	| list
-	| anonymous_function;
+constant: NUMBER
+		| BOOL
+		| STRING
+		| BLOCK
+		| RELDIR
+		| ABSDIR
+		| list
+		| anonymous_function
+		;
 
-function:
-	'function' ID '(' parameters? ')' 'do' statements 'end'
-	| anonymous_function;
+function: 'function' ID '(' parameters? ')' 'do' statements 'end'
+		| anonymous_function
+		;
 
-anonymous_function:
-	'function' '(' parameters? ')' 'do' statements 'end'
-	| 'fn' ID* '->' expression;
+anonymous_function: 'function' '(' parameters? ')' 'do' statements 'end'
+				  | 'fn' ID* '->' expression
+				  ;
 
-function_application:
-	ID '(' arguments? ')'
-	| '(' anonymous_function ')' '(' arguments? ')';
+function_application: ID '(' arguments? ')'
+					| '(' anonymous_function ')' '(' arguments? ')'
+					;
 
 parameters: ID (',' ID)*;
 
