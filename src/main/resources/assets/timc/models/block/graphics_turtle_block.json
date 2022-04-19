@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "timc:block/graphics_turtle_block"
+    "all": "timc:block/TimSmall"
   }
 }
