@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.11-SNAPSHOT'
 	id 'maven-publish'
+	id 'antlr'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -18,11 +19,20 @@ repositories {
 	// for more information about repositories.
 }
 
+configurations {
+	compile {
+		extendsFrom = extendsFrom.findAll { it != configurations.antlr }
+	}
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	antlr "org.antlr:antlr4:4.10.1"
+	compile "org.antlr:antlr4-runtime:4.10.1"
+
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
