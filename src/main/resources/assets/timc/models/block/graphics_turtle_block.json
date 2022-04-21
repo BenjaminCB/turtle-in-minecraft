@@ -1,6 +1,24 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/block",
   "textures": {
-    "all": "timc:block/graphics_turtle_block"
-  }
+      "top": "timc:block/graphics_turtle_block",
+      "bottom": "timc:block/graphics_turtle_block",
+      "front": "timc:block/graphics_turtle_block",
+      "back": "timc:block/graphics_turtle_block",
+      "left": "timc:block/graphics_turtle_block",
+      "right": "timc:block/graphics_turtle_block"
+  },
+  "elements": [
+    {
+      "faces":
+      {
+        "up": {"texture": "#top"},
+        "down": {"texture": "#bottom", "cullface": "down"},
+        "north": {"texture": "#front"},
+        "south": {"texture": "#back"},
+        "east": {"texture": "#right"},
+        "west": {"texture": "#left"}
+      }
+    }
+  ]
 }

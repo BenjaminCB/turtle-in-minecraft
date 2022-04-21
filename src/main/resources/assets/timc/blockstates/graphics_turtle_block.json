@@ -1,7 +1,8 @@
 {
   "variants": {
-    "": {
-      "model": "timc:block/graphics_turtle_block"
-    }
+    "facing=north": { "model": "timc:block/graphics_turtle_block" },
+    "facing=east": {"model": "timc:block/graphics_turtle_block"},
+    "facing=south": {"model": "timc:block/graphics_turtle_block"},
+    "facing=west": {"model": "timc:block/graphics_turtle_block"}
   }
 }
