@@ -6,6 +6,7 @@
       "north": "timc:block/graphics_turtle_block_front",
       "south": "timc:block/graphics_turtle_block_back",
       "east": "timc:block/graphics_turtle_block_left",
-      "west": "timc:block/graphics_turtle_block_right"
+      "west": "timc:block/graphics_turtle_block_right",
+      "particle": "timc:block/graphics_turtle_block_back"
   }
 }
