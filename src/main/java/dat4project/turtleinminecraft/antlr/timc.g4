@@ -27,7 +27,6 @@ statement:
 	assignment						# AssignStmt
 	| expression						# ExprStmt
 	| function						# FuncStmt
-	| function_application					# FuncAppStmt
 	| control_structure					# CtrlStmt
 	| 'return' expression? (',' expression)*	        # RetStmt;
 
@@ -43,7 +42,15 @@ control_structure:
 	)* ('default' 'do' statements 'end')? 'end'             # SwitchCtrl;
 
 assignment:
-	ID ('=' | '+=' | '-=' | '*=' | '^=' | '%=') expression;
+	ID op = (ASSIGN | ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression;
+
+ASSIGN: '=' ;
+ADDASSIGN: '+=' ;
+SUBASSIGN: '-=' ;
+MULTASSIGN: '*=' ;
+DIVASSIGN: '/=' ;
+MODASSIGN: '%=' ;
+POWERASSIGN: '^=' ;
 
 expression:
 	'(' expression ')'					# ParenExpr

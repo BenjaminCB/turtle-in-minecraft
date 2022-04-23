@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SymbolTable<T> {
+    // not using a stack as the iterator is in the wrong order
     private Deque<Map<String, T>> tables;
+    public T ret;
 
     public SymbolTable() {
         tables = new ArrayDeque<>();
         tables.push(new HashMap<>());
+        ret = null;
     }
 
     public void enterScope() {
@@ -28,6 +31,7 @@ public class SymbolTable<T> {
     public T get(String name) {
         T res = null;
 
+        // go through the call stack looking for the symbol
         for (Map<String, T> table : tables) {
             if (table.containsKey(name)) {
                 res = table.get(name);
