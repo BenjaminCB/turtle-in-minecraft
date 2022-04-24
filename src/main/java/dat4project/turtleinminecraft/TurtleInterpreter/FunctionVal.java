@@ -1,11 +1,12 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
 import dat4project.turtleinminecraft.antlr.timcParser;
+import org.jetbrains.annotations.NotNull;
 
 public class FunctionVal extends TimcVal {
-    private String[] params;
-    private timcParser.StatementsContext ctx;
-    private SymbolTable<TimcVal> declarationTable;
+    private final String[] params;
+    private final timcParser.StatementsContext ctx;
+    private final SymbolTable<TimcVal> declarationTable;
 
     public FunctionVal(String[] params, timcParser.StatementsContext ctx, SymbolTable<TimcVal> declarationTable) {
         super(TimcType.FUNCTION);
@@ -17,4 +18,10 @@ public class FunctionVal extends TimcVal {
     public String[] getParams() { return params; }
     public timcParser.StatementsContext getCtx() { return ctx; }
     public SymbolTable<TimcVal> getDeclarationTable() { return declarationTable; }
+
+    // compare the reference
+    @Override
+    protected boolean timcValEquals(TimcVal o) {
+        return o == this;
+    }
 }

@@ -1,6 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-public class TimcVal {
+public abstract class TimcVal {
     private TimcType type;
 
     public TimcVal(TimcType type) {
@@ -8,4 +8,15 @@ public class TimcVal {
     }
 
     public TimcType getType() { return type; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof TimcVal v) {
+            return timcValEquals(v);
+        } else {
+            return false;
+        }
+    }
+
+    protected abstract boolean timcValEquals(TimcVal o);
 }

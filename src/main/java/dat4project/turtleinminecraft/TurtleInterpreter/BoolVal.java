@@ -1,21 +1,21 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-public class NumberVal extends TimcVal {
-    private int val;
+public class BoolVal extends TimcVal {
+    private boolean val;
 
-    public NumberVal(int val) {
-        super(TimcType.NUMBER);
+    public BoolVal(boolean val) {
+        super(TimcType.BOOL);
         this.val = val;
     }
 
-    public int getVal() {
+    public boolean getVal() {
         return val;
     }
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof NumberVal n) {
-            return val == n.getVal();
+        if (o instanceof BoolVal b) {
+            return val == b.getVal();
         } else {
             return false;
         }

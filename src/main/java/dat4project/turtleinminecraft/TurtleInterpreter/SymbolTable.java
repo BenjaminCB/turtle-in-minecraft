@@ -41,5 +41,9 @@ public class SymbolTable<T> {
 
         return res;
     }
+
+    public Boolean contains(String name) {
+        return get(name) != null;
+    }
 }
 

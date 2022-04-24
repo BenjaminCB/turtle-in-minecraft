@@ -11,4 +11,13 @@ public class StringVal extends TimcVal {
     public String getVal() {
         return val;
     }
+
+    @Override
+    protected boolean timcValEquals(TimcVal o) {
+        if (o instanceof StringVal s) {
+            return val.equals(s.getVal());
+        } else {
+            return false;
+        }
+    }
 }
