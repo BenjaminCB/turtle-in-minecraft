@@ -83,6 +83,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (cond instanceof BoolVal b) {
                 if (b.getVal()) {
                     visit(ctx.statements());
+                    if(hasBreaked == true){
+                        hasBreaked = false;
+                        break;
+                    }
                 } else {
                     break;
                 }
@@ -100,6 +104,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
            int c = a.getVal();
            for(int i=0;i<c; i++){
                visit(ctx.statements());
+               if(hasBreaked == true){
+                    hasBreaked = false;    
+                    break;
+               }
+
            }
        } else{
            System.exit(0);
