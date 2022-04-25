@@ -12,11 +12,11 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link timcParser#list}.
+	 * Visit a parse tree produced by {@link timcParser#array}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitList(timcParser.ListContext ctx);
+	T visitArray(timcParser.ArrayContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link timcParser#statements}.
 	 * @param ctx the parse tree
@@ -58,6 +58,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRetStmt(timcParser.RetStmtContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BreakStmt}
+	 * labeled alternative in {@link timcParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreakStmt(timcParser.BreakStmtContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IfCtrl}
 	 * labeled alternative in {@link timcParser#control_structure}.
@@ -226,12 +233,12 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAbsDirConst(timcParser.AbsDirConstContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ListConst}
+	 * Visit a parse tree produced by the {@code arrayConst}
 	 * labeled alternative in {@link timcParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitListConst(timcParser.ListConstContext ctx);
+	T visitArrayConst(timcParser.ArrayConstContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AnonFuncConst}
 	 * labeled alternative in {@link timcParser#constant}.
@@ -254,6 +261,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAnonFunc(timcParser.AnonFuncContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code BuildInFunc}
+	 * labeled alternative in {@link timcParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuildInFunc(timcParser.BuildInFuncContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code StmtAnonFunc}
 	 * labeled alternative in {@link timcParser#anonymous_function}.
 	 * @param ctx the parse tree
@@ -261,12 +275,12 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code LambdaAnanFunc}
+	 * Visit a parse tree produced by the {@code LambdaAnonFunc}
 	 * labeled alternative in {@link timcParser#anonymous_function}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLambdaAnanFunc(timcParser.LambdaAnanFuncContext ctx);
+	T visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IdFuncApp}
 	 * labeled alternative in {@link timcParser#function_application}.
@@ -281,6 +295,69 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConstFuncApp(timcParser.ConstFuncAppContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ForwardFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForwardFunc(timcParser.ForwardFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BackwardFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBackwardFunc(timcParser.BackwardFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code UpFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUpFunc(timcParser.UpFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code DownFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDownFunc(timcParser.DownFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code LookFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLookFunc(timcParser.LookFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code TurnFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTurnFunc(timcParser.TurnFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code PrintFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrintFunc(timcParser.PrintFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FacingFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFacingFunc(timcParser.FacingFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code PositionFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPositionFunc(timcParser.PositionFuncContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link timcParser#parameters}.
 	 * @param ctx the parse tree

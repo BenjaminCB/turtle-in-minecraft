@@ -19,8 +19,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = new SymbolTable<>();
     }
 
-    @Override public TimcVal visitList(timcParser.ListContext ctx) { return null; }
-
     @Override public TimcVal visitStatements(timcParser.StatementsContext ctx) {
         for (timcParser.StatementContext stmt : ctx.statement()) {
             visit(stmt);
@@ -336,12 +334,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    @Override public TimcVal visitListConst(timcParser.ListConstContext ctx) { return null; }
     @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) { return null; }
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) { return null; }
     @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) { return null; }
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) { return null; }
-    @Override public TimcVal visitLambdaAnanFunc(timcParser.LambdaAnanFuncContext ctx) { return null; }
 
     @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
         String id = ctx.ID().getText();

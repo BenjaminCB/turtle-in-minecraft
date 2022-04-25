@@ -27,9 +27,10 @@ statement:
 	assignment										# AssignStmt
 	| expression									# ExprStmt
 	| function										# FuncStmt
-	| build_in_func									# BuildInFunc
 	| control_structure								# CtrlStmt
-	| 'return' expression? (',' expression)*		# RetStmt;
+	| 'return' expression? (',' expression)*		# RetStmt
+	| 'break'                                       # BreakStmt
+	;
 
 control_structure:
 	'if' expression 'do' statements? (
@@ -97,7 +98,7 @@ constant:
 function:
 	'function' ID '(' parameters? ')' 'do' statements 'end' # DclFunc
 	| anonymous_function				        # AnonFunc
-	| build_in_func 							#BuildInFunc;
+	| build_in_func 							# BuildInFunc;
 
 anonymous_function:
 	'function' '(' parameters? ')' 'do' statements 'end'	# StmtAnonFunc
@@ -108,15 +109,15 @@ function_application:
 	| '(' anonymous_function ')' '(' arguments? ')'	        # ConstFuncApp;
 
 build_in_func:
-	'forward' '(' expression? ')'			# forwardFunc
-	| 'backward' '(' expression? ')'		# backwardFunc
-	| 'up' '(' expression? ')'				# upFunc
-	| 'down' '(' expression? ')'			# downFunc
-	| 'look' '(' RELDIR ')' 				# lookFunc
-	| 'turn' '(' (RELDIR | ABSDIR) ')'		# turnFunc
-	| 'print' '(' expression? ')'			# printFunc
-	| 'facing' '(' ')'						# facingFunc
-	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# positionFunc;
+	'forward' '(' expression? ')'			# ForwardFunc
+	| 'backward' '(' expression? ')'		# BackwardFunc
+	| 'up' '(' expression? ')'				# UpFunc
+	| 'down' '(' expression? ')'			# DownFunc
+	| 'look' '(' RELDIR ')' 				# LookFunc
+	| 'turn' '(' (RELDIR | ABSDIR) ')'		# TurnFunc
+	| 'print' '(' expression? ')'			# PrintFunc
+	| 'facing' '(' ')'						# FacingFunc
+	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# PositionFunc;
 
 parameters: ID (',' ID)*;
 
