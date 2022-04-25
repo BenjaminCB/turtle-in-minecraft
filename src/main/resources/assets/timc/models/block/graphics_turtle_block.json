@@ -1,6 +1,12 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "timc:block/graphics_turtle_block"
+      "up": "timc:block/graphics_turtle_block_top",
+      "down": "timc:block/graphics_turtle_block_bottom",
+      "north": "timc:block/graphics_turtle_block_front",
+      "south": "timc:block/graphics_turtle_block_back",
+      "east": "timc:block/graphics_turtle_block_left",
+      "west": "timc:block/graphics_turtle_block_right",
+      "particle": "timc:block/graphics_turtle_block_back"
   }
 }
