@@ -76,6 +76,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitWhileCtrl(timcParser.WhileCtrlContext ctx) {
+        // continue to visit the while body until the condition evaluates to false
         while(true) {
             TimcVal cond = visit(ctx.expression());
             if (cond instanceof BoolVal b) {
@@ -104,8 +105,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
         int oper = ctx.op.getType();
         if (oper == timcParser.ASSIGN) {
+            // for a regular assignment we do not care what the type of val is
             symbolTable.put(id, val);
         } else if (symbolTable.get(id) instanceof NumberVal n && val instanceof NumberVal m) {
+            // in a compound assignment id has to be defined and id and val should both be numbers
             switch (oper) {
                 case timcParser.ADDASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() + m.getVal()));
                 case timcParser.SUBASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() - m.getVal()));
@@ -129,6 +132,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     // TODO error handling
+    // TODO concat on arrays
     @Override public TimcVal visitTermExpr(timcParser.TermExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -147,7 +151,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    // short circuiting not implemented
     @Override public TimcVal visitAndExpr(timcParser.AndExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -162,16 +165,68 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    @Override public TimcVal visitPowerExpr(timcParser.PowerExprContext ctx) { return null; }
-    @Override public TimcVal visitConstExpr(timcParser.ConstExprContext ctx) { return null; }
-    @Override public TimcVal visitIdExpr(timcParser.IdExprContext ctx) { return null; }
-    @Override public TimcVal visitFuncAppExpr(timcParser.FuncAppExprContext ctx) { return null; }
-    @Override public TimcVal visitEqExpr(timcParser.EqExprContext ctx) { return null; }
-    @Override public TimcVal visitCompExpr(timcParser.CompExprContext ctx) { return null; }
-    @Override public TimcVal visitParenExpr(timcParser.ParenExprContext ctx) { return null; }
-    @Override public TimcVal visitUnaryExpr(timcParser.UnaryExprContext ctx) { return null; }
+    @Override public TimcVal visitPowerExpr(timcParser.PowerExprContext ctx) {
+        TimcVal left = visit(ctx.expression(0));
+        TimcVal right = visit(ctx.expression(1));
 
-    // short circuiting not implemented
+        if (left.getType() != TimcType.NUMBER || right.getType() != TimcType.NUMBER) System.exit(0);
+
+        NumberVal n = (NumberVal) left;
+        NumberVal m = (NumberVal) right;
+
+        return new NumberVal((int) Math.pow(n.getVal(), m.getVal()));
+    }
+
+    @Override public TimcVal visitConstExpr(timcParser.ConstExprContext ctx) {
+        return visit(ctx.constant());
+    }
+
+    @Override public TimcVal visitIdExpr(timcParser.IdExprContext ctx) {
+        TimcVal val = symbolTable.get(ctx.ID().getText());
+        if (val == null) System.exit(0);
+        return val;
+    }
+
+    @Override public TimcVal visitFuncAppExpr(timcParser.FuncAppExprContext ctx) {
+        return visit(ctx.function_application());
+    }
+
+    @Override public TimcVal visitEqExpr(timcParser.EqExprContext ctx) {
+        TimcVal left = visit(ctx.expression(0));
+        TimcVal right = visit(ctx.expression(1));
+
+        // we cannot compare types that are not the same
+        if (!left.getClass().equals(right.getClass())) System.exit(0);
+
+        if (ctx.op.getType() == timcParser.EQ) {
+            return new BoolVal(left.equals(right));
+        } else {
+            return new BoolVal(!left.equals(right));
+        }
+    }
+
+    @Override public TimcVal visitCompExpr(timcParser.CompExprContext ctx) { return null; }
+
+    @Override public TimcVal visitParenExpr(timcParser.ParenExprContext ctx) {
+        return visit(ctx.expression());
+    }
+
+    @Override public TimcVal visitUnaryExpr(timcParser.UnaryExprContext ctx) {
+        TimcVal val = visit(ctx.expression());
+
+        TimcVal res = null;
+
+        if (ctx.op.getType() == timcParser.NOT && val instanceof BoolVal b) {
+            res = new BoolVal(!b.getVal());
+        } else if (ctx.op.getType() == timcParser.SUB && val instanceof NumberVal n) {
+            res = new NumberVal(-n.getVal());
+        } else {
+            System.exit(0);
+        }
+
+        return res;
+    }
+
     @Override public TimcVal visitOrExpr(timcParser.OrExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -186,7 +241,29 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    @Override public TimcVal visitFactorExpr(timcParser.FactorExprContext ctx) { return null; }
+    @Override public TimcVal visitFactorExpr(timcParser.FactorExprContext ctx) {
+        TimcVal left = visit(ctx.expression(0));
+        TimcVal right = visit(ctx.expression(1));
+
+        TimcVal res = null;
+        if (left instanceof NumberVal n && right instanceof NumberVal m) {
+            switch (ctx.op.getType()) {
+                case timcParser.DIV -> {
+                    if (m.getVal() == 0) System.exit(0);
+                    res = new NumberVal(n.getVal() / m.getVal());
+                }
+                case timcParser.MOD -> {
+                    if (m.getVal() == 0) System.exit(0);
+                    res = new NumberVal(n.getVal() % m.getVal());
+                }
+                default -> res = new NumberVal(n.getVal() * m.getVal());
+            }
+        } else {
+            System.exit(0);
+        }
+
+        return res;
+    }
 
     @Override public TimcVal visitNumberConst(timcParser.NumberConstContext ctx) {
         return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
@@ -254,7 +331,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         String id = ctx.ID().getText();
         TimcVal val = symbolTable.get(id);
 
-        // probably needs exceptions
+        // check for undefined reference and type error
         if (val == null) System.exit(0);
         if (val.getType() != TimcType.FUNCTION) System.exit(0);
 
@@ -265,6 +342,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         FunctionVal func = (FunctionVal) val;
         symbolTable = func.getDeclarationTable();
 
+        // has the correct amount arguments been applied to the function
         if (args.size() != func.getParams().length) System.exit(0);
 
         // execute function body

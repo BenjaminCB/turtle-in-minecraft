@@ -4,8 +4,13 @@ import dat4project.turtleinminecraft.antlr.timcParser;
 import org.jetbrains.annotations.NotNull;
 
 public class FunctionVal extends TimcVal {
+    // function parameter names
     private final String[] params;
+
+    // function body
     private final timcParser.StatementsContext ctx;
+
+    // symbolTable at the time of declaration including a reference to the function itself
     private final SymbolTable<TimcVal> declarationTable;
 
     public FunctionVal(String[] params, timcParser.StatementsContext ctx, SymbolTable<TimcVal> declarationTable) {

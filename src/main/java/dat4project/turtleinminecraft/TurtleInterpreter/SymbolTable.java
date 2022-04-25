@@ -28,10 +28,11 @@ public class SymbolTable<T> {
         tables.peek().put(name, val);
     }
 
+    // go through the call stack looking for the symbol
+    // if the symbol is not found returns null
     public T get(String name) {
         T res = null;
 
-        // go through the call stack looking for the symbol
         for (Map<String, T> table : tables) {
             if (table.containsKey(name)) {
                 res = table.get(name);
