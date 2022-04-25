@@ -12,6 +12,8 @@ import java.util.*;
 
 public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     private SymbolTable<TimcVal> symbolTable;
+    private boolean hasBreaked;
+    private boolean hasReturned;
 
     public ExecutionVisitor() {
         symbolTable = new SymbolTable<>();
@@ -22,6 +24,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitStatements(timcParser.StatementsContext ctx) {
         for (timcParser.StatementContext stmt : ctx.statement()) {
             visit(stmt);
+
         }
         return null;
     }
@@ -92,8 +95,21 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    @Override public TimcVal visitRepeatCtrl(timcParser.RepeatCtrlContext ctx) { return null; }
-    @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) { return null; }
+    @Override public TimcVal visitRepeatCtrl(timcParser.RepeatCtrlContext ctx) 
+    { 
+       TimcVal amount = visit(ctx.expression());
+       if(amount instanceof NumberVal a){
+           int c = a.getVal();
+           for(int i=0;i<c; i++){
+               visit(ctx.statements());
+           }
+       } else{
+           System.exit(0);
+       }
+        return null; 
+    }
+    @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) 
+    { return null; }
     @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) { return null; }
 
     // currently always returns null, but could return value of the assignment
