@@ -1,6 +1,7 @@
 package dat4project.turtleinminecraft;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -31,6 +32,7 @@ public class Timc implements ModInitializer {
 	public static final Block GraphicsTurtleBlock = new TurtleBlock(FabricBlockSettings.of(Material.METAL).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).breakByTool(FabricToolTags.PICKAXES));
 	public static BlockEntityType<TurtleBlockEntity> GraphicsTurtleBlockEntity;
 	public static ScreenHandlerType<TurtleScreenHandler> GraphicsTurtleScreenHandler;
+	public static final Item TurtleBook = new Item(new FabricItemSettings().group(ItemGroup.MISC));
 
 	@Override
 	public void onInitialize() {
@@ -42,6 +44,7 @@ public class Timc implements ModInitializer {
 		GraphicsTurtleScreenHandler = ScreenHandlerRegistry.registerSimple(new Identifier("timc", "turtle"), TurtleScreenHandler::new);
 		Registry.register(Registry.BLOCK, new Identifier("timc", "graphics_turtle_block"), GraphicsTurtleBlock);
 		Registry.register(Registry.ITEM, new Identifier("timc", "graphics_turtle_block"), new BlockItem(GraphicsTurtleBlock, new Item.Settings().group(ItemGroup.MISC)));
+		Registry.register(Registry.ITEM, new Identifier("timc", "turtle_book"), TurtleBook);
 
 		LOGGER.info("Hello Fabric world!");
 	}

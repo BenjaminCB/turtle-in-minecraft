@@ -20,23 +20,24 @@ BLOCK:
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 
-list: '[' (constant (',' constant)*)* ']';
+array: '[' (constant (',' constant)*)* ']';
 
 statements: statement+;
 statement:
-	assignment						# AssignStmt
-	| expression						# ExprStmt
-	| function						# FuncStmt
-	| function_application					# FuncAppStmt
-	| control_structure					# CtrlStmt
-	| 'return' expression? (',' expression)*	        # RetStmt;
+	assignment										# AssignStmt
+	| expression									# ExprStmt
+	| function										# FuncStmt
+	| function_application							# FuncAppStmt
+	| build_in_func									#BuildInFunc
+	| control_structure								# CtrlStmt
+	| 'return' expression? (',' expression)*		# RetStmt;
 
 control_structure:
 	'if' expression 'do' statements? (
 		'else' 'if' expression 'do' statements
-	)* ('else' 'do' statements)? 'end'			# IfCtrl
-	| 'while' expression 'do' statements 'end'		# WhileCtrl
-	| 'repeat' expression 'do' statements 'end'		# RepeatCtrl
+	)* ('else' 'do' statements)? 'end'						# IfCtrl
+	| 'while' expression 'do' statements 'end'				# WhileCtrl
+	| 'repeat' expression 'do' statements 'end'				# RepeatCtrl
 	| 'foreach' ID 'in' expression 'do' statements 'end'	# ForeachCtrl
 	| 'switch' expression 'do' (
 		'case' expression 'do' statements 'end'
@@ -46,18 +47,18 @@ assignment:
 	ID ('=' | '+=' | '-=' | '*=' | '^=' | '%=') expression;
 
 expression:
-	'(' expression ')'					# ParenExpr
-	| function_application					# FuncAppExpr
-	| <assoc = right> op = (NOT | SUB) expression		# UnaryExpr
-	| <assoc = right> expression POWER expression		# PowerExpr
-	| expression op = (MULT | DIV | MOD) expression		# FactorExpr
-	| expression op = (ADD | SUB | CONCAT) expression	# TermExpr
+	'(' expression ')'										# ParenExpr
+	| function_application									# FuncAppExpr
+	| <assoc = right> op = (NOT | SUB) expression			# UnaryExpr
+	| <assoc = right> expression POWER expression			# PowerExpr
+	| expression op = (MULT | DIV | MOD) expression			# FactorExpr
+	| expression op = (ADD | SUB | CONCAT) expression		# TermExpr
 	| expression op = (LT | LTEQ | GT | GTEQ) expression	# CompExpr
-	| expression op = ( EQ | NEQ) expression		# EqExpr
-	| expression AND expression				# AndExpr
-	| expression OR expression				# OrExpr
-	| constant						# ConstExpr
-	| ID						        # IdExpr;
+	| expression op = ( EQ | NEQ) expression				# EqExpr
+	| expression AND expression								# AndExpr
+	| expression OR expression								# OrExpr
+	| constant												# ConstExpr
+	| ID						        					# IdExpr;
 
 NOT: 'not';
 SUB: '-';
@@ -83,20 +84,32 @@ constant:
 	| BLOCK					        # BlockConst
 	| RELDIR				        # RelDirConst
 	| ABSDIR				        # AbsDirConst
-	| list					        # ListConst
+	| array				        	# arrayConst
 	| anonymous_function	                        # AnonFuncConst;
 
 function:
 	'function' ID '(' parameters? ')' 'do' statements 'end' # DclFunc
-	| anonymous_function				        # AnonFunc;
+	| anonymous_function				        # AnonFunc
+	| build_in_func 							#BuildInFunc;
 
 anonymous_function:
 	'function' '(' parameters? ')' 'do' statements 'end'	# StmtAnonFunc
-	| 'fn' ID* '->' expression				# LambdaAnanFunc;
+	| 'fn' ID* '->' expression				# LambdaAnonFunc;
 
 function_application:
 	ID '(' arguments? ')'					# IdFuncApp
 	| '(' anonymous_function ')' '(' arguments? ')'	        # ConstFuncApp;
+
+build_in_func:
+	'forward' '(' expression? ')'			# forwardFunc
+	| 'backward' '(' expression? ')'		# backwardFunc
+	| 'up' '(' expression? ')'				# upFunc
+	| 'down' '(' expression? ')'			# downFunc
+	| 'look' '(' RELDIR ')' 				# lookFunc
+	| 'turn' '(' (RELDIR | ABSDIR) ')'		# turnFunc
+	| 'print' '(' expression? ')'			# printFunc
+	| 'facing' '(' ')'						# facingFunc
+	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# positionFunc;
 
 parameters: ID (',' ID)*;
 
