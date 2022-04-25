@@ -19,6 +19,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = new SymbolTable<>();
     }
 
+    @Override public TimcVal visitArray(timcParser.ArrayContext ctx) { return visitChildren(ctx); }
+
     @Override public TimcVal visitStatements(timcParser.StatementsContext ctx) {
         for (timcParser.StatementContext stmt : ctx.statement()) {
             visit(stmt);
@@ -48,6 +50,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) { return null; }
+    @Override public TimcVal visitBreakStmt(timcParser.BreakStmtContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitIfCtrl(timcParser.IfCtrlContext ctx) {
         List<timcParser.ExpressionContext> conds = ctx.expression();
@@ -343,10 +346,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
+    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) { return null; }
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) { return null; }
     @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) { return null; }
+    @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) { return null; }
+    @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
         String id = ctx.ID().getText();
@@ -382,6 +388,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitConstFuncApp(timcParser.ConstFuncAppContext ctx) { return null; }
+
+    @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
 
     @Override public TimcVal visitArguments(timcParser.ArgumentsContext ctx) { return null; }
