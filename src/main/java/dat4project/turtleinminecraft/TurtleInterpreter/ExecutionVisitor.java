@@ -469,7 +469,19 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { return visitChildren(ctx); }
+    
+    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
+        TimcVal o = visit(ctx.expression());
+        NumberVal n = null;
+        if(o instanceof ArrayVal arr){
+            n = new NumberVal(arr.val.size());
+        }
+        else System.exit(0);
+
+        return n;
+    }
+
+
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
 
     @Override public TimcVal visitArguments(timcParser.ArgumentsContext ctx) { return null; }
