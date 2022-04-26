@@ -22,7 +22,7 @@ public class FunctionVal extends TimcVal {
         this.declarationTable = declarationTable;
     }
 
-    public String[] getParams() { return params; }
+    public List<String> getParams() { return params; }
     public timcParser.StatementsContext getCtx() { return ctx; }
     public SymbolTable<TimcVal> getDeclarationTable() { return declarationTable; }
 

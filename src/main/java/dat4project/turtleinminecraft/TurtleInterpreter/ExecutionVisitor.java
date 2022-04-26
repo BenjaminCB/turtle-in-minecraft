@@ -404,10 +404,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) { return null; }
 
+    // TODO add return nothing to end
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
         FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
 
-        // don't think this solves the recursion problem
+        // TODO don't think this solves the recursion problem
         func.getDeclarationTable().put(ctx.ID().getText(), func);
         return null;
     }
@@ -438,10 +439,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         // execute function body
         symbolTable.enterScope();
         for (int i = 0; i < args.size(); i++) {
-            symbolTable.put(func.getParams()[i], args.get(i));
+            symbolTable.put(func.getParams().get(i), args.get(i));
         }
         visitStatements(func.getCtx());
         symbolTable.exitScope();
+        hasReturned = false;
 
         // return to normal with new return value
         savedTable.ret = symbolTable.ret;
@@ -450,7 +452,26 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return symbolTable.ret;
     }
 
-    @Override public TimcVal visitConstFuncApp(timcParser.ConstFuncAppContext ctx) { return null; }
+    @Override public TimcVal visitConstFuncApp(timcParser.ConstFuncAppContext ctx) {
+        if (visit(ctx.anonymous_function()) instanceof FunctionVal f) {
+            List<String> params = f.getParams();
+            List<TimcVal> args = getArguments(ctx.arguments());
+            if (params.size() != args.size()) System.exit(0);
+
+            // TODO check for recursion error
+            symbolTable.enterScope();
+            for (int i = 0; i < params.size(); i++) {
+                symbolTable.put(params.get(i), args.get(i));
+            }
+            visit(f.getCtx());
+            symbolTable.exitScope();
+            hasReturned = false;
+        } else {
+            System.exit(0);
+        }
+
+        return symbolTable.ret;
+    }
 
     @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { return visitChildren(ctx); }
