@@ -34,8 +34,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitStatements(timcParser.StatementsContext ctx) {
         for (timcParser.StatementContext stmt : ctx.statement()) {
             visit(stmt);
-            if(hasBreaked == true) break;
-            if(hasReturned == true) break;
+            if (hasBreaked || hasReturned) break;
         }
         return null;
     }
@@ -60,8 +59,14 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) { return null; }
-    @Override public TimcVal visitBreakStmt(timcParser.BreakStmtContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
+        return null;
+    }
+
+    @Override public TimcVal visitBreakStmt(timcParser.BreakStmtContext ctx) {
+        hasBreaked = true;
+        return null;
+    }
 
     @Override public TimcVal visitIfCtrl(timcParser.IfCtrlContext ctx) {
         List<timcParser.ExpressionContext> conds = ctx.expression();
