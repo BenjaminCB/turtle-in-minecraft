@@ -11,8 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,14 +45,20 @@ public class TurtleBlockEntity extends BlockEntity implements NamedScreenHandler
     }
 
     @Nullable
-    @Override
+    /*@Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new TurtleScreenHandler(syncId, inv, this);
-    }
+    }*/
 
     public DefaultedList<ItemStack> getItems() {
         return inventory;
     }
+
+    // Creates screenhandler
+	@Override
+	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+		return new ExampleGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
+	}
 
     public static void tick(World world, BlockPos pos, BlockState state, TurtleBlockEntity entity) {
     }

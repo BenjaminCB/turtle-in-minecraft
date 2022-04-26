@@ -16,6 +16,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +26,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class TurtleBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING;
+
+    public static final Identifier ID = new Identifier("timc", "turtle");
+
     public TurtleBlock(Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)));
@@ -37,7 +41,7 @@ public class TurtleBlock extends BlockWithEntity implements BlockEntityProvider 
     }
 
 
-    @Override
+    /*@Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         // world.removeBlock(pos, true);
         // world.setBlockState(pos.up(), state);
@@ -50,7 +54,7 @@ public class TurtleBlock extends BlockWithEntity implements BlockEntityProvider 
             }
         }
         return ActionResult.SUCCESS;
-    }
+    }*/
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
@@ -69,4 +73,13 @@ public class TurtleBlock extends BlockWithEntity implements BlockEntityProvider 
     static {
         FACING = HorizontalFacingBlock.FACING;
     }
+
+    // cotton GUI
+    @Override
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		// You need a Block.createScreenHandlerFactory implementation that delegates to the block entity,
+		// such as the one from BlockWithEntity
+		player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+		return ActionResult.SUCCESS;
+	}
 }
