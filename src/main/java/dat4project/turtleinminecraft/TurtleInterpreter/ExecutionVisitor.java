@@ -483,7 +483,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
-<<<<<<< HEAD
+
     
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
         TimcVal o = visit(ctx.expression());
@@ -496,9 +496,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return n;
     }
 
-=======
-    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { return visitChildren(ctx); }
->>>>>>> 96fb248d5baf162a0582c459d8b1d1552491a5bc
+
 
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
     public List<String> getParameters(timcParser.ParametersContext ctx) {
