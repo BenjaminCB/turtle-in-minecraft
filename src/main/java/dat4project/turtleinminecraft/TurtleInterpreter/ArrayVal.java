@@ -38,7 +38,7 @@ public class ArrayVal extends TimcVal {
             if(a == this.val.size()){
 
                 for (int i = 0; i < a; i++) {
-                    if(!arr.val.get(i).timcValEquals(this.val.get(i))) return false;
+                    if(!arr.val.get(i).equals(this.val.get(i))) return false;
                 }
 
             } else {   
