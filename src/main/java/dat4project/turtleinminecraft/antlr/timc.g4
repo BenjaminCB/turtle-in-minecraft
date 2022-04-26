@@ -7,6 +7,7 @@ COMMENT: '/*' .*? '*/' -> skip;
 NUMBER: [0-9]+;
 BOOL: 'true' | 'false';
 STRING: '"' [^"]* '"';
+NOTHING: 'nothing';
 ID: [a-zA-Z_][0-9a-zA-Z_]*;
 
 BLOCK:
@@ -20,7 +21,7 @@ BLOCK:
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 
-array: '[' (constant (',' constant)*)* ']';
+array: '[' (expression (',' expression)*)* ']';
 
 statements: statement+;
 statement:
@@ -56,6 +57,7 @@ POWERASSIGN: '^=' ;
 
 expression:
 	'(' expression ')'										# ParenExpr
+	| expression '[' expression ']'                         # IndexExpr
 	| function_application									# FuncAppExpr
 	| <assoc = right> op = (NOT | SUB) expression			# UnaryExpr
 	| <assoc = right> expression POWER expression			# PowerExpr
@@ -92,7 +94,8 @@ constant:
 	| BLOCK					        # BlockConst
 	| RELDIR				        # RelDirConst
 	| ABSDIR				        # AbsDirConst
-	| array				        	# arrayConst
+	| array				        	# ArrayConst
+	| NOTHING                       # NothingConst
 	| anonymous_function	                        # AnonFuncConst;
 
 function:
@@ -117,7 +120,8 @@ build_in_func:
 	| 'turn' '(' (RELDIR | ABSDIR) ')'		# TurnFunc
 	| 'print' '(' expression? ')'			# PrintFunc
 	| 'facing' '(' ')'						# FacingFunc
-	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# PositionFunc;
+	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# PositionFunc
+	| 'length' '(' expression ')'           # LengthFunc;
 
 parameters: ID (',' ID)*;
 

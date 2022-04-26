@@ -19,7 +19,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = new SymbolTable<>();
     }
 
-    @Override public TimcVal visitArray(timcParser.ArrayContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
+        ArrayVal res = new ArrayVal();
+
+        for (timcParser.ExpressionContext expr : ctx.expression()) {
+            TimcVal val = visit(expr);
+            res.add(val);
+        }
+
+        return res;
+    }
 
     @Override public TimcVal visitStatements(timcParser.StatementsContext ctx) {
         for (timcParser.StatementContext stmt : ctx.statement()) {
@@ -120,7 +129,38 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
     @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) 
     { return null; }
-    @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) { return null; }
+
+    // maybe refactor into a version that does not copy arrays
+    @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) {
+        TimcVal match = visit(ctx.expression(0));
+
+        // get everything but head of expression list
+        List<timcParser.ExpressionContext> cases = new ArrayList<>(ctx.expression());
+        cases.remove(0);
+
+        // get clauses and assign default case if nedded
+        List<timcParser.StatementsContext> clauses = new ArrayList<>(ctx.statements());
+        timcParser.StatementsContext defaultClause =
+                clauses.size() > cases.size() ? clauses.remove(clauses.size() - 1) : null;
+
+        // go through the cases
+        boolean visitedClause = false;
+        for (int i = 0; i < cases.size(); i++) {
+            TimcVal _case = visit(cases.get(i));
+            if (match.getType() != _case.getType()) System.exit(0);
+
+            if (_case.equals(match)) {
+                visitedClause = true;
+                visit(clauses.get(i));
+                break;
+            }
+        }
+
+        // visit default case if needed
+        if (!visitedClause && defaultClause != null) visit(defaultClause);
+
+        return null;
+    }
 
     // currently always returns null, but could return value of the assignment
     // also probably needs some refactoring
@@ -275,6 +315,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
+    @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { return visitChildren(ctx); }
+
     @Override public TimcVal visitOrExpr(timcParser.OrExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -368,7 +410,14 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) {
+        return visit(ctx.array());
+    }
+
+    @Override public TimcVal visitNothingConst(timcParser.NothingConstContext ctx) {
+        return new NothingVal();
+    }
+
     @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) { return null; }
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) { return null; }
     @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) { return null; }
@@ -420,6 +469,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
 
     @Override public TimcVal visitArguments(timcParser.ArgumentsContext ctx) { return null; }

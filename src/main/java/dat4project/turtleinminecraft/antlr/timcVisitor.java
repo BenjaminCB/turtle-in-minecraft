@@ -121,13 +121,6 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAndExpr(timcParser.AndExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code PowerExpr}
-	 * labeled alternative in {@link timcParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPowerExpr(timcParser.PowerExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code ConstExpr}
 	 * labeled alternative in {@link timcParser#expression}.
 	 * @param ctx the parse tree
@@ -149,26 +142,12 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncAppExpr(timcParser.FuncAppExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code EqExpr}
-	 * labeled alternative in {@link timcParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEqExpr(timcParser.EqExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code CompExpr}
 	 * labeled alternative in {@link timcParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCompExpr(timcParser.CompExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ParenExpr}
-	 * labeled alternative in {@link timcParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParenExpr(timcParser.ParenExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code UnaryExpr}
 	 * labeled alternative in {@link timcParser#expression}.
@@ -183,6 +162,34 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOrExpr(timcParser.OrExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code IndexExpr}
+	 * labeled alternative in {@link timcParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIndexExpr(timcParser.IndexExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code PowerExpr}
+	 * labeled alternative in {@link timcParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPowerExpr(timcParser.PowerExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code EqExpr}
+	 * labeled alternative in {@link timcParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqExpr(timcParser.EqExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParenExpr}
+	 * labeled alternative in {@link timcParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenExpr(timcParser.ParenExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code FactorExpr}
 	 * labeled alternative in {@link timcParser#expression}.
@@ -233,12 +240,19 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAbsDirConst(timcParser.AbsDirConstContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code arrayConst}
+	 * Visit a parse tree produced by the {@code ArrayConst}
 	 * labeled alternative in {@link timcParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitArrayConst(timcParser.ArrayConstContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code NothingConst}
+	 * labeled alternative in {@link timcParser#constant}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNothingConst(timcParser.NothingConstContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AnonFuncConst}
 	 * labeled alternative in {@link timcParser#constant}.
@@ -358,6 +372,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPositionFunc(timcParser.PositionFuncContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code LengthFunc}
+	 * labeled alternative in {@link timcParser#build_in_func}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLengthFunc(timcParser.LengthFuncContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link timcParser#parameters}.
 	 * @param ctx the parse tree
