@@ -17,6 +17,10 @@ public class ArrayVal extends TimcVal {
         for (TimcVal v : val) add(v);
     }
 
+    public List<TimcVal> getVal() {
+        return val;
+    }
+
     public void add(TimcVal val) {
         if (this.val.isEmpty()) elementType = val.getType();
         if (elementType != val.getType()) System.exit(0);

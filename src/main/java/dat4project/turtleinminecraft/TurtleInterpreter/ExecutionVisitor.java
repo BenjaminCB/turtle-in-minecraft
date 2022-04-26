@@ -5,6 +5,7 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.UndefinedReferen
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcLexer;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 
@@ -198,7 +199,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     // TODO error handling
-    // TODO concat on arrays
     @Override public TimcVal visitTermExpr(timcParser.TermExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -210,10 +210,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             } else if (ctx.op.getType() == timcParser.SUB) {
                 res = new NumberVal(n1.getVal() - n2.getVal());
             }
-        } else if (left instanceof StringVal s1 && right instanceof StringVal s2 && ctx.op.getType() == timcParser.CONCAT) {
-            res = new StringVal(s1.getVal() + s2.getVal());
+        } else if (ctx.op.getType() == timcParser.CONCAT) {
+            // could probably make this more scaleable with an interface
+            if (left instanceof StringVal s1 && right instanceof StringVal s2) {
+                res = new StringVal(s1.getVal() + s2.getVal());
+            } else if (left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
+                ArrayVal temp = new ArrayVal(a1.getVal());
+                temp.addAll(a2.getVal());
+                res = temp;
+            }
         }
-
         return res;
     }
 
@@ -419,7 +425,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) { return null; }
-    @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) { return null; }
+
+    @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
+        FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
+
+        // don't think this solves the recursion problem
+        func.getDeclarationTable().put(ctx.ID().getText(), func);
+        return null;
+    }
+
     @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) { return null; }
     @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) { return null; }
@@ -441,7 +455,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = func.getDeclarationTable();
 
         // has the correct amount arguments been applied to the function
-        if (args.size() != func.getParams().length) System.exit(0);
+        if (args.size() != func.getParams().size()) System.exit(0);
 
         // execute function body
         symbolTable.enterScope();
@@ -469,6 +483,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
+<<<<<<< HEAD
     
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
         TimcVal o = visit(ctx.expression());
@@ -481,8 +496,18 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return n;
     }
 
+=======
+    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { return visitChildren(ctx); }
+>>>>>>> 96fb248d5baf162a0582c459d8b1d1552491a5bc
 
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
+    public List<String> getParameters(timcParser.ParametersContext ctx) {
+        List<String> res = new ArrayList<>();
+        for (TerminalNode node : ctx.ID()) {
+            res.add(node.getText());
+        }
+        return res;
+    }
 
     @Override public TimcVal visitArguments(timcParser.ArgumentsContext ctx) { return null; }
     public List<TimcVal> getArguments(timcParser.ArgumentsContext ctx) {
