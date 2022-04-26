@@ -34,7 +34,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitStatements(timcParser.StatementsContext ctx) {
         for (timcParser.StatementContext stmt : ctx.statement()) {
             visit(stmt);
-
+            if(hasBreaked == true) break;
+            if(hasReturned == true) break;
         }
         return null;
     }
@@ -121,7 +122,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                     hasBreaked = false;    
                     break;
                }
-
            }
        } else{
            System.exit(0);
@@ -277,7 +277,29 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
     }
 
-    @Override public TimcVal visitCompExpr(timcParser.CompExprContext ctx) { return null; }
+    @Override public TimcVal visitCompExpr(timcParser.CompExprContext ctx) { 
+        TimcVal res = null;
+        TimcVal left = visit(ctx.expression(0));
+        TimcVal right = visit(ctx.expression(1));
+
+        if(left instanceof NumberVal l && right instanceof NumberVal r){
+            if(ctx.op.getType() == timcParser.GT){
+                res = new BoolVal( l.getVal() > r.getVal() );
+            }
+            else if(ctx.op.getType() == timcParser.GTEQ){
+                res = new BoolVal( l.getVal() >= r.getVal() );
+                
+            }
+            else if(ctx.op.getType() == timcParser.LT){
+                res = new BoolVal( l.getVal() < r.getVal() );
+            }
+            else if(ctx.op.getType() == timcParser.LTEQ){
+                res = new BoolVal( l.getVal() <= r.getVal() );
+            }
+            else System.exit(0);
+        } else System.exit(0);
+
+        return res; }
 
     @Override public TimcVal visitParenExpr(timcParser.ParenExprContext ctx) {
         return visit(ctx.expression());
@@ -482,7 +504,20 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { return visitChildren(ctx); }
+
+    
+    @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
+        TimcVal o = visit(ctx.expression());
+        NumberVal n = null;
+        if(o instanceof ArrayVal arr){
+            n = new NumberVal(arr.val.size());
+        }
+        else System.exit(0);
+
+        return n;
+    }
+
+
 
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
     public List<String> getParameters(timcParser.ParametersContext ctx) {
