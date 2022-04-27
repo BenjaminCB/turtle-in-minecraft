@@ -101,11 +101,37 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSwitchCtrl(timcParser.SwitchCtrlContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link timcParser#assignment}.
+	 * Visit a parse tree produced by the {@code SingleAssign}
+	 * labeled alternative in {@link timcParser#assignment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAssignment(timcParser.AssignmentContext ctx);
+	T visitSingleAssign(timcParser.SingleAssignContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code MultiAssign}
+	 * labeled alternative in {@link timcParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiAssign(timcParser.MultiAssignContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link timcParser#identifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier(timcParser.IdentifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link timcParser#identifier_list}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier_list(timcParser.Identifier_listContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link timcParser#expression_list}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression_list(timcParser.Expression_listContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code TermExpr}
 	 * labeled alternative in {@link timcParser#expression}.
