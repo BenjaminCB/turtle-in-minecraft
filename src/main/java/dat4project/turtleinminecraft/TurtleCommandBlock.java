@@ -4,17 +4,24 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class TurtleBlock extends BlockWithEntity {
+public class TurtleCommandBlock extends BlockWithEntity{
     public static final DirectionProperty FACING;
 
-    public TurtleBlock(Settings settings) {
+    public static final Identifier ID = new Identifier("timc", "turtle");
+
+    public TurtleCommandBlock(Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)));
     }
@@ -24,22 +31,6 @@ public class TurtleBlock extends BlockWithEntity {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
-
-
-    /*@Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        // world.removeBlock(pos, true);
-        // world.setBlockState(pos.up(), state);
-
-        if (!world.isClient) {
-            NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
-
-            if (screenHandlerFactory != null) {
-                player.openHandledScreen(screenHandlerFactory);
-            }
-        }
-        return ActionResult.SUCCESS;
-    }*/
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
@@ -59,4 +50,12 @@ public class TurtleBlock extends BlockWithEntity {
         FACING = HorizontalFacingBlock.FACING;
     }
 
+    // cotton GUI
+    @Override
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		// You need a Block.createScreenHandlerFactory implementation that delegates to the block entity,
+		// such as the one from BlockWithEntity
+		player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
+		return ActionResult.SUCCESS;
+	}
 }
