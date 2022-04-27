@@ -102,7 +102,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (cond instanceof BoolVal b) {
                 if (b.getVal()) {
                     visit(ctx.statements());
-                    if(hasBreaked == true){
+                    if (hasBreaked) {
                         hasBreaked = false;
                         break;
                     }
@@ -119,16 +119,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitRepeatCtrl(timcParser.RepeatCtrlContext ctx) 
     { 
        TimcVal amount = visit(ctx.expression());
-       if(amount instanceof NumberVal a){
+       if (amount instanceof NumberVal a) {
            int c = a.getVal();
-           for(int i=0;i<c; i++){
+           for (int i = 0; i < c; i++) {
                visit(ctx.statements());
-               if(hasBreaked == true){
+               if (hasBreaked) {
                     hasBreaked = false;    
                     break;
                }
            }
-       } else{
+       } else {
            System.exit(0);
        }
         return null; 
@@ -170,38 +170,44 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     // currently always returns null, but could return value of the assignment
     // also probably needs some refactoring
-    @Override public TimcVal visitAssignment(timcParser.AssignmentContext ctx) {
-        String id = ctx.ID().getText();
-        TimcVal val = visit(ctx.expression());
+    // @Override public TimcVal visitAssignment(timcParser.AssignmentContext ctx) {
+        // String id = ctx.ID().getText();
+        // TimcVal val = visit(ctx.expression());
 
 
-        int oper = ctx.op.getType();
-        if (oper == timcParser.ASSIGN) {
-            // for a regular assignment we do not care what the type of val is
-            symbolTable.put(id, val);
-        } else if (symbolTable.get(id) instanceof NumberVal n && val instanceof NumberVal m) {
+        // int oper = ctx.op.getType();
+        // if (oper == timcParser.ASSIGN) {
+            // // for a regular assignment we do not care what the type of val is
+            // symbolTable.put(id, val);
+        // } else if (symbolTable.get(id) instanceof NumberVal n && val instanceof NumberVal m) {
             // in a compound assignment id has to be defined and id and val should both be numbers
-            switch (oper) {
-                case timcParser.ADDASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() + m.getVal()));
-                case timcParser.SUBASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() - m.getVal()));
-                case timcParser.MULTASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() * m.getVal()));
-                case timcParser.DIVASSIGN -> {
-                    if (m.getVal() == 0) System.exit(0);
-                    symbolTable.put(id, new NumberVal(n.getVal() / m.getVal()));
-                }
-                case timcParser.MODASSIGN -> {
-                    if (m.getVal() == 0) System.exit(0);
-                    symbolTable.put(id, new NumberVal(n.getVal() % m.getVal()));
-                }
-                case timcParser.POWERASSIGN -> symbolTable.put(id, new NumberVal((int) Math.pow(n.getVal(), m.getVal())));
-                default -> symbolTable.put(id, val);
-            }
-        } else {
-            System.exit(0);
-        }
+            // switch (oper) {
+                // case timcParser.ADDASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() + m.getVal()));
+                // case timcParser.SUBASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() - m.getVal()));
+                // case timcParser.MULTASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() * m.getVal()));
+                // case timcParser.DIVASSIGN -> {
+                    // if (m.getVal() == 0) System.exit(0);
+                    // symbolTable.put(id, new NumberVal(n.getVal() / m.getVal()));
+                // }
+                // case timcParser.MODASSIGN -> {
+                    // if (m.getVal() == 0) System.exit(0);
+                    // symbolTable.put(id, new NumberVal(n.getVal() % m.getVal()));
+                // }
+                // case timcParser.POWERASSIGN -> symbolTable.put(id, new NumberVal((int) Math.pow(n.getVal(), m.getVal())));
+                // default -> symbolTable.put(id, val);
+            // }
+        // } else {
+            // System.exit(0);
+        // }
 
-        return null;
-    }
+        // return null;
+    // }
+
+    @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return visitChildren(ctx); }
 
     // TODO error handling
     @Override public TimcVal visitTermExpr(timcParser.TermExprContext ctx) {
@@ -384,7 +390,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitBlockConst(timcParser.BlockConstContext ctx) {
-        TimcVal res = null;
+        TimcVal res;
         switch(ctx.BLOCK().getText()) {
             case "DIRT"  -> res = new BlockVal(BlockVal.BlockType.DIRT);
             case "SAND"  -> res = new BlockVal(BlockVal.BlockType.SAND);
@@ -398,7 +404,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRelDirConst(timcParser.RelDirConstContext ctx) {
-        TimcVal res = null;
+        TimcVal res;
         switch(ctx.RELDIR().getText()) {
             case "UP"    -> res = new RelDirVal(RelDirVal.RelDir.UP);
             case "DOWN"  -> res = new RelDirVal(RelDirVal.RelDir.DOWN);
@@ -411,7 +417,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitAbsDirConst(timcParser.AbsDirConstContext ctx) {
-        TimcVal res = null;
+        TimcVal res;
         switch(ctx.ABSDIR().getText()) {
             case "NORTH" -> res = new AbsDirVal(AbsDirVal.AbsDir.NORTH);
             case "SOUTH" -> res = new AbsDirVal(AbsDirVal.AbsDir.SOUTH);

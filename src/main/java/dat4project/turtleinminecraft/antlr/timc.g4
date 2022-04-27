@@ -29,7 +29,7 @@ statement:
 	| expression									# ExprStmt
 	| function										# FuncStmt
 	| control_structure								# CtrlStmt
-	| 'return' expression? (',' expression)*		# RetStmt
+	| 'return' expression_list              		# RetStmt
 	| 'break'                                       # BreakStmt
 	;
 
@@ -45,7 +45,13 @@ control_structure:
 	)* ('default' 'do' statements 'end')? 'end'             # SwitchCtrl;
 
 assignment:
-	ID op = (ASSIGN | ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression;
+	identifier op = (ASSIGN | ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression # SingleAssign
+	| identifier_list ASSIGN expression_list # MultiAssign
+	;
+
+identifier: ID('[' expression ']')* ;
+identifier_list: identifier (',' identifier)* ;
+expression_list: expression (',' expression)* ;
 
 ASSIGN: '=' ;
 ADDASSIGN: '+=' ;
@@ -116,11 +122,11 @@ build_in_func:
 	| 'backward' '(' expression? ')'		# BackwardFunc
 	| 'up' '(' expression? ')'				# UpFunc
 	| 'down' '(' expression? ')'			# DownFunc
-	| 'look' '(' RELDIR ')' 				# LookFunc
-	| 'turn' '(' (RELDIR | ABSDIR) ')'		# TurnFunc
+	| 'look' '(' expression ')' 				# LookFunc
+	| 'turn' '(' expression ')'		# TurnFunc
 	| 'print' '(' expression? ')'			# PrintFunc
 	| 'facing' '(' ')'						# FacingFunc
-	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# PositionFunc
+	| 'position' '(' ')'	# PositionFunc
 	| 'length' '(' expression ')'           # LengthFunc;
 
 parameters: ID (',' ID)*;
