@@ -102,7 +102,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (cond instanceof BoolVal b) {
                 if (b.getVal()) {
                     visit(ctx.statements());
-                    if(hasBreaked == true){
+                    if (hasBreaked) {
                         hasBreaked = false;
                         break;
                     }
@@ -119,16 +119,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitRepeatCtrl(timcParser.RepeatCtrlContext ctx) 
     { 
        TimcVal amount = visit(ctx.expression());
-       if(amount instanceof NumberVal a){
+       if (amount instanceof NumberVal a) {
            int c = a.getVal();
-           for(int i=0;i<c; i++){
+           for (int i = 0; i < c; i++) {
                visit(ctx.statements());
-               if(hasBreaked == true){
+               if (hasBreaked) {
                     hasBreaked = false;    
                     break;
                }
            }
-       } else{
+       } else {
            System.exit(0);
        }
         return null; 
@@ -390,7 +390,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitBlockConst(timcParser.BlockConstContext ctx) {
-        TimcVal res = null;
+        TimcVal res;
         switch(ctx.BLOCK().getText()) {
             case "DIRT"  -> res = new BlockVal(BlockVal.BlockType.DIRT);
             case "SAND"  -> res = new BlockVal(BlockVal.BlockType.SAND);
@@ -404,7 +404,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRelDirConst(timcParser.RelDirConstContext ctx) {
-        TimcVal res = null;
+        TimcVal res;
         switch(ctx.RELDIR().getText()) {
             case "UP"    -> res = new RelDirVal(RelDirVal.RelDir.UP);
             case "DOWN"  -> res = new RelDirVal(RelDirVal.RelDir.DOWN);
@@ -417,7 +417,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitAbsDirConst(timcParser.AbsDirConstContext ctx) {
-        TimcVal res = null;
+        TimcVal res;
         switch(ctx.ABSDIR().getText()) {
             case "NORTH" -> res = new AbsDirVal(AbsDirVal.AbsDir.NORTH);
             case "SOUTH" -> res = new AbsDirVal(AbsDirVal.AbsDir.SOUTH);
