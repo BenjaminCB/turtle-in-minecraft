@@ -168,42 +168,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    // currently always returns null, but could return value of the assignment
-    // also probably needs some refactoring
-    // @Override public TimcVal visitAssignment(timcParser.AssignmentContext ctx) {
-        // String id = ctx.ID().getText();
-        // TimcVal val = visit(ctx.expression());
-
-
-        // int oper = ctx.op.getType();
-        // if (oper == timcParser.ASSIGN) {
-            // // for a regular assignment we do not care what the type of val is
-            // symbolTable.put(id, val);
-        // } else if (symbolTable.get(id) instanceof NumberVal n && val instanceof NumberVal m) {
-            // in a compound assignment id has to be defined and id and val should both be numbers
-            // switch (oper) {
-                // case timcParser.ADDASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() + m.getVal()));
-                // case timcParser.SUBASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() - m.getVal()));
-                // case timcParser.MULTASSIGN -> symbolTable.put(id, new NumberVal(n.getVal() * m.getVal()));
-                // case timcParser.DIVASSIGN -> {
-                    // if (m.getVal() == 0) System.exit(0);
-                    // symbolTable.put(id, new NumberVal(n.getVal() / m.getVal()));
-                // }
-                // case timcParser.MODASSIGN -> {
-                    // if (m.getVal() == 0) System.exit(0);
-                    // symbolTable.put(id, new NumberVal(n.getVal() % m.getVal()));
-                // }
-                // case timcParser.POWERASSIGN -> symbolTable.put(id, new NumberVal((int) Math.pow(n.getVal(), m.getVal())));
-                // default -> symbolTable.put(id, val);
-            // }
-        // } else {
-            // System.exit(0);
-        // }
-
-        // return null;
-    // }
-
-    @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) { return null; }
     @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
