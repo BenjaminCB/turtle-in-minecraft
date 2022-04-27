@@ -429,7 +429,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return new NothingVal();
     }
 
-    @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) { return null; }
+    @Override public TimcVal visitAnonFuncConst(timcParser.AnonFuncConstContext ctx) {
+        return visit(ctx.anonymous_function());
+    }
 
     // TODO add return nothing to end
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
@@ -440,9 +442,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) { return null; }
-    @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) { return null; }
+    @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) {
+        return visit(ctx.anonymous_function());
+    }
+    @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) {
+        return visit(ctx.build_in_func());
+    }
+    @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) {
+        // Copy pasta from visitDclFunc, as they do the same
+        FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
+        return null;
+    }
     @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
