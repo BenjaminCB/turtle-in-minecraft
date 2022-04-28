@@ -114,8 +114,8 @@ anonymous_function:
 	| 'fn' ID* '->' expression				# LambdaAnonFunc;
 
 function_application:
-	ID '(' arguments? ')'					# IdFuncApp
-	| '(' anonymous_function ')' '(' arguments? ')'	        # ConstFuncApp;
+	ID '(' expression_list? ')'					# IdFuncApp
+	| '(' anonymous_function ')' '(' expression_list? ')'	        # ConstFuncApp;
 
 build_in_func:
 	'forward' '(' expression? ')'			# ForwardFunc
@@ -130,5 +130,3 @@ build_in_func:
 	| 'length' '(' expression ')'           # LengthFunc;
 
 parameters: ID (',' ID)*;
-
-arguments: expression (',' expression)*;

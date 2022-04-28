@@ -411,10 +411,4 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitParameters(timcParser.ParametersContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link timcParser#arguments}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArguments(timcParser.ArgumentsContext ctx);
 }
