@@ -472,7 +472,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitConstFuncApp(timcParser.ConstFuncAppContext ctx) {
         if (visit(ctx.anonymous_function()) instanceof FunctionVal f) {
             List<String> params = f.getParams();
-            List<TimcVal> args = getArguments(ctx.arguments());
+            List<TimcVal> args = getExpression_list(ctx.expression_list());
             if (params.size() != args.size()) System.exit(0);
 
             // TODO check for recursion error
