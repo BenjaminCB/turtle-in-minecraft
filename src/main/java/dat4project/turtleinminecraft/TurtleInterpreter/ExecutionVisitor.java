@@ -60,6 +60,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
+        ListVal values = new ListVal(getExpression_list(ctx.expression_list()));
+        symbolTable.ret = values;
+        hasReturned = true;
         return null;
     }
 
@@ -476,10 +479,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         for (int i = 0; i < args.size(); i++) {
             symbolTable.put(func.getParams().get(i), args.get(i));
         }
+        symbolTable.ret = new NothingVal();
         visitStatements(func.getCtx());
         symbolTable.exitScope();
         hasReturned = false;
-
+    
         // return to normal with new return value
         savedTable.ret = symbolTable.ret;
         symbolTable = savedTable;

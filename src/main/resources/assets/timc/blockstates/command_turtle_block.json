@@ -1,0 +1,9 @@
+{
+    "variants": {
+      "facing=north": { "model": "timc:block/command_turtle_block", "uvlock": false },
+      "facing=east":  { "model": "timc:block/command_turtle_block", "y":  90, "uvlock": false },
+      "facing=south": { "model": "timc:block/command_turtle_block", "y": 180, "uvlock": false },
+      "facing=west":  { "model": "timc:block/command_turtle_block", "y": 270, "uvlock": false }
+    }
+  }
+  
