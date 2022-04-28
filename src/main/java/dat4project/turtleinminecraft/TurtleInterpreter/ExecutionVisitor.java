@@ -174,11 +174,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     // TODO decide whether array index should be allowed in declaration, currently is not
     @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
-        if (ctx.identifier().expression().isEmpty()) {
-            symbolTable.put(ctx.identifier().ID().getText(), visit(ctx.expression()));
-        } else if (symbolTable.get(ctx.identifier().ID().getText()) instanceof ArrayVal a) {
-                List<TimcVal> is = getExpression(ctx.identifier().expression());
-                a.setNested(is, visit(ctx.expression()));
+        TimcVal assignee = visit(ctx.expression());
+        if (assignee instanceof ListVal) System.exit(0);
+
+        String id = ctx.identifier().ID().getText();
+        List<timcParser.ExpressionContext> indexExprs = ctx.identifier().expression();
+
+        if (indexExprs.isEmpty()) {
+            symbolTable.put(id, assignee);
+        } else if (symbolTable.get(id) instanceof ArrayVal a) {
+            List<TimcVal> indexes = getExpression(indexExprs);
+            a.setNested(indexes, assignee);
         } else {
             System.exit(0);
         }
@@ -190,15 +196,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal v = symbolTable.get(id);
         if (v == null) System.exit(0);
 
-        List<timcParser.ExpressionContext> indexctx = ctx.identifier().expression();
-        boolean isArray = !indexctx.isEmpty();
+        List<timcParser.ExpressionContext> indexExprs = ctx.identifier().expression();
+        boolean isArray = !indexExprs.isEmpty();
 
         // if the right hand side is not a number we cannot do compound assignment
         if (visit(ctx.expression()) instanceof NumberVal n) {
             if (!isArray && v instanceof NumberVal m) {
                 symbolTable.put(id, NumberVal.operation(m, n, ctx.op.getType()));
             } else if (isArray && v instanceof ArrayVal a) {
-                List<TimcVal> is = getExpression(indexctx);
+                List<TimcVal> is = getExpression(indexExprs);
                 if (a.getNested(is) instanceof NumberVal m) {
                     a.setNested(is, NumberVal.operation(m, n, ctx.op.getType()));
                 } else {
@@ -215,13 +221,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) {
-        List<TimcVal> vals = getExpression_list(ctx.expression_list());
+        ListVal vals = new ListVal(getExpression_list(ctx.expression_list()));
         List<timcParser.IdentifierContext> idents = ctx.identifier_list().identifier();
 
-        if (vals.size() != idents.size()) System.exit(0);
+        if (vals.getVal().size() != idents.size()) System.exit(0);
 
         for (int i = 0; i < vals.size(); i++) {
-            TimcVal val = vals.get(i);
+            TimcVal val = vals.getVal().get(i);
             timcParser.IdentifierContext ident = idents.get(i);
             if (ident.expression().isEmpty()) {
                 symbolTable.put(ident.ID().getText(), val);
