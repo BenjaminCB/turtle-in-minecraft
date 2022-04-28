@@ -12,6 +12,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
 
 
 public class ExampleGUI extends SyncedGuiDescription {
@@ -34,7 +35,7 @@ public class ExampleGUI extends SyncedGuiDescription {
         WButton button = new WButton(new LiteralText("Start turtle"));
         button.setOnClick(() -> {
             //player.sendMessage(new LiteralText("Starting Turtle"));
-            System.out.println("Button clicked!");
+            System.out.println("Button clicked at " );
         });
         root.add(button, 4, 1, 5, 7);
     
