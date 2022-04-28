@@ -60,6 +60,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
+        TimcVal amount = visit(ctx.expression_list());
         return null;
     }
 
@@ -172,7 +173,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { 
+        TimcVal value = null;
+     
+
+        return visitChildren(ctx); 
+    }
 
     // TODO error handling
     @Override public TimcVal visitTermExpr(timcParser.TermExprContext ctx) {
