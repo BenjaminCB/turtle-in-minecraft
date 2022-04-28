@@ -5,10 +5,9 @@ import java.util.List;
 
 public class ListVal extends TimcVal {
     List<TimcVal> val;
-    private TimcType elementType = null;
     public ListVal() {
         super(TimcType.ARRAY);
-        val = new ArrayList<>();
+        val = new ArrayList<TimcVal>();
     }
 
     public ListVal(List<TimcVal> val) {

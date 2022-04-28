@@ -136,8 +136,24 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
        }
         return null; 
     }
-    @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) 
-    { return null; }
+    @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) { 
+        String identifier = ctx.ID().getText();
+        TimcVal o = visit(ctx.expression());
+        if(o instanceof ArrayVal arr){
+            for (TimcVal a : arr.val) {
+                symbolTable.put(identifier, a);
+                visit(ctx.statements());
+                if(hasBreaked){
+                    hasBreaked = false;
+                    break;
+                }
+            }
+        } else {
+            System.exit(0);
+        }
+
+        return null; 
+    }
 
     // maybe refactor into a version that does not copy arrays
     @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) {
