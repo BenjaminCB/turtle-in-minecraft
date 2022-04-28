@@ -45,7 +45,8 @@ control_structure:
 	)* ('default' 'do' statements 'end')? 'end'             # SwitchCtrl;
 
 assignment:
-	identifier op = (ASSIGN | ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression # SingleAssign
+	identifier ASSIGN expression # SingleAssign
+	| identifier op = (ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression # CompoundAssign
 	| identifier_list ASSIGN expression_list # MultiAssign
 	;
 

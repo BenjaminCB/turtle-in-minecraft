@@ -108,6 +108,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSingleAssign(timcParser.SingleAssignContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code CompoundAssign}
+	 * labeled alternative in {@link timcParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompoundAssign(timcParser.CompoundAssignContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code MultiAssign}
 	 * labeled alternative in {@link timcParser#assignment}.
 	 * @param ctx the parse tree

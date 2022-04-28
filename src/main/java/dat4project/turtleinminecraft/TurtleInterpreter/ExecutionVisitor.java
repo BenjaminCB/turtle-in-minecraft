@@ -168,13 +168,31 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) { return null; }
-    @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) {
+    // TODO decide whether array index should be allowed in declaration, currently is not
+    @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
+        if (ctx.identifier().expression().isEmpty()) {
+            symbolTable.put(ctx.identifier().ID().getText(), visit(ctx.expression()));
+        } else {
+            if (symbolTable.get(ctx.identifier().ID().getText()) instanceof ArrayVal a) {
+                List<TimcVal> is = new ArrayList<>();
+                for (timcParser.ExpressionContext expr : ctx.identifier().expression()) {
+                    is.add(visit(expr));
+                }
+                a.setNested(is, visit(ctx.expression()));
+            }
+        }
         return null;
     }
+
+    @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
+
+    }
+    @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
+
+    @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
+
+    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
     private List<TimcVal> getExpression_list(timcParser.Expression_listContext ctx) {
         List<TimcVal> res = new ArrayList<>();
         for (timcParser.ExpressionContext expr : ctx.expression()) {

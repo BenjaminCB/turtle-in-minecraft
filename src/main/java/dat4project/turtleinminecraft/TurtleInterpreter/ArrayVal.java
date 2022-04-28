@@ -1,6 +1,7 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ArrayVal extends TimcVal {
@@ -31,8 +32,24 @@ public class ArrayVal extends TimcVal {
         for(TimcVal v : val) add(v);
     }
 
-    public void set(int index, TimcVal val) {
-        this.val.set(index, val);
+    public void setNested(List<TimcVal> is, TimcVal val) {
+        if (is.isEmpty()) System.exit(0);
+        if (is.remove(0) instanceof NumberVal n) {
+            if (is.size() == 1) {
+                if (val.getType() != elementType) System.exit(0);
+                if (n.getVal() > this.val.size()) System.exit(0);
+                this.val.set(n.getVal(), val);
+            } else {
+                if (this.val.get(n.getVal()) instanceof ArrayVal a) {
+                    is.remove(0);
+                    a.setNested(is, val);
+                } else {
+                    System.exit(0);
+                }
+            }
+        } else {
+            System.exit(0);
+        }
     }
 
     @Override
