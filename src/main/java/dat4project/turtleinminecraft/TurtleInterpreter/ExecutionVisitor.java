@@ -426,11 +426,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
         return res;
     }
-
-    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) {
-        return visit(ctx.array());
-    }
-
+    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) { return visit(ctx.array()); }
+    // return visit(ctx.array());
     @Override public TimcVal visitNothingConst(timcParser.NothingConstContext ctx) {
         return new NothingVal();
     }
@@ -448,9 +445,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) {
-        return visit(ctx.anonymous_function());
-    }
+    @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) { return visit(ctx.anonymous_function()); }
     @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) {
         return visit(ctx.build_in_func());
     }
