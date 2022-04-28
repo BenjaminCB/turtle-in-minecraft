@@ -39,6 +39,17 @@ public class NumberVal extends TimcVal {
         }
     }
 
+    public static NumberVal operation(NumberVal n, int oper) {
+        NumberVal res = null;
+
+        switch (oper) {
+            case timcParser.SUB -> res = new NumberVal(-n.getVal());
+            default -> System.exit(0);
+        }
+
+        return res;
+    }
+
     @Override
     protected boolean timcValEquals(TimcVal o) {
         if (o instanceof NumberVal n) {

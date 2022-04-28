@@ -177,10 +177,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (ctx.identifier().expression().isEmpty()) {
             symbolTable.put(ctx.identifier().ID().getText(), visit(ctx.expression()));
         } else if (symbolTable.get(ctx.identifier().ID().getText()) instanceof ArrayVal a) {
-                List<TimcVal> is = new ArrayList<>();
-                for (timcParser.ExpressionContext expr : ctx.identifier().expression()) {
-                    is.add(visit(expr));
-                }
+                List<TimcVal> is = getExpression(ctx.identifier().expression());
                 a.setNested(is, visit(ctx.expression()));
         } else {
             System.exit(0);
@@ -201,10 +198,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (!isArray && v instanceof NumberVal m) {
                 symbolTable.put(id, NumberVal.operation(m, n, ctx.op.getType()));
             } else if (isArray && v instanceof ArrayVal a) {
-                List<TimcVal> is = new ArrayList<>();
-                for (timcParser.ExpressionContext expr : indexctx) {
-                    is.add(visit(expr));
-                }
+                List<TimcVal> is = getExpression(indexctx);
                 if (a.getNested(is) instanceof NumberVal m) {
                     a.setNested(is, NumberVal.operation(m, n, ctx.op.getType()));
                 } else {
@@ -232,10 +226,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (ident.expression().isEmpty()) {
                 symbolTable.put(ident.ID().getText(), val);
             } else if (symbolTable.get(ident.ID().getText()) instanceof ArrayVal a) {
-                    List<TimcVal> is = new ArrayList<>();
-                    for (timcParser.ExpressionContext expr : ident.expression()) {
-                        is.add(visit(expr));
-                    }
+                    List<TimcVal> is = getExpression(ident.expression());
                     a.setNested(is, val);
             } else {
                 System.exit(0);
@@ -250,11 +241,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
     private List<TimcVal> getExpression_list(timcParser.Expression_listContext ctx) {
-        List<TimcVal> res = new ArrayList<>();
-        for (timcParser.ExpressionContext expr : ctx.expression()) {
-            res.add(visit(expr));
-        }
-        return res;
+        return getExpression(ctx.expression());
     }
 
     // TODO error handling
@@ -342,23 +329,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal right = visit(ctx.expression(1));
 
         if(left instanceof NumberVal l && right instanceof NumberVal r){
-            if(ctx.op.getType() == timcParser.GT){
-                res = new BoolVal( l.getVal() > r.getVal() );
-            }
-            else if(ctx.op.getType() == timcParser.GTEQ){
-                res = new BoolVal( l.getVal() >= r.getVal() );
-                
-            }
-            else if(ctx.op.getType() == timcParser.LT){
-                res = new BoolVal( l.getVal() < r.getVal() );
-            }
-            else if(ctx.op.getType() == timcParser.LTEQ){
-                res = new BoolVal( l.getVal() <= r.getVal() );
-            }
-            else System.exit(0);
-        } else System.exit(0);
+            res = BoolVal.operation(l, r, ctx.op.getType());
+        } else {
+            System.exit(0);
+        }
 
-        return res; }
+        return res;
+    }
 
     @Override public TimcVal visitParenExpr(timcParser.ParenExprContext ctx) {
         return visit(ctx.expression());
@@ -370,9 +347,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal res = null;
 
         if (ctx.op.getType() == timcParser.NOT && val instanceof BoolVal b) {
-            res = new BoolVal(!b.getVal());
+            res = BoolVal.operation(b, timcParser.NOT);
         } else if (ctx.op.getType() == timcParser.SUB && val instanceof NumberVal n) {
-            res = new NumberVal(-n.getVal());
+            res = NumberVal.operation(n, timcParser.SUB);
         } else {
             System.exit(0);
         }
@@ -388,7 +365,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
         TimcVal res = null;
         if (left instanceof BoolVal b1 && right instanceof BoolVal b2) {
-            res = new BoolVal(b1.getVal() || b2.getVal());
+            res = BoolVal.operation(b1, b2, timcParser.OR);
         } else {
             System.exit(0);
         }
@@ -402,17 +379,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
         TimcVal res = null;
         if (left instanceof NumberVal n && right instanceof NumberVal m) {
-            switch (ctx.op.getType()) {
-                case timcParser.DIV -> {
-                    if (m.getVal() == 0) System.exit(0);
-                    res = new NumberVal(n.getVal() / m.getVal());
-                }
-                case timcParser.MOD -> {
-                    if (m.getVal() == 0) System.exit(0);
-                    res = new NumberVal(n.getVal() % m.getVal());
-                }
-                default -> res = new NumberVal(n.getVal() * m.getVal());
-            }
+            res = NumberVal.operation(n, m, ctx.op.getType());
         } else {
             System.exit(0);
         }
@@ -588,10 +555,18 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
-    public List<String> getParameters(timcParser.ParametersContext ctx) {
+    private List<String> getParameters(timcParser.ParametersContext ctx) {
         List<String> res = new ArrayList<>();
         for (TerminalNode node : ctx.ID()) {
             res.add(node.getText());
+        }
+        return res;
+    }
+
+    private List<TimcVal> getExpression(List<timcParser.ExpressionContext> exprs) {
+        List<TimcVal> res = new ArrayList<>();
+        for (timcParser.ExpressionContext expr : exprs) {
+            res.add(visit(expr));
         }
         return res;
     }
