@@ -325,7 +325,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { 
+        TimcVal value = null;
+        
+        if(visit(ctx.expression(0)) instanceof ArrayVal arr){
+            if(visit(ctx.expression(1)) instanceof NumberVal n){
+                value = arr.val.get(n.getVal());
+            } else System.exit(0);
+        } else System.exit(0);
+        
+        return value;
+    }
 
     @Override public TimcVal visitOrExpr(timcParser.OrExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
