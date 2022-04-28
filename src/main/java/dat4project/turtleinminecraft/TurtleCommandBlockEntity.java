@@ -17,11 +17,11 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class TurtleBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
+public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
-    public TurtleBlockEntity(BlockPos pos, BlockState state) {
-        super(Timc.GraphicsTurtleBlockEntity, pos, state);
+    public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
+        super(Timc.TurtleCommandBlockEntity, pos, state);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class TurtleBlockEntity extends BlockEntity implements NamedScreenHandler
 		return new ExampleGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
 
-    public static void tick(World world, BlockPos pos, BlockState state, TurtleBlockEntity entity) {
+    public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
     }
 }
