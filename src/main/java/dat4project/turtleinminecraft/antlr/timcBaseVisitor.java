@@ -418,11 +418,4 @@ public class timcBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements t
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitParameters(timcParser.ParametersContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitArguments(timcParser.ArgumentsContext ctx) { return visitChildren(ctx); }
 }

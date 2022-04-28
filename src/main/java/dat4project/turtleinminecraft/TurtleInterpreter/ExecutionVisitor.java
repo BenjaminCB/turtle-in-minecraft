@@ -60,7 +60,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
-        TimcVal amount = visit(ctx.expression_list());
         return null;
     }
 
@@ -173,11 +172,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { 
-        TimcVal value = null;
-     
-
-        return visitChildren(ctx); 
+    @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) {
+        return null;
+    }
+    private List<TimcVal> getExpression_list(timcParser.Expression_listContext ctx) {
+        List<TimcVal> res = new ArrayList<>();
+        for (timcParser.ExpressionContext expr : ctx.expression()) {
+            res.add(visit(expr));
+        }
+        return res;
     }
 
     // TODO error handling
@@ -440,7 +443,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (val == null) System.exit(0);
         if (val.getType() != TimcType.FUNCTION) System.exit(0);
 
-        List<TimcVal> args = getArguments(ctx.arguments());
+        List<TimcVal> args = getExpression_list(ctx.expression_list());
 
         // save current table and retrieve function value
         SymbolTable<TimcVal> savedTable = symbolTable;
@@ -469,7 +472,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitConstFuncApp(timcParser.ConstFuncAppContext ctx) {
         if (visit(ctx.anonymous_function()) instanceof FunctionVal f) {
             List<String> params = f.getParams();
-            List<TimcVal> args = getArguments(ctx.arguments());
+            List<TimcVal> args = getExpression_list(ctx.expression_list());
             if (params.size() != args.size()) System.exit(0);
 
             // TODO check for recursion error
@@ -509,22 +512,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return n;
     }
 
-
-
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
     public List<String> getParameters(timcParser.ParametersContext ctx) {
         List<String> res = new ArrayList<>();
         for (TerminalNode node : ctx.ID()) {
             res.add(node.getText());
-        }
-        return res;
-    }
-
-    @Override public TimcVal visitArguments(timcParser.ArgumentsContext ctx) { return null; }
-    public List<TimcVal> getArguments(timcParser.ArgumentsContext ctx) {
-        List<TimcVal> res = new ArrayList<>();
-        for (timcParser.ExpressionContext expr : ctx.expression()) {
-            res.add(visit(expr));
         }
         return res;
     }
