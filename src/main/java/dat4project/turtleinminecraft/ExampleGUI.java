@@ -1,11 +1,17 @@
 package dat4project.turtleinminecraft;
 
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
+import io.github.cottonmc.cotton.gui.widget.WButton;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Util;
 
 
 public class ExampleGUI extends SyncedGuiDescription {
@@ -20,9 +26,17 @@ public class ExampleGUI extends SyncedGuiDescription {
         root.setInsets(Insets.ROOT_PANEL);
 
         WItemSlot itemSlot = WItemSlot.of(blockInventory, 0);
-        root.add(itemSlot, 4, 1);
+        root.add(itemSlot, 2, 1);
         root.add(this.createPlayerInventoryPanel(), 0, 3);
         root.validate(this);
+
+        // button
+        WButton button = new WButton(new LiteralText("Start turtle"));
+        button.setOnClick(() -> {
+            //player.sendMessage(new LiteralText("Starting Turtle"));
+            System.out.println("Button clicked!");
+        });
+        root.add(button, 4, 1, 5, 7);
     
     }
 }

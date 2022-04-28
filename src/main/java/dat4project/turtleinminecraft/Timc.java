@@ -1,6 +1,7 @@
 package dat4project.turtleinminecraft;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -16,6 +17,8 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dat4project.turtleinminecraft.commands.StartTurtleCommand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -54,6 +57,9 @@ public class Timc implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier("timc", "command_turtle_block"), new BlockItem(GraphicsTurtleCommandBlock, new Item.Settings().group(ItemGroup.MISC)));
 
 		Registry.register(Registry.ITEM, new Identifier("timc", "turtle_book"), TurtleBook);
+
+		// Register commands
+		CommandRegistrationCallback.EVENT.register(StartTurtleCommand::register);
 
 		LOGGER.info("Hello Fabric world!");
 	}
