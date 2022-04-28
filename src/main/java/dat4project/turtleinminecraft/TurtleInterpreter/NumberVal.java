@@ -1,5 +1,7 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.antlr.timcParser;
+
 public class NumberVal extends TimcVal {
     private int val;
 
@@ -10,6 +12,31 @@ public class NumberVal extends TimcVal {
 
     public int getVal() {
         return val;
+    }
+
+    public static NumberVal operation(NumberVal n, NumberVal m, int oper) {
+        switch (oper) {
+            case timcParser.ADD -> {
+                return new NumberVal(n.getVal() + m.getVal());
+            }
+            case timcParser.SUB -> {
+                return new NumberVal(n.getVal() - m.getVal());
+            }
+            case timcParser.MULT -> {
+                return new NumberVal(n.getVal() * m.getVal());
+            }
+            case timcParser.DIV -> {
+                if (m.getVal() == 0) System.exit(0);
+                return new NumberVal(n.getVal() / m.getVal());
+            }
+            case timcParser.MOD -> {
+                if (m.getVal() == 0) System.exit(0);
+                return new NumberVal(n.getVal() % m.getVal());
+            }
+            default -> {
+                return new NumberVal((int) Math.pow(n.getVal(), m.getVal()));
+            }
+        }
     }
 
     @Override

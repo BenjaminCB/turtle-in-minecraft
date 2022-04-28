@@ -5,6 +5,7 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.UndefinedReferen
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcLexer;
+import net.minecraft.util.Identifier;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
@@ -175,22 +176,74 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
         if (ctx.identifier().expression().isEmpty()) {
             symbolTable.put(ctx.identifier().ID().getText(), visit(ctx.expression()));
-        } else {
-            if (symbolTable.get(ctx.identifier().ID().getText()) instanceof ArrayVal a) {
+        } else if (symbolTable.get(ctx.identifier().ID().getText()) instanceof ArrayVal a) {
                 List<TimcVal> is = new ArrayList<>();
                 for (timcParser.ExpressionContext expr : ctx.identifier().expression()) {
                     is.add(visit(expr));
                 }
                 a.setNested(is, visit(ctx.expression()));
-            }
+        } else {
+            System.exit(0);
         }
         return null;
     }
 
     @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
+        String id = ctx.identifier().ID().getText();
+        TimcVal v = symbolTable.get(id);
+        if (v == null) System.exit(0);
 
+        List<timcParser.ExpressionContext> indexctx = ctx.identifier().expression();
+        boolean isArray = !indexctx.isEmpty();
+
+        // if the right hand side is not a number we cannot do compound assignment
+        if (visit(ctx.expression()) instanceof NumberVal n) {
+            if (!isArray && v instanceof NumberVal m) {
+                symbolTable.put(id, NumberVal.operation(m, n, ctx.op.getType()));
+            } else if (isArray && v instanceof ArrayVal a) {
+                List<TimcVal> is = new ArrayList<>();
+                for (timcParser.ExpressionContext expr : indexctx) {
+                    is.add(visit(expr));
+                }
+                if (a.getNested(is) instanceof NumberVal m) {
+                    a.setNested(is, NumberVal.operation(m, n, ctx.op.getType()));
+                } else {
+                    System.exit(0);
+                }
+            } else {
+                System.exit(0);
+            }
+        } else {
+            System.exit(0);
+        }
+
+        return null;
     }
-    @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
+
+    @Override public TimcVal visitMultiAssign(timcParser.MultiAssignContext ctx) {
+        List<TimcVal> vals = getExpression_list(ctx.expression_list());
+        List<timcParser.IdentifierContext> idents = ctx.identifier_list().identifier();
+
+        if (vals.size() != idents.size()) System.exit(0);
+
+        for (int i = 0; i < vals.size(); i++) {
+            TimcVal val = vals.get(i);
+            timcParser.IdentifierContext ident = idents.get(i);
+            if (ident.expression().isEmpty()) {
+                symbolTable.put(ident.ID().getText(), val);
+            } else if (symbolTable.get(ident.ID().getText()) instanceof ArrayVal a) {
+                    List<TimcVal> is = new ArrayList<>();
+                    for (timcParser.ExpressionContext expr : ident.expression()) {
+                        is.add(visit(expr));
+                    }
+                    a.setNested(is, val);
+            } else {
+                System.exit(0);
+            }
+        }
+        return null;
+    }
+
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }

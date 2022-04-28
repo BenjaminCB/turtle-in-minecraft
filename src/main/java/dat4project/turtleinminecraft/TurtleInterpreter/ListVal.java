@@ -7,7 +7,7 @@ public class ListVal extends TimcVal {
     List<TimcVal> val;
     private TimcType elementType = null;
     public ListVal() {
-        super(TimcType.ARRAY);
+        super(TimcType.LIST);
         val = new ArrayList<>();
     }
 

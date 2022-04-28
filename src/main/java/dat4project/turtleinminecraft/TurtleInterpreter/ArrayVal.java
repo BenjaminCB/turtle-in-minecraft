@@ -22,6 +22,22 @@ public class ArrayVal extends TimcVal {
         return val;
     }
 
+    public TimcVal getNested(List<TimcVal> is) {
+        if (is.isEmpty()) System.exit(0);
+        TimcVal i = is.remove(0);
+        if (i instanceof NumberVal n) {
+            if (is.isEmpty()) {
+                return val.get(n.getVal());
+            } else if (val.get(n.getVal()) instanceof ArrayVal a) {
+                return a.getNested(is);
+            } else {
+                System.exit(0);
+            }
+        } else {
+            System.exit(0);
+        }
+    }
+
     public void add(TimcVal val) {
         if (this.val.isEmpty()) elementType = val.getType();
         if (elementType != val.getType()) System.exit(0);
