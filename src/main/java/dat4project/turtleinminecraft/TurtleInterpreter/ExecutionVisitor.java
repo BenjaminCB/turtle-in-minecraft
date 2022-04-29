@@ -21,6 +21,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = new SymbolTable<>();
     }
 
+    private void exceptionHandler(Exception e) throws Exception {
+        throw e;
+    }
+
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
         ArrayVal res = new ArrayVal();
 
@@ -137,8 +141,24 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
        }
         return null; 
     }
-    @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) 
-    { return null; }
+    @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) { 
+        String identifier = ctx.ID().getText();
+        TimcVal o = visit(ctx.expression());
+        if(o instanceof ArrayVal arr){
+            for (TimcVal a : arr.getVal()) {
+                symbolTable.put(identifier, a);
+                visit(ctx.statements());
+                if(hasBreaked){
+                    hasBreaked = false;
+                    break;
+                }
+            }
+        } else {
+            System.exit(0);
+        }
+
+        return null; 
+    }
 
     // maybe refactor into a version that does not copy arrays
     @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) {
@@ -242,7 +262,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
-
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
@@ -255,22 +274,21 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
+        int oper = ctx.op.getType();
+        boolean isConcat = oper == timcParser.CONCAT;
         TimcVal res = null;
-        if (left instanceof NumberVal n1 && right instanceof NumberVal n2) {
-            if (ctx.op.getType() == timcParser.ADD) {
-                res = new NumberVal(n1.getVal() + n2.getVal());
-            } else if (ctx.op.getType() == timcParser.SUB) {
-                res = new NumberVal(n1.getVal() - n2.getVal());
+        if (!isConcat && left instanceof NumberVal n1 && right instanceof NumberVal n2) {
+            try {
+                res = NumberVal.operation(n1, n2, oper);
+            } catch (ArithmeticException e) {
+                System.exit(0);
             }
-        } else if (ctx.op.getType() == timcParser.CONCAT) {
-            // could probably make this more scaleable with an interface
-            if (left instanceof StringVal s1 && right instanceof StringVal s2) {
-                res = new StringVal(s1.getVal() + s2.getVal());
-            } else if (left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
-                ArrayVal temp = new ArrayVal(a1.getVal());
-                temp.addAll(a2.getVal());
-                res = temp;
-            }
+        } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
+            res = StringVal.operation(s1, s2, oper);
+        } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
+            res = ArrayVal.operation(a1, a2, oper);
+        } else {
+            System.exit(0);
         }
         return res;
     }
@@ -319,6 +337,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
+        // List cannot be compared
+        if (left instanceof ListVal && right instanceof ListVal) System.exit(0);
+
         // we cannot compare types that are not the same
         if (!left.getClass().equals(right.getClass())) System.exit(0);
 
@@ -363,7 +384,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return res;
     }
 
-    @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { 
+        TimcVal value = null;
+        
+        if(visit(ctx.expression(0)) instanceof ArrayVal arr){
+            if(visit(ctx.expression(1)) instanceof NumberVal n){
+                value = arr.getVal().get(n.getVal());
+            } else System.exit(0);
+        } else System.exit(0);
+        
+        return value;
+    }
 
     @Override public TimcVal visitOrExpr(timcParser.OrExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
@@ -552,10 +583,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
         TimcVal o = visit(ctx.expression());
         NumberVal n = null;
-        if(o instanceof ArrayVal arr){
-            n = new NumberVal(arr.val.size());
+        if (o instanceof ArrayVal arr) {
+            n = new NumberVal(arr.getVal().size());
+        } else {
+            System.exit(0);
         }
-        else System.exit(0);
 
         return n;
     }
