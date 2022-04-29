@@ -15,13 +15,22 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class TurtleBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
+public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
-    public TurtleBlockEntity(BlockPos pos, BlockState state) {
-        super(Timc.GraphicsTurtleBlockEntity, pos, state);
+    private BlockPos turtlePos;
+    private BlockState turtleState;
+    private Direction turtleDirection;
+    private boolean latched = false;
+
+    public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
+        super(Timc.TurtleCommandBlockEntity, pos, state);
+        turtleDirection = state.get(TurtleCommandBlock.FACING);
+        turtlePos = pos.add(turtleDirection.getVector());
+        turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
     }
 
     @Override
@@ -41,22 +50,28 @@ public class TurtleBlockEntity extends BlockEntity implements NamedScreenHandler
         return new LiteralText("Graphics Turtle");
     }
 
-    @Nullable
-    /*@Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new TurtleScreenHandler(syncId, inv, this);
-    }*/
-
     public DefaultedList<ItemStack> getItems() {
         return inventory;
     }
 
-    // Creates screenhandler
 	@Override
 	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
 		return new ExampleGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
 
-    public static void tick(World world, BlockPos pos, BlockState state, TurtleBlockEntity entity) {
+    public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
+        if (world.isReceivingRedstonePower(pos)) {
+            if(!entity.latched) {
+                if(world.getBlockState(entity.turtlePos) == entity.turtleState) {
+                    world.removeBlock(entity.turtlePos, true);
+                    entity.turtlePos = entity.turtlePos.add(entity.turtleDirection.getVector());
+                }
+                world.setBlockState(entity.turtlePos, entity.turtleState);
+            }
+            entity.latched = true;
+        }
+        else {
+            entity.latched = false;
+        }
     }
 }

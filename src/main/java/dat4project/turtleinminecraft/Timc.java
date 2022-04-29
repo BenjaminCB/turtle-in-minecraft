@@ -29,12 +29,9 @@ public class Timc implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("timc");
 
 	public static final Block GraphicsTurtleBlock = new TurtleBlock(FabricBlockSettings.of(Material.METAL).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL));
-	public static BlockEntityType<TurtleBlockEntity> GraphicsTurtleBlockEntity;
 
-	//public static ScreenHandlerType<TurtleScreenHandler> GraphicsTurtleScreenHandler;
-	public static final Item TurtleBook = new Item(new FabricItemSettings().group(ItemGroup.MISC));
 	public static final Block GraphicsTurtleCommandBlock = new TurtleCommandBlock(FabricBlockSettings.of(Material.METAL).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL));
-	public static BlockEntityType<TurtleBlockEntity> TurtleCommandBlockEntity;
+	public static BlockEntityType<TurtleCommandBlockEntity> TurtleCommandBlockEntity;	
 
 	public static ScreenHandlerType<ExampleGUI> SCREEN_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(TurtleCommandBlock.ID, (syncId, inventory) -> new ExampleGUI(syncId, inventory, ScreenHandlerContext.EMPTY));
 
@@ -45,18 +42,14 @@ public class Timc implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		// Creates turtle block inside minecraft
-		GraphicsTurtleBlockEntity = Registry.register(Registry.BLOCK_ENTITY_TYPE, "timc:graphics_turtle_block_entity", FabricBlockEntityTypeBuilder.create(TurtleBlockEntity::new, GraphicsTurtleBlock).build(null));
-		//GraphicsTurtleScreenHandler = ScreenHandlerRegistry.registerSimple(new Identifier("timc", "turtle"), TurtleScreenHandler::new);
-		Registry.register(Registry.BLOCK, new Identifier("timc", "graphics_turtle_block"), GraphicsTurtleBlock);
-		Registry.register(Registry.ITEM, new Identifier("timc", "graphics_turtle_block"), new BlockItem(GraphicsTurtleBlock, new Item.Settings().group(ItemGroup.MISC)));
+		// Register the Turtle Block and Item
+		Registry.register(Registry.BLOCK, TurtleBlock.ID, GraphicsTurtleBlock);
+		Registry.register(Registry.ITEM, TurtleBlock.ID, new BlockItem(GraphicsTurtleBlock, new Item.Settings().group(ItemGroup.MISC)));
 		
-		// Creates turtle command block
-		TurtleCommandBlockEntity = Registry.register(Registry.BLOCK_ENTITY_TYPE, "timc:turtle_command_block", FabricBlockEntityTypeBuilder.create(TurtleBlockEntity::new, GraphicsTurtleCommandBlock).build(null));
-		Registry.register(Registry.BLOCK, new Identifier("timc", "command_turtle_block"), GraphicsTurtleCommandBlock);
-		Registry.register(Registry.ITEM, new Identifier("timc", "command_turtle_block"), new BlockItem(GraphicsTurtleCommandBlock, new Item.Settings().group(ItemGroup.MISC)));
-
-		Registry.register(Registry.ITEM, new Identifier("timc", "turtle_book"), TurtleBook);
+		// Register the Turtle Command Block, Entity and Item
+		TurtleCommandBlockEntity = Registry.register(Registry.BLOCK_ENTITY_TYPE, "timc:turtle_command_block", FabricBlockEntityTypeBuilder.create(TurtleCommandBlockEntity::new, GraphicsTurtleCommandBlock).build(null));
+		Registry.register(Registry.BLOCK, TurtleCommandBlock.ID, GraphicsTurtleCommandBlock);
+		Registry.register(Registry.ITEM, TurtleCommandBlock.ID, new BlockItem(GraphicsTurtleCommandBlock, new Item.Settings().group(ItemGroup.MISC)));
 
 		// Register commands
 		CommandRegistrationCallback.EVENT.register(StartTurtleCommand::register);
