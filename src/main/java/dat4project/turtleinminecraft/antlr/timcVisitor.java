@@ -1,7 +1,6 @@
 package dat4project.turtleinminecraft.antlr;
 
 // Generated from timc.g4 by ANTLR 4.9.2
-import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.UndefinedReferenceException;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
