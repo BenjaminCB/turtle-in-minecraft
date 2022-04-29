@@ -1,5 +1,6 @@
 package dat4project.turtleinminecraft;
 
+import net.minecraft.block.Block;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -58,20 +59,43 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
 		return new ExampleGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
+    public static void move(World world,TurtleCommandBlockEntity entity){
+        if(world.getBlockState(entity.turtlePos) == entity.turtleState) {
+
+            world.removeBlock(entity.turtlePos, true);
+            entity.turtlePos = entity.turtlePos.add(entity.turtleDirection.getVector());
+        }
+        world.setBlockState(entity.turtlePos, entity.turtleState);
+    }
+    public static void rotate(World world, TurtleCommandBlockEntity entity, Direction direction){
+        if(world.getBlockState(entity.turtlePos) == entity.turtleState){
+            world.removeBlock(entity.turtlePos, true);
+            entity.turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING,direction);
+        }
+        world.setBlockState(entity.turtlePos, entity.turtleState);
+    }
+    public static Block look(World world, TurtleCommandBlockEntity entity, @Nullable Direction direction){
+        if(!(direction == null)){
+            entity.turtleDirection = direction;
+        }
+        return world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getVector())).getBlock();
+    }
+
+
+
 
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
+        if(!world.isClient){
         if (world.isReceivingRedstonePower(pos)) {
             if(!entity.latched) {
-                if(world.getBlockState(entity.turtlePos) == entity.turtleState) {
-                    world.removeBlock(entity.turtlePos, true);
-                    entity.turtlePos = entity.turtlePos.add(entity.turtleDirection.getVector());
-                }
-                world.setBlockState(entity.turtlePos, entity.turtleState);
+                move(world,entity);
             }
             entity.latched = true;
+
         }
         else {
             entity.latched = false;
+        }
         }
     }
 }
