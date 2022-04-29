@@ -7,6 +7,7 @@ COMMENT: '/*' .*? '*/' -> skip;
 NUMBER: [0-9]+;
 BOOL: 'true' | 'false';
 STRING: '"' [^"]* '"';
+NOTHING: 'nothing';
 ID: [a-zA-Z_][0-9a-zA-Z_]*;
 
 BLOCK:
@@ -20,17 +21,17 @@ BLOCK:
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 
-array: '[' (constant (',' constant)*)* ']';
+array: '[' (expression (',' expression)*)* ']';
 
 statements: statement+;
 statement:
 	assignment										# AssignStmt
 	| expression									# ExprStmt
 	| function										# FuncStmt
-	| function_application							# FuncAppStmt
-	| build_in_func									#BuildInFunc
 	| control_structure								# CtrlStmt
-	| 'return' expression? (',' expression)*		# RetStmt;
+	| 'return' expression_list              		# RetStmt
+	| 'break'                                       # BreakStmt
+	;
 
 control_structure:
 	'if' expression 'do' statements? (
@@ -44,10 +45,26 @@ control_structure:
 	)* ('default' 'do' statements 'end')? 'end'             # SwitchCtrl;
 
 assignment:
-	ID ('=' | '+=' | '-=' | '*=' | '^=' | '%=') expression;
+	identifier ASSIGN expression # SingleAssign
+	| identifier op = (ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression # CompoundAssign
+	| identifier_list ASSIGN expression_list # MultiAssign
+	;
+
+identifier: ID('[' expression ']')* ;
+identifier_list: identifier (',' identifier)* ;
+expression_list: expression (',' expression)* ;
+
+ASSIGN: '=' ;
+ADDASSIGN: '+=' ;
+SUBASSIGN: '-=' ;
+MULTASSIGN: '*=' ;
+DIVASSIGN: '/=' ;
+MODASSIGN: '%=' ;
+POWERASSIGN: '^=' ;
 
 expression:
 	'(' expression ')'										# ParenExpr
+	| expression '[' expression ']'                         # IndexExpr
 	| function_application									# FuncAppExpr
 	| <assoc = right> op = (NOT | SUB) expression			# UnaryExpr
 	| <assoc = right> expression POWER expression			# PowerExpr
@@ -84,33 +101,33 @@ constant:
 	| BLOCK					        # BlockConst
 	| RELDIR				        # RelDirConst
 	| ABSDIR				        # AbsDirConst
-	| array				        	# arrayConst
+	| array				        	# ArrayConst
+	| NOTHING                       # NothingConst
 	| anonymous_function	                        # AnonFuncConst;
 
 function:
 	'function' ID '(' parameters? ')' 'do' statements 'end' # DclFunc
 	| anonymous_function				        # AnonFunc
-	| build_in_func 							#BuildInFunc;
+	| build_in_func 							# BuildInFunc;
 
 anonymous_function:
 	'function' '(' parameters? ')' 'do' statements 'end'	# StmtAnonFunc
 	| 'fn' ID* '->' expression				# LambdaAnonFunc;
 
 function_application:
-	ID '(' arguments? ')'					# IdFuncApp
-	| '(' anonymous_function ')' '(' arguments? ')'	        # ConstFuncApp;
+	ID '(' expression_list? ')'					# IdFuncApp
+	| '(' anonymous_function ')' '(' expression_list? ')'	        # ConstFuncApp;
 
 build_in_func:
-	'forward' '(' expression? ')'			# forwardFunc
-	| 'backward' '(' expression? ')'		# backwardFunc
-	| 'up' '(' expression? ')'				# upFunc
-	| 'down' '(' expression? ')'			# downFunc
-	| 'look' '(' RELDIR ')' 				# lookFunc
-	| 'turn' '(' (RELDIR | ABSDIR) ')'		# turnFunc
-	| 'print' '(' expression? ')'			# printFunc
-	| 'facing' '(' ')'						# facingFunc
-	| 'position' '('( ' ' | NUMBER',' NUMBER',' NUMBER)')'	# positionFunc;
+	'forward' '(' expression? ')'			# ForwardFunc
+	| 'backward' '(' expression? ')'		# BackwardFunc
+	| 'up' '(' expression? ')'				# UpFunc
+	| 'down' '(' expression? ')'			# DownFunc
+	| 'look' '(' expression ')' 				# LookFunc
+	| 'turn' '(' expression ')'		# TurnFunc
+	| 'print' '(' expression? ')'			# PrintFunc
+	| 'facing' '(' ')'						# FacingFunc
+	| 'position' '(' ')'	# PositionFunc
+	| 'length' '(' expression ')'           # LengthFunc;
 
 parameters: ID (',' ID)*;
-
-arguments: expression (',' expression)*;
