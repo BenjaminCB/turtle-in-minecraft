@@ -73,39 +73,46 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         }
         world.setBlockState(entity.turtlePos, entity.turtleState);
     }
-    public static void rotate(World world, TurtleCommandBlockEntity entity, Direction direction){
+    public static void rotate(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
         if(world.getBlockState(entity.turtlePos) == entity.turtleState){
             world.removeBlock(entity.turtlePos, true);
-            entity.turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING,direction);
+            entity.turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING,absDirToMcDir(absDir));
         }
         world.setBlockState(entity.turtlePos, entity.turtleState);
     }
-    public static Block look(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir direction){
-        Direction mcDirection = entity.turtleDirection;
-        switch (direction){
-            case EAST -> mcDirection = Direction.EAST;
-            case WEST -> mcDirection = Direction.WEST;
-            case NORTH -> mcDirection = Direction.NORTH;
-            case SOUTH -> mcDirection = Direction.SOUTH;
+    public static void rotate(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
+        if(world.getBlockState(entity.turtlePos) == entity.turtleState){
+            world.removeBlock(entity.turtlePos, true);
+            entity.turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING,relDirToMcDir(entity,relDir));
         }
-
-        entity.turtleDirection = mcDirection;
-
-        return world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getVector())).getBlock();
+        world.setBlockState(entity.turtlePos, entity.turtleState);
     }
-    public static Block look(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
+    public static Direction absDirToMcDir(AbsDirVal.AbsDir absDir){
+        return switch (absDir){
+            case EAST -> Direction.EAST;
+            case WEST -> Direction.WEST;
+            case NORTH -> Direction.NORTH;
+            case SOUTH -> Direction.SOUTH;
+        };
+    }
+    public static Direction relDirToMcDir(TurtleCommandBlockEntity entity,RelDirVal.RelDir relDir){
         return switch (relDir) {
-            case UP -> (world.getBlockState(entity.turtlePos.add(Direction.UP.getVector())).getBlock());
-            case DOWN -> (world.getBlockState(entity.turtlePos.add(Direction.DOWN.getVector())).getBlock());
-            case LEFT -> (world.getBlockState(entity.turtlePos.add(entity.turtleDirection.rotateYCounterclockwise().getVector())).getBlock());
-            case RIGHT -> (world.getBlockState(entity.turtlePos.add(entity.turtleDirection.rotateYClockwise().getVector())).getBlock());
-            case FRONT -> world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getVector())).getBlock();
-            case BACK -> world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getOpposite().getVector())).getBlock();
+            case UP -> Direction.UP;
+            case DOWN -> Direction.DOWN;
+            case LEFT -> entity.turtleDirection.rotateYCounterclockwise();
+            case RIGHT -> entity.turtleDirection.rotateYClockwise();
+            case FRONT -> entity.turtleDirection;
+            case BACK -> entity.turtleDirection.getOpposite();
         };
     }
 
-
-
+    public static Block look(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
+        entity.turtleDirection = absDirToMcDir(absDir);
+        return world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getVector())).getBlock();
+    }
+    public static Block look(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
+        return world.getBlockState(entity.turtlePos.add(relDirToMcDir(entity,relDir).getVector())).getBlock();
+    }
 
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
         if(!world.isClient){
