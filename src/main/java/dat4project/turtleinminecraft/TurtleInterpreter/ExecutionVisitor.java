@@ -1,7 +1,7 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.TypeErrorException;
-import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.UndefinedReferenceException;
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TypeErrorException;
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.UndefinedReferenceException;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcLexer;
@@ -19,10 +19,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     public ExecutionVisitor() {
         symbolTable = new SymbolTable<>();
-    }
-
-    private void exceptionHandler(Exception e) throws Exception {
-        throw e;
     }
 
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
@@ -92,7 +88,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                     break;
                 }
             } else {
-                System.exit(0);
+                throw new TypeErrorException();
             }
         }
 
@@ -118,7 +114,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                     break;
                 }
             } else {
-                System.exit(0);
+                throw new TypeErrorException();
             }
         }
         return null;
@@ -137,7 +133,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                }
            }
        } else {
-           System.exit(0);
+           throw new TypeErrorException();
        }
         return null; 
     }
@@ -154,7 +150,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                 }
             }
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return null; 
@@ -177,7 +173,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         boolean visitedClause = false;
         for (int i = 0; i < cases.size(); i++) {
             TimcVal _case = visit(cases.get(i));
-            if (match.getType() != _case.getType()) System.exit(0);
+            if (match.getType() != _case.getType()) throw new TypeErrorException();
 
             if (_case.equals(match)) {
                 visitedClause = true;
@@ -195,7 +191,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     // TODO decide whether array index should be allowed in declaration, currently is not
     @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
         TimcVal assignee = visit(ctx.expression());
-        if (assignee instanceof ListVal) System.exit(0);
+        if (assignee instanceof ListVal) throw new TypeErrorException();
 
         String id = ctx.identifier().ID().getText();
         List<timcParser.ExpressionContext> indexExprs = ctx.identifier().expression();
@@ -206,7 +202,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             List<TimcVal> indexes = getExpression(indexExprs);
             a.setNested(indexes, assignee);
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
         return null;
     }
@@ -214,7 +210,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
         String id = ctx.identifier().ID().getText();
         TimcVal v = symbolTable.get(id);
-        if (v == null) System.exit(0);
+        if (v == null) throw new UndefinedReferenceException();
 
         List<timcParser.ExpressionContext> indexExprs = ctx.identifier().expression();
         boolean isArray = !indexExprs.isEmpty();
@@ -228,15 +224,14 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                 if (a.getNested(is) instanceof NumberVal m) {
                     a.setNested(is, NumberVal.operation(m, n, ctx.op.getType()));
                 } else {
-                    System.exit(0);
+                    throw new TypeErrorException();
                 }
             } else {
-                System.exit(0);
+                throw new TypeErrorException();
             }
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
-
         return null;
     }
 
@@ -244,18 +239,19 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         ListVal vals = new ListVal(getExpression_list(ctx.expression_list()));
         List<timcParser.IdentifierContext> idents = ctx.identifier_list().identifier();
 
-        if (vals.getVal().size() != idents.size()) System.exit(0);
+        if (vals.getVal().size() != idents.size()) throw new ArithmeticException();
 
         for (int i = 0; i < vals.getVal().size(); i++) {
             TimcVal val = vals.getVal().get(i);
             timcParser.IdentifierContext ident = idents.get(i);
+            String id = ident.ID().getText();
             if (ident.expression().isEmpty()) {
-                symbolTable.put(ident.ID().getText(), val);
-            } else if (symbolTable.get(ident.ID().getText()) instanceof ArrayVal a) {
+                symbolTable.put(id, val);
+            } else if (symbolTable.get(id) instanceof ArrayVal a) {
                     List<TimcVal> is = getExpression(ident.expression());
                     a.setNested(is, val);
             } else {
-                System.exit(0);
+                throw new TypeErrorException();
             }
         }
         return null;
@@ -278,17 +274,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         boolean isConcat = oper == timcParser.CONCAT;
         TimcVal res = null;
         if (!isConcat && left instanceof NumberVal n1 && right instanceof NumberVal n2) {
-            try {
-                res = NumberVal.operation(n1, n2, oper);
-            } catch (ArithmeticException e) {
-                System.exit(0);
-            }
+            res = NumberVal.operation(n1, n2, oper);
         } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
             res = StringVal.operation(s1, s2, oper);
         } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
             res = ArrayVal.operation(a1, a2, oper);
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
         return res;
     }
@@ -301,7 +293,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (left instanceof BoolVal b1 && right instanceof BoolVal b2) {
             res = new BoolVal(b1.getVal() && b2.getVal());
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return res;
@@ -311,7 +303,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
-        if (left.getType() != TimcType.NUMBER || right.getType() != TimcType.NUMBER) System.exit(0);
+        if (left.getType() != TimcType.NUMBER || right.getType() != TimcType.NUMBER)
+            throw new TypeErrorException();
 
         NumberVal n = (NumberVal) left;
         NumberVal m = (NumberVal) right;
@@ -325,7 +318,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitIdExpr(timcParser.IdExprContext ctx) {
         TimcVal val = symbolTable.get(ctx.ID().getText());
-        if (val == null) System.exit(0);
+        if (val == null) throw new UndefinedReferenceException();
         return val;
     }
 
@@ -338,10 +331,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal right = visit(ctx.expression(1));
 
         // List cannot be compared
-        if (left instanceof ListVal && right instanceof ListVal) System.exit(0);
+        if (left instanceof ListVal && right instanceof ListVal) throw new TypeErrorException();
 
         // we cannot compare types that are not the same
-        if (!left.getClass().equals(right.getClass())) System.exit(0);
+        if (!left.getClass().equals(right.getClass())) throw new TypeErrorException();
 
         if (ctx.op.getType() == timcParser.EQ) {
             return new BoolVal(left.equals(right));
@@ -358,7 +351,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if(left instanceof NumberVal l && right instanceof NumberVal r){
             res = BoolVal.operation(l, r, ctx.op.getType());
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return res;
@@ -373,12 +366,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
         TimcVal res = null;
 
-        if (ctx.op.getType() == timcParser.NOT && val instanceof BoolVal b) {
+        int oper = ctx.op.getType();
+        if (oper == timcParser.NOT && val instanceof BoolVal b) {
             res = BoolVal.operation(b, timcParser.NOT);
-        } else if (ctx.op.getType() == timcParser.SUB && val instanceof NumberVal n) {
+        } else if (oper == timcParser.SUB && val instanceof NumberVal n) {
             res = NumberVal.operation(n, timcParser.SUB);
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return res;
@@ -387,11 +381,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { 
         TimcVal value = null;
         
-        if(visit(ctx.expression(0)) instanceof ArrayVal arr){
-            if(visit(ctx.expression(1)) instanceof NumberVal n){
+        if (visit(ctx.expression(0)) instanceof ArrayVal arr) {
+            if (visit(ctx.expression(1)) instanceof NumberVal n) {
                 value = arr.getVal().get(n.getVal());
-            } else System.exit(0);
-        } else System.exit(0);
+            } else {
+                throw new TypeErrorException();
+            }
+        } else {
+            throw new TypeErrorException();
+        }
         
         return value;
     }
@@ -404,7 +402,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (left instanceof BoolVal b1 && right instanceof BoolVal b2) {
             res = BoolVal.operation(b1, b2, timcParser.OR);
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return res;
@@ -418,7 +416,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (left instanceof NumberVal n && right instanceof NumberVal m) {
             res = NumberVal.operation(n, m, ctx.op.getType());
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return res;
@@ -518,8 +516,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal val = symbolTable.get(id);
 
         // check for undefined reference and type error
-        if (val == null) System.exit(0);
-        if (val.getType() != TimcType.FUNCTION) System.exit(0);
+        if (val == null) throw new UndefinedReferenceException();
+        if (val.getType() != TimcType.FUNCTION) throw new TypeErrorException();
 
         List<TimcVal> args = getExpression_list(ctx.expression_list());
 
@@ -529,7 +527,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = func.getDeclarationTable();
 
         // has the correct amount arguments been applied to the function
-        if (args.size() != func.getParams().size()) System.exit(0);
+        if (args.size() != func.getParams().size()) throw new ArithmeticException();
 
         // execute function body
         symbolTable.enterScope();
@@ -552,7 +550,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (visit(ctx.anonymous_function()) instanceof FunctionVal f) {
             List<String> params = f.getParams();
             List<TimcVal> args = getExpression_list(ctx.expression_list());
-            if (params.size() != args.size()) System.exit(0);
+            if (params.size() != args.size()) throw new ArithmeticException();
 
             // TODO check for recursion error
             symbolTable.enterScope();
@@ -563,7 +561,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             symbolTable.exitScope();
             hasReturned = false;
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return symbolTable.ret;
@@ -586,7 +584,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (o instanceof ArrayVal arr) {
             n = new NumberVal(arr.getVal().size());
         } else {
-            System.exit(0);
+            throw new TypeErrorException();
         }
 
         return n;
