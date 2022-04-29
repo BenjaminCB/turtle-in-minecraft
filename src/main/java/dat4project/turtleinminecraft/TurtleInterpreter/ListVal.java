@@ -6,8 +6,8 @@ import java.util.List;
 public class ListVal extends TimcVal {
     List<TimcVal> val;
     public ListVal() {
-        super(TimcType.ARRAY);
-        val = new ArrayList<TimcVal>();
+        super(TimcType.LIST);
+        val = new ArrayList<>();
     }
 
     public ListVal(List<TimcVal> val) {
@@ -20,7 +20,12 @@ public class ListVal extends TimcVal {
     }
 
     public void add(TimcVal val) {
-        this.val.add(val);
+        if (val instanceof ListVal l) {
+            // a list value should always be flattened
+            for (TimcVal v : l.getVal()) this.val.add(v);
+        } else {
+            this.val.add(val);
+        }
     }
 
     public void addAll(List<TimcVal> val) {

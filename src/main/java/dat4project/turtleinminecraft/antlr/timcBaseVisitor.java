@@ -116,6 +116,13 @@ public class timcBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements t
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitCompoundAssign(timcParser.CompoundAssignContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitMultiAssign(timcParser.MultiAssignContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
