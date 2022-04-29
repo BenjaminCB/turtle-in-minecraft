@@ -1,5 +1,8 @@
 package dat4project.turtleinminecraft;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import io.github.cottonmc.cotton.gui.SyncedGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
@@ -9,6 +12,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Util;
@@ -34,8 +38,7 @@ public class ExampleGUI extends SyncedGuiDescription {
         // button
         WButton button = new WButton(new LiteralText("Start turtle"));
         button.setOnClick(() -> {
-            //player.sendMessage(new LiteralText("Starting Turtle"));
-            System.out.println("Button clicked at " );
+            System.out.println("Start turtle button clicked");
         });
         root.add(button, 4, 1, 5, 7);
     
