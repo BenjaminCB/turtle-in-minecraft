@@ -12,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
-    private SymbolTable<TimcVal> symbolTable;
+    private SymbolTable symbolTable;
     private boolean hasBreaked;
     private boolean hasReturned;
 
     public ExecutionVisitor() {
-        symbolTable = new SymbolTable<>();
+        symbolTable = new SymbolTable();
     }
 
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
@@ -528,7 +528,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         List<TimcVal> args = getExpression_list(ctx.expression_list());
 
         // save current table and retrieve function value
-        SymbolTable<TimcVal> savedTable = symbolTable;
+        SymbolTable savedTable = symbolTable;
         FunctionVal func = (FunctionVal) val;
         symbolTable = func.getDeclarationTable();
 
