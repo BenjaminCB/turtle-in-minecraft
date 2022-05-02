@@ -15,42 +15,32 @@ public class BoolVal extends TimcVal {
     }
 
     public static BoolVal operation(NumberVal l, NumberVal r, int oper) {
-        BoolVal res = null;
-        if (oper == timcParser.GT) {
-            res = new BoolVal( l.getVal() > r.getVal() );
-        } else if(oper == timcParser.GTEQ) {
-            res = new BoolVal( l.getVal() >= r.getVal() );
-        } else if (oper == timcParser.LT) {
-            res = new BoolVal( l.getVal() < r.getVal() );
-        } else if (oper == timcParser.LTEQ) {
-            res = new BoolVal(l.getVal() <= r.getVal());
-        } else {
-            System.exit(0);
+        switch (oper) {
+            case timcParser.GT -> {
+                return new BoolVal( l.getVal() > r.getVal() );
+            }
+            case timcParser.GTEQ -> {
+                return new BoolVal( l.getVal() >= r.getVal() );
+            }
+            case timcParser.LT -> {
+                return new BoolVal( l.getVal() < r.getVal() );
+            }
+            default -> {
+                return new BoolVal(l.getVal() <= r.getVal());
+            }
         }
-        return res;
     }
 
     public static BoolVal operation(BoolVal l, BoolVal r, int oper) {
-        BoolVal res = null;
-
-        switch (oper) {
-            case timcParser.AND -> res = new BoolVal(l.getVal() && r.getVal());
-            case timcParser.OR -> res = new BoolVal(l.getVal() || r.getVal());
-            default -> System.exit(0);
+        if (oper == timcParser.AND) {
+            return new BoolVal(l.getVal() && r.getVal());
+        } else {
+            return new BoolVal(l.getVal() || r.getVal());
         }
-
-        return res;
     }
 
     public static BoolVal operation(BoolVal b, int oper) {
-        BoolVal res = null;
-
-        switch (oper) {
-            case timcParser.NOT -> res = new BoolVal(!b.getVal());
-            default -> System.exit(0);
-        }
-
-        return res;
+        return new BoolVal(!b.getVal());
     }
 
     @Override

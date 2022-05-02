@@ -1,5 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.antlr.timcParser;
 
 public class NumberVal extends TimcVal {
@@ -14,7 +15,7 @@ public class NumberVal extends TimcVal {
         return val;
     }
 
-    public static NumberVal operation(NumberVal n, NumberVal m, int oper) {
+    public static NumberVal operation(NumberVal n, NumberVal m, int oper) throws ArithmeticException {
         switch (oper) {
             case timcParser.ADD -> {
                 return new NumberVal(n.getVal() + m.getVal());
@@ -26,11 +27,11 @@ public class NumberVal extends TimcVal {
                 return new NumberVal(n.getVal() * m.getVal());
             }
             case timcParser.DIV -> {
-                if (m.getVal() == 0) System.exit(0);
+                if (m.getVal() == 0) throw new ArithmeticException("division by zero");
                 return new NumberVal(n.getVal() / m.getVal());
             }
             case timcParser.MOD -> {
-                if (m.getVal() == 0) System.exit(0);
+                if (m.getVal() == 0) throw new ArithmeticException("division by zero");
                 return new NumberVal(n.getVal() % m.getVal());
             }
             default -> {
@@ -40,14 +41,11 @@ public class NumberVal extends TimcVal {
     }
 
     public static NumberVal operation(NumberVal n, int oper) {
-        NumberVal res = null;
-
         switch (oper) {
-            case timcParser.SUB -> res = new NumberVal(-n.getVal());
-            default -> System.exit(0);
+            default -> {
+                return new NumberVal(-n.getVal());
+            }
         }
-
-        return res;
     }
 
     @Override

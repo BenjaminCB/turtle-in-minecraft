@@ -1,7 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.TypeErrorException;
-import dat4project.turtleinminecraft.TurtleInterpreter.Excepton.UndefinedReferenceException;
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcLexer;
@@ -19,6 +18,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     public ExecutionVisitor() {
         symbolTable = new SymbolTable<>();
+    }
+
+    private void expressionThrower(String msg, timcParser.ExpressionContext expr) {
+        int start = expr.start.getLine();
+        int end = expr.stop.getLine();
+        throw new TimcException(msg, start, end);
     }
 
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
@@ -80,7 +85,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         boolean executeElse = true;
         // run through the conditionals and execute first to evaluate to true
         for (i = 0; i < conds.size(); i++) {
-            TimcVal val = visit(conds.get(i));
+            timcParser.ExpressionContext cond = conds.get(i);
+            TimcVal val = visit(cond);
             if (val instanceof BoolVal b) {
                 if (b.getVal()) {
                     executeElse = false;
@@ -88,7 +94,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                     break;
                 }
             } else {
-                System.exit(0);
+                expressionThrower("condition does not evaluate to a bool", cond);
             }
         }
 
@@ -114,7 +120,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                     break;
                 }
             } else {
-                System.exit(0);
+                expressionThrower("condition does not evaluate to a bool", ctx.expression());
             }
         }
         return null;
@@ -133,15 +139,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                }
            }
        } else {
-           System.exit(0);
+           expressionThrower("condition does not evaluate to a bool", ctx.expression());
        }
-        return null; 
+       return null;
     }
     @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) { 
         String identifier = ctx.ID().getText();
         TimcVal o = visit(ctx.expression());
         if(o instanceof ArrayVal arr){
-            for (TimcVal a : arr.val) {
+            for (TimcVal a : arr.getVal()) {
                 symbolTable.put(identifier, a);
                 visit(ctx.statements());
                 if(hasBreaked){
@@ -150,7 +156,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
                 }
             }
         } else {
-            System.exit(0);
+            expressionThrower("foreach without an array", ctx.expression());
         }
 
         return null; 
@@ -173,7 +179,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         boolean visitedClause = false;
         for (int i = 0; i < cases.size(); i++) {
             TimcVal _case = visit(cases.get(i));
-            if (match.getType() != _case.getType()) System.exit(0);
+            if (match.getType() != _case.getType()) expressionThrower("type mismatch", cases.get(i));
 
             if (_case.equals(match)) {
                 visitedClause = true;
@@ -191,7 +197,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     // TODO decide whether array index should be allowed in declaration, currently is not
     @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
         TimcVal assignee = visit(ctx.expression());
-        if (assignee instanceof ListVal) System.exit(0);
+        if (assignee instanceof ListVal)
+            expressionThrower("right side evaluated to a list", ctx.expression());
 
         String id = ctx.identifier().ID().getText();
         List<timcParser.ExpressionContext> indexExprs = ctx.identifier().expression();
@@ -202,7 +209,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             List<TimcVal> indexes = getExpression(indexExprs);
             a.setNested(indexes, assignee);
         } else {
-            System.exit(0);
+            int line = ctx.identifier().ID().getSymbol().getLine();
+            throw new TimcException(id + " is not an array", line);
         }
         return null;
     }
@@ -210,29 +218,35 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
         String id = ctx.identifier().ID().getText();
         TimcVal v = symbolTable.get(id);
-        if (v == null) System.exit(0);
+        if (v == null) throw new TimcException(id + " is not defined", ctx.identifier().start.getLine());
 
         List<timcParser.ExpressionContext> indexExprs = ctx.identifier().expression();
         boolean isArray = !indexExprs.isEmpty();
 
+        int startLine = ctx.expression().start.getLine();
+        int endLine = ctx.expression().stop.getLine();
+
         // if the right hand side is not a number we cannot do compound assignment
         if (visit(ctx.expression()) instanceof NumberVal n) {
             if (!isArray && v instanceof NumberVal m) {
-                symbolTable.put(id, NumberVal.operation(m, n, ctx.op.getType()));
+                try {
+                    symbolTable.put(id, NumberVal.operation(m, n, ctx.op.getType()));
+                } catch (ArithmeticException e) {
+                    throw new TimcException(e.getMessage(), startLine, endLine);
+                }
             } else if (isArray && v instanceof ArrayVal a) {
                 List<TimcVal> is = getExpression(indexExprs);
                 if (a.getNested(is) instanceof NumberVal m) {
                     a.setNested(is, NumberVal.operation(m, n, ctx.op.getType()));
                 } else {
-                    System.exit(0);
+                    throw new TimcException("index not a number", startLine, endLine);
                 }
             } else {
-                System.exit(0);
+                throw new TimcException(id + " was used as array, but is not", startLine, endLine);
             }
         } else {
-            System.exit(0);
+            throw new TimcException("expected a number", startLine, endLine);
         }
-
         return null;
     }
 
@@ -240,25 +254,29 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         ListVal vals = new ListVal(getExpression_list(ctx.expression_list()));
         List<timcParser.IdentifierContext> idents = ctx.identifier_list().identifier();
 
-        if (vals.getVal().size() != idents.size()) System.exit(0);
+        if (vals.getVal().size() != idents.size()) {
+            int start = ctx.start.getLine();
+            int end = ctx.stop.getLine();
+            throw new TimcException("not an equal number of assignments", start, end);
+        }
 
-        for (int i = 0; i < vals.size(); i++) {
+        for (int i = 0; i < vals.getVal().size(); i++) {
             TimcVal val = vals.getVal().get(i);
             timcParser.IdentifierContext ident = idents.get(i);
+            String id = ident.ID().getText();
             if (ident.expression().isEmpty()) {
-                symbolTable.put(ident.ID().getText(), val);
-            } else if (symbolTable.get(ident.ID().getText()) instanceof ArrayVal a) {
+                symbolTable.put(id, val);
+            } else if (symbolTable.get(id) instanceof ArrayVal a) {
                     List<TimcVal> is = getExpression(ident.expression());
                     a.setNested(is, val);
             } else {
-                System.exit(0);
+                throw new TimcException(id + " is not an array", ident.start.getLine());
             }
         }
         return null;
     }
 
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
-
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
@@ -271,22 +289,19 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
+        int oper = ctx.op.getType();
+        boolean isConcat = oper == timcParser.CONCAT;
         TimcVal res = null;
-        if (left instanceof NumberVal n1 && right instanceof NumberVal n2) {
-            if (ctx.op.getType() == timcParser.ADD) {
-                res = new NumberVal(n1.getVal() + n2.getVal());
-            } else if (ctx.op.getType() == timcParser.SUB) {
-                res = new NumberVal(n1.getVal() - n2.getVal());
-            }
-        } else if (ctx.op.getType() == timcParser.CONCAT) {
-            // could probably make this more scaleable with an interface
-            if (left instanceof StringVal s1 && right instanceof StringVal s2) {
-                res = new StringVal(s1.getVal() + s2.getVal());
-            } else if (left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
-                ArrayVal temp = new ArrayVal(a1.getVal());
-                temp.addAll(a2.getVal());
-                res = temp;
-            }
+        if (!isConcat && left instanceof NumberVal n1 && right instanceof NumberVal n2) {
+            res = NumberVal.operation(n1, n2, oper);
+        } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
+            res = StringVal.operation(s1, s2, oper);
+        } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
+            res = ArrayVal.operation(a1, a2, oper);
+        } else {
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
         }
         return res;
     }
@@ -299,7 +314,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (left instanceof BoolVal b1 && right instanceof BoolVal b2) {
             res = new BoolVal(b1.getVal() && b2.getVal());
         } else {
-            System.exit(0);
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
         }
 
         return res;
@@ -309,7 +326,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
-        if (left.getType() != TimcType.NUMBER || right.getType() != TimcType.NUMBER) System.exit(0);
+        if (left.getType() != TimcType.NUMBER || right.getType() != TimcType.NUMBER)
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
 
         NumberVal n = (NumberVal) left;
         NumberVal m = (NumberVal) right;
@@ -323,7 +343,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitIdExpr(timcParser.IdExprContext ctx) {
         TimcVal val = symbolTable.get(ctx.ID().getText());
-        if (val == null) System.exit(0);
+        if (val == null) throw new TimcException(ctx.ID().getText() + " not defined", ctx.start.getLine());
         return val;
     }
 
@@ -335,8 +355,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
+        // List cannot be compared
+        if (left instanceof ListVal && right instanceof ListVal)
+            throw new TimcException("tried to check equality between lists",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
+
         // we cannot compare types that are not the same
-        if (!left.getClass().equals(right.getClass())) System.exit(0);
+        if (!left.getClass().equals(right.getClass()))
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
 
         if (ctx.op.getType() == timcParser.EQ) {
             return new BoolVal(left.equals(right));
@@ -350,10 +379,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
 
-        if(left instanceof NumberVal l && right instanceof NumberVal r){
+        if (left instanceof NumberVal l && right instanceof NumberVal r) {
             res = BoolVal.operation(l, r, ctx.op.getType());
         } else {
-            System.exit(0);
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
         }
 
         return res;
@@ -368,12 +399,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
         TimcVal res = null;
 
-        if (ctx.op.getType() == timcParser.NOT && val instanceof BoolVal b) {
+        int oper = ctx.op.getType();
+        if (oper == timcParser.NOT && val instanceof BoolVal b) {
             res = BoolVal.operation(b, timcParser.NOT);
-        } else if (ctx.op.getType() == timcParser.SUB && val instanceof NumberVal n) {
+        } else if (oper == timcParser.SUB && val instanceof NumberVal n) {
             res = NumberVal.operation(n, timcParser.SUB);
         } else {
-            System.exit(0);
+            expressionThrower("type mismatch", ctx.expression());
         }
 
         return res;
@@ -382,11 +414,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitIndexExpr(timcParser.IndexExprContext ctx) { 
         TimcVal value = null;
         
-        if(visit(ctx.expression(0)) instanceof ArrayVal arr){
-            if(visit(ctx.expression(1)) instanceof NumberVal n){
-                value = arr.val.get(n.getVal());
-            } else System.exit(0);
-        } else System.exit(0);
+        if (visit(ctx.expression(0)) instanceof ArrayVal arr) {
+            if (visit(ctx.expression(1)) instanceof NumberVal n) {
+                value = arr.getVal().get(n.getVal());
+            } else {
+                expressionThrower("index not number", ctx.expression(1));
+            }
+        } else {
+            expressionThrower("expr did eval to array", ctx.expression(0));
+        }
         
         return value;
     }
@@ -399,7 +435,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (left instanceof BoolVal b1 && right instanceof BoolVal b2) {
             res = BoolVal.operation(b1, b2, timcParser.OR);
         } else {
-            System.exit(0);
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
         }
 
         return res;
@@ -413,7 +451,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (left instanceof NumberVal n && right instanceof NumberVal m) {
             res = NumberVal.operation(n, m, ctx.op.getType());
         } else {
-            System.exit(0);
+            throw new TimcException("type mismatch",
+                    ctx.expression(0).start.getLine(),
+                    ctx.expression(1).stop.getLine());
         }
 
         return res;
@@ -513,8 +553,9 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         TimcVal val = symbolTable.get(id);
 
         // check for undefined reference and type error
-        if (val == null) System.exit(0);
-        if (val.getType() != TimcType.FUNCTION) System.exit(0);
+        if (val == null) throw new TimcException(id + " is not defined", ctx.start.getLine());
+        if (val.getType() != TimcType.FUNCTION)
+            throw new TimcException(id + " is not a function", ctx.start.getLine());
 
         List<TimcVal> args = getExpression_list(ctx.expression_list());
 
@@ -524,7 +565,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         symbolTable = func.getDeclarationTable();
 
         // has the correct amount arguments been applied to the function
-        if (args.size() != func.getParams().size()) System.exit(0);
+        if (args.size() != func.getParams().size())
+            throw new TimcException(id + ": too many or few arguments applied", ctx.start.getLine());
 
         // execute function body
         symbolTable.enterScope();
@@ -547,7 +589,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         if (visit(ctx.anonymous_function()) instanceof FunctionVal f) {
             List<String> params = f.getParams();
             List<TimcVal> args = getExpression_list(ctx.expression_list());
-            if (params.size() != args.size()) System.exit(0);
+            if (params.size() != args.size())
+                throw new TimcException("too many or few arguments applied to const func",
+                        ctx.start.getLine(),
+                        ctx.stop.getLine());
 
             // TODO check for recursion error
             symbolTable.enterScope();
@@ -558,7 +603,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             symbolTable.exitScope();
             hasReturned = false;
         } else {
-            System.exit(0);
+            throw new TimcException("anon function is not a function", ctx.start.getLine(), ctx.stop.getLine());
         }
 
         return symbolTable.ret;
@@ -578,10 +623,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
         TimcVal o = visit(ctx.expression());
         NumberVal n = null;
-        if(o instanceof ArrayVal arr){
-            n = new NumberVal(arr.val.size());
+        if (o instanceof ArrayVal arr) {
+            n = new NumberVal(arr.getVal().size());
+        } else {
+            throw new TimcException("tried to take length of non array",
+                    ctx.start.getLine(),
+                    ctx.stop.getLine());
         }
-        else System.exit(0);
 
         return n;
     }

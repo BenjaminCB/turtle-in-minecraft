@@ -1,11 +1,13 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ArrayVal extends TimcVal {
-    List<TimcVal> val;
+    private List<TimcVal> val;
     private TimcType elementType = null;
 
     public ArrayVal() {
@@ -71,23 +73,27 @@ public class ArrayVal extends TimcVal {
         }
     }
 
+    public static ArrayVal operation(ArrayVal a, ArrayVal b, int oper) {
+        // currently only has one operation
+        List<TimcVal> temp = new ArrayList<>(a.getVal().size() + b.getVal().size());
+        temp.addAll(a.getVal());
+        temp.addAll(b.getVal());
+        return new ArrayVal(temp);
+    }
+
     @Override
     protected boolean timcValEquals(TimcVal o) {
         if(o instanceof ArrayVal arr){
             int a = arr.val.size();
             if(a == this.val.size()){
-
                 for (int i = 0; i < a; i++) {
                     if(!arr.val.get(i).equals(this.val.get(i))) return false;
                 }
-
-            } else {   
+            } else {
                 System.exit(0);
                 return false;
             }
-
-            
-        }else {   
+        } else {
             System.exit(0);
             return false;
         }
