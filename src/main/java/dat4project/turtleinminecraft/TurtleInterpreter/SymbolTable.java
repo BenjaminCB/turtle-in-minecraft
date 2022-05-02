@@ -1,5 +1,7 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
+
 import java.util.Deque;
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -40,11 +42,9 @@ public class SymbolTable<T> {
             }
         }
 
+        if (res == null) throw new TimcException(name + ": is undefined");
         return res;
     }
 
-    public Boolean contains(String name) {
-        return get(name) != null;
-    }
 }
 
