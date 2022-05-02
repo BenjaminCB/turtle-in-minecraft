@@ -13,9 +13,9 @@ public class FunctionVal extends TimcVal {
     private final timcParser.StatementsContext ctx;
 
     // symbolTable at the time of declaration including a reference to the function itself
-    private final SymbolTable<TimcVal> declarationTable;
+    private final SymbolTable declarationTable;
 
-    public FunctionVal(List<String> params, timcParser.StatementsContext ctx, SymbolTable<TimcVal> declarationTable) {
+    public FunctionVal(List<String> params, timcParser.StatementsContext ctx, SymbolTable declarationTable) {
         super(TimcType.FUNCTION);
         this.params = params;
         this.ctx = ctx;
@@ -24,7 +24,7 @@ public class FunctionVal extends TimcVal {
 
     public List<String> getParams() { return params; }
     public timcParser.StatementsContext getCtx() { return ctx; }
-    public SymbolTable<TimcVal> getDeclarationTable() { return declarationTable; }
+    public SymbolTable getDeclarationTable() { return declarationTable; }
 
     // compare the reference
     @Override

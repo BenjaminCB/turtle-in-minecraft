@@ -56,7 +56,7 @@ public class SymbolTable {
 
     public void put(String name, TimcVal val) {
         if (restrictedWords.contains(name)) {
-            throw new TimcException(name + ": is a restricted word")
+            throw new TimcException(name + ": is a restricted word");
         } else if (builtVariables.contains(name)) {
             // TODO insert into command block
         } else {
