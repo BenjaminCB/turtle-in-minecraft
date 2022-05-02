@@ -226,7 +226,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
         if (vals.getVal().size() != idents.size()) System.exit(0);
 
-        for (int i = 0; i < vals.size(); i++) {
+        for (int i = 0; i < vals.getVal().size(); i++) {
             TimcVal val = vals.getVal().get(i);
             timcParser.IdentifierContext ident = idents.get(i);
             if (ident.expression().isEmpty()) {

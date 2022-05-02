@@ -3,16 +3,21 @@ package dat4project.turtleinminecraft;
 import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal;
 import dat4project.turtleinminecraft.TurtleInterpreter.BlockVal;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal;
+import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.block.Block;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -63,27 +68,28 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 
 	@Override
 	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return new ExampleGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
+		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
     public static void move(World world,TurtleCommandBlockEntity entity){
         if(world.getBlockState(entity.turtlePos) == entity.turtleState) {
-
             world.removeBlock(entity.turtlePos, true);
+            world.setBlockState(entity.turtlePos, Blocks.STONE.getDefaultState());
             entity.turtlePos = entity.turtlePos.add(entity.turtleDirection.getVector());
+            world.breakBlock(entity.turtlePos, true);
         }
         world.setBlockState(entity.turtlePos, entity.turtleState);
     }
     public static void rotate(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
         if(world.getBlockState(entity.turtlePos) == entity.turtleState){
-            world.removeBlock(entity.turtlePos, true);
-            entity.turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING,absDirToMcDir(absDir));
+            entity.turtleState = entity.turtleState.with(TurtleCommandBlock.FACING,absDirToMcDir(absDir));
+            entity.turtleDirection = absDirToMcDir(absDir);
         }
         world.setBlockState(entity.turtlePos, entity.turtleState);
     }
     public static void rotate(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
         if(world.getBlockState(entity.turtlePos) == entity.turtleState){
-            world.removeBlock(entity.turtlePos, true);
-            entity.turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING,relDirToMcDir(entity,relDir));
+            entity.turtleState = entity.turtleState.with(TurtleCommandBlock.FACING,relDirToMcDir(entity,relDir));
+            entity.turtleDirection = relDirToMcDir(entity, relDir);
         }
         world.setBlockState(entity.turtlePos, entity.turtleState);
     }
@@ -117,8 +123,29 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
         if(!world.isClient){
         if (world.isReceivingRedstonePower(pos)) {
+            int redstone = world.getReceivedRedstonePower(pos);
             if(!entity.latched) {
-                move(world,entity);
+                switch(redstone) {
+                    case 15:
+                    // bevæg turtle
+                        move(world, entity);
+                        break;
+                    case 14:
+                    // roter turtle
+                        rotate(world, entity, RelDir.RIGHT);
+                        break;
+                    case 13:
+                    // læs bog
+                        if(entity.getStack(0).getItem() == Items.WRITABLE_BOOK) {
+                            NbtList nbtList = entity.getStack(0).getNbt().getList("pages", 8);
+                            for (int i = 0; i < nbtList.size(); ++i) {
+                                String string = nbtList.getString(i);
+                                Timc.LOGGER.info(string);
+                            }
+                        }
+                    default:
+                        break;
+                }
             }
             entity.latched = true;
 
