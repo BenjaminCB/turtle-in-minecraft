@@ -1,10 +1,15 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcLexer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.MessageType;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +20,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     private SymbolTable symbolTable;
     private boolean hasBreaked;
     private boolean hasReturned;
+    private final TurtleCommandBlockEntity tcbEntity;
 
-    public ExecutionVisitor() {
-        symbolTable = new SymbolTable();
+
+    public ExecutionVisitor(TurtleCommandBlockEntity tcbEntity) {
+        this.tcbEntity = tcbEntity;
+        symbolTable = new SymbolTable(tcbEntity);
     }
 
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
@@ -579,9 +587,36 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { return visitChildren(ctx); }
+
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
+
+    @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) {
+        TimcVal val = visit(ctx.expression());
+        if (val instanceof RelDirVal dir) {
+            TurtleCommandBlockEntity.rotate(tcbEntity.getWorld(), tcbEntity, dir.getVal());
+        } else if (val instanceof AbsDirVal dir) {
+            TurtleCommandBlockEntity.rotate(tcbEntity.getWorld(), tcbEntity, dir.getVal());
+        } else {
+            throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
+        }
+
+        return null;
+    }
+
+    @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
+        TimcVal val = visit(ctx.expression());
+        if (val instanceof StringVal s) {
+            MinecraftClient.getInstance().inGameHud.addChatMessage(
+                    MessageType.CHAT,
+                    new LiteralText(s.getVal()),
+                    Util.NIL_UUID
+            );
+        } else {
+            throw new TimcException(ctx.expression().getText() + ": expected string");
+        }
+        return null;
+    }
+
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
 

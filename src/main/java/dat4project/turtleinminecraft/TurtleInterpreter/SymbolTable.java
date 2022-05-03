@@ -1,5 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 
 import java.util.*;
@@ -39,8 +40,10 @@ public class SymbolTable {
     );
 
     public TimcVal ret;
+    private final TurtleCommandBlockEntity tcbEntity;
 
-    public SymbolTable() {
+    public SymbolTable(TurtleCommandBlockEntity tcbEntity) {
+        this.tcbEntity = tcbEntity;
         tables = new ArrayDeque<>();
         tables.push(new HashMap<>());
         ret = new NothingVal();
