@@ -25,7 +25,6 @@ public class FunctionVal extends TimcVal {
     public timcParser.StatementsContext getCtx() { return ctx; }
     public SymbolTable getDeclarationTable() { return declarationTable; }
 
-    // compare the reference
     @Override
     protected boolean timcValEquals(TimcVal o) {
         return o == this;

@@ -50,10 +50,6 @@ public class NumberVal extends TimcVal {
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof NumberVal n) {
-            return val == n.getVal();
-        } else {
-            return false;
-        }
+        return (o instanceof NumberVal n) && (val == n.val);
     }
 }

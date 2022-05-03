@@ -91,13 +91,9 @@ public class ArrayVal extends TimcVal {
                 for (int i = 0; i < a; i++) {
                     if(!arr.val.get(i).equals(this.val.get(i))) return false;
                 }
-            } else {
-                return false;
+                return true;
             }
-        } else {
-            System.exit(0);
-            return false;
         }
-        return true;
+        return false;
     }
 }

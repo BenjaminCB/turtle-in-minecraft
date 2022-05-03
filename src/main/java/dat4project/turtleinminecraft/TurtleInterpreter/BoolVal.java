@@ -45,10 +45,6 @@ public class BoolVal extends TimcVal {
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof BoolVal b) {
-            return val == b.getVal();
-        } else {
-            return false;
-        }
+        return (o instanceof BoolVal b) && (val == b.val);
     }
 }

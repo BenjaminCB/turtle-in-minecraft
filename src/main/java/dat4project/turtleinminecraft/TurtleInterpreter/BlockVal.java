@@ -9,7 +9,7 @@ public class BlockVal extends TimcVal {
 
     public BlockVal(String blockString) {
         super(TimcType.BLOCK);
-        val = Registry.BLOCK.get(new Identifier(blockString));
+        val = Registry.BLOCK.get(new Identifier(blockString.toLowerCase()));
     }
 
     public BlockVal(Block block) {
@@ -23,7 +23,6 @@ public class BlockVal extends TimcVal {
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        // TODO: compare blockvals
-        return false;
+        return (o instanceof BlockVal b) && val.equals(b.val);
     }
 }
