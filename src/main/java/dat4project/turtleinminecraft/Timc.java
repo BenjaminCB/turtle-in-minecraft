@@ -28,7 +28,7 @@ public class Timc implements ModInitializer {
 	public static final Block GraphicsTurtleCommandBlock = new TurtleCommandBlock(FabricBlockSettings.of(Material.METAL).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL));
 	public static BlockEntityType<TurtleCommandBlockEntity> TurtleCommandBlockEntity;	
 
-	public static ScreenHandlerType<ExampleGUI> SCREEN_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(TurtleCommandBlock.ID, (syncId, inventory) -> new ExampleGUI(syncId, inventory, ScreenHandlerContext.EMPTY));
+	public static ScreenHandlerType<TurtleCommandBlockGUI> SCREEN_HANDLER_TYPE = ScreenHandlerRegistry.registerSimple(TurtleCommandBlock.ID, (syncId, inventory) -> new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.EMPTY));
 
 
 	@Override
