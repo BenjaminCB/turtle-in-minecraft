@@ -478,11 +478,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
         return res;
     }
-
-    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) {
-        return visit(ctx.array());
-    }
-
+    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) { return visit(ctx.array()); }
+    // return visit(ctx.array());
     @Override public TimcVal visitNothingConst(timcParser.NothingConstContext ctx) {
         return new NothingVal();
     }
