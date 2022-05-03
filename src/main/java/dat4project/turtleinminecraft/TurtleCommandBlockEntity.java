@@ -1,19 +1,18 @@
 package dat4project.turtleinminecraft;
 
-import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal;
-import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
+import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal.AbsDir;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.network.MessageType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -29,21 +28,32 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 
     private BlockPos turtlePos;
     private BlockState turtleState;
+    private BlockState placingBlockState;
+    private BlockState savedBlockState;
     private Direction turtleDirection;
-    private boolean latched = false;
-
+    private boolean placing;
+    private boolean breaking;
 
     public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
         super(Timc.TurtleCommandBlockEntity, pos, state);
+        
         turtleDirection = state.get(TurtleCommandBlock.FACING);
         turtlePos = pos.add(turtleDirection.getVector());
         turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
+        
+        placing = false;
+        breaking = false;
+        placingBlockState = Blocks.AIR.getDefaultState();
+        savedBlockState = world.getBlockState(pos);
+
+        world.setBlockState(turtlePos, turtleState);
     }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, inventory);
         super.writeNbt(nbt);
+
     }
 
     @Override
@@ -66,93 +76,92 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
 
-    public static void move(World world,TurtleCommandBlockEntity entity){
-        if(world.getBlockState(entity.turtlePos) == entity.turtleState) {
-            world.removeBlock(entity.turtlePos, true);
-            world.setBlockState(entity.turtlePos, Blocks.STONE.getDefaultState());
-            entity.turtlePos = entity.turtlePos.add(entity.turtleDirection.getVector());
-            world.breakBlock(entity.turtlePos, true);
-        }
-        world.setBlockState(entity.turtlePos, entity.turtleState);
-    }
-
-    public static void rotate(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
-        if(world.getBlockState(entity.turtlePos) == entity.turtleState){
-            entity.turtleState = entity.turtleState.with(TurtleCommandBlock.FACING,absDirToMcDir(absDir));
-            entity.turtleDirection = absDirToMcDir(absDir);
-        }
-        world.setBlockState(entity.turtlePos, entity.turtleState);
-    }
-
-    public static void rotate(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
-        if(world.getBlockState(entity.turtlePos) == entity.turtleState){
-            entity.turtleState = entity.turtleState.with(TurtleCommandBlock.FACING,relDirToMcDir(entity,relDir));
-            entity.turtleDirection = relDirToMcDir(entity, relDir);
-        }
-        world.setBlockState(entity.turtlePos, entity.turtleState);
-    }
-
-    public static Direction absDirToMcDir(AbsDirVal.AbsDir absDir){
-        return switch (absDir){
-            case EAST -> Direction.EAST;
-            case WEST -> Direction.WEST;
-            case NORTH -> Direction.NORTH;
-            case SOUTH -> Direction.SOUTH;
-        };
-    }
-
-    public static Direction relDirToMcDir(TurtleCommandBlockEntity entity,RelDirVal.RelDir relDir){
-        return switch (relDir) {
-            case UP -> Direction.UP;
-            case DOWN -> Direction.DOWN;
-            case LEFT -> entity.turtleDirection.rotateYCounterclockwise();
-            case RIGHT -> entity.turtleDirection.rotateYClockwise();
-            case FRONT -> entity.turtleDirection;
-            case BACK -> entity.turtleDirection.getOpposite();
-        };
-    }
-
-    public static Block look(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
-        entity.turtleDirection = absDirToMcDir(absDir);
-        return world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getVector())).getBlock();
-    }
-
-    public static Block look(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
-        return world.getBlockState(entity.turtlePos.add(relDirToMcDir(entity,relDir).getVector())).getBlock();
-    }
-
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
-        if(!world.isClient){
-            if (world.isReceivingRedstonePower(pos)) {
-                int redstone = world.getReceivedRedstonePower(pos);
-                if(!entity.latched) {
-                    switch(redstone) {
-                        case 15:
-                        // bevæg turtle
-                            move(world, entity);
-                            break;
-                        case 14:
-                        // roter turtle
-                            rotate(world, entity, RelDir.RIGHT);
-                            break;
-                        case 13:
-                        // læs bog
-                            if(entity.getStack(0).getItem() == Items.WRITABLE_BOOK) {
-                                NbtList nbtList = entity.getStack(0).getNbt().getList("pages", 8);
-                                for (int i = 0; i < nbtList.size(); ++i) {
-                                    String string = nbtList.getString(i);
-                                    Timc.LOGGER.info(string);
-                                }
-                            }
-                        default:
-                            break;
-                    }
-                }
-                entity.latched = true;
+        // Entity code executed each tick
+    }
+
+    /**
+     * Moves the Turtle 1 block distance in the relative direction
+     * @param relDir Relative direction to move the turtle
+     */
+    public void move(RelDir relDir) {
+        BlockPos newPos = turtlePos.add(TimcUtil.relDirToMcDir(turtleDirection, relDir).getVector());
+
+        if (placing) {
+            world.setBlockState(turtlePos, placingBlockState);
+        }
+        else {
+            if (breaking) {
+                world.breakBlock(newPos, true);
             }
-            else {
-                entity.latched = false;
-            }
+            world.setBlockState(turtlePos, savedBlockState);
+        }
+        savedBlockState = world.getBlockState(newPos);
+        world.setBlockState(newPos, turtleState);
+    }
+
+    /**
+     * Turns the Turtle to the given relative direction. Implementation does nothing for up or down directions
+     * @param relDir Relative direction to turn the Turtle to
+     */
+    public void turn(RelDir relDir) {
+        if(relDir != RelDir.UP && relDir != RelDir.DOWN) {
+            turtleDirection = TimcUtil.relDirToMcDir(turtleDirection, relDir);
+            BlockState newTurtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
+            world.setBlockState(turtlePos, newTurtleState);
         }
     }
+
+    /**
+     * Turns the Turtle to the given absolute direction
+     * @param absDir Absolute direction to turn the Turtle to
+     */
+    public void turn(AbsDir absDir) {
+        turtleDirection = TimcUtil.absDirToMcDir(absDir);
+        BlockState newTurtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
+        world.setBlockState(turtlePos, newTurtleState);
+    }
+
+    /**
+     * Looks at the block in the relative direction of the turtle and returns its type
+     * @param relDir Relative direction to look in
+     * @return The type of the looked at block
+     */
+    public Block look(RelDir relDir) {
+        Direction dir = TimcUtil.relDirToMcDir(turtleDirection, relDir);
+        return world.getBlockState(turtlePos.add(dir.getVector())).getBlock();
+    }
+
+    /**
+     * Gets the current direction the Turtle is facing
+     * @return AbsDir value of the Turtles direction
+     */
+    public AbsDir facing() {
+        return switch(turtleDirection) {
+            case EAST   -> AbsDir.EAST;
+            case WEST   -> AbsDir.WEST;
+            case NORTH  -> AbsDir.NORTH;
+            case SOUTH  -> AbsDir.SOUTH;
+            default     -> null;
+        };
+    }
+
+    /**
+     * Prints a message in the in-game chat
+     * @param s Message to print
+     */
+    public void print(String s) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        LiteralText message = new LiteralText("timc: " + s);
+        mc.inGameHud.addChatMessage(MessageType.SYSTEM, message, mc.player.getUuid());
+    }
+
+    /**
+     * Returns the current position of the Turtle
+     * @return Turtles position
+     */
+    public BlockPos position() {
+        return turtlePos;
+    }
+
 }

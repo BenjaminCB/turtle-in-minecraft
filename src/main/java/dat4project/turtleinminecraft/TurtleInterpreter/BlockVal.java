@@ -9,8 +9,12 @@ public class BlockVal extends TimcVal {
 
     public BlockVal(String blockString) {
         super(TimcType.BLOCK);
-        // If no block exists with ID, get returns a default value (Blocks.AIR)
         block = Registry.BLOCK.get(new Identifier(blockString));
+    }
+
+    public BlockVal(Block block) {
+        super(TimcType.BLOCK);
+        this.block = block;
     }
 
     @Override

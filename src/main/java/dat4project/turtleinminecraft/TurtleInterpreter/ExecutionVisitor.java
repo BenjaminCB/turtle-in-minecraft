@@ -2,16 +2,15 @@ package dat4project.turtleinminecraft.TurtleInterpreter;
 
 import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
+import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
-import dat4project.turtleinminecraft.antlr.timcLexer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
-import dat4project.turtleinminecraft.antlr.timcParser;
+import net.minecraft.util.math.BlockPos;
+
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.*;
@@ -574,42 +573,140 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return symbolTable.ret;
     }
 
-    @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) {
+        RelDir dir = RelDir.FRONT;
 
-    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) { return visitChildren(ctx); }
+        if(ctx.getChildCount() != 0) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return null; 
+    }
+
+    @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { 
+        RelDir dir = RelDir.BACK;
+
+        if(ctx.getChildCount() != 0) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return null; 
+    }
+
+    @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { 
+        RelDir dir = RelDir.UP;
+
+        if(ctx.getChildCount() != 0) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return null; 
+    }
+
+    @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { 
+        RelDir dir = RelDir.DOWN;
+
+        if(ctx.getChildCount() != 0) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return null; 
+    }
+
+    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
+        TimcVal expr = visit(ctx.expression());
+        BlockVal val = null;
+
+        if(expr instanceof RelDirVal dir) {
+            val = new BlockVal(tcbEntity.look(dir.getVal()));
+        }
+        else {
+            throw new TimcException(ctx.expression().getText() + ": expected reldir");
+        }
+
+        return val; 
+    }
 
     @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
         if (val instanceof RelDirVal dir) {
-            TurtleCommandBlockEntity.rotate(tcbEntity.getWorld(), tcbEntity, dir.getVal());
+            tcbEntity.turn(dir.getVal());
         } else if (val instanceof AbsDirVal dir) {
-            TurtleCommandBlockEntity.rotate(tcbEntity.getWorld(), tcbEntity, dir.getVal());
+            tcbEntity.turn(dir.getVal());
         } else {
             throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
         }
-
         return null;
     }
 
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
         if (val instanceof StringVal s) {
-            MinecraftClient.getInstance().inGameHud.addChatMessage(
-                    MessageType.CHAT,
-                    new LiteralText(s.getVal()),
-                    Util.NIL_UUID
-            );
+            tcbEntity.print(s.getVal());
         } else {
             throw new TimcException(ctx.expression().getText() + ": expected string");
         }
         return null;
     }
 
-    @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { 
+        return new AbsDirVal(tcbEntity.facing()); 
+    }
+
+    @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { 
+        BlockPos pos = tcbEntity.position();
+        ArrayVal posArr = new ArrayVal();
+
+        posArr.add(new NumberVal(pos.getX()));
+        posArr.add(new NumberVal(pos.getY()));
+        posArr.add(new NumberVal(pos.getZ()));
+        
+        return posArr; 
+    }
 
     
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 

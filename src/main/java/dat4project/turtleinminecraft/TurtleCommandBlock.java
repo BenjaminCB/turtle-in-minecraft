@@ -27,9 +27,11 @@ public class TurtleCommandBlock extends BlockWithEntity{
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)));
     }
+    
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState().with(FACING, ctx.getPlayerFacing());
     }
+
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
 

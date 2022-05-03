@@ -1,7 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ public class ArrayVal extends TimcVal {
 
     public ArrayVal(List<TimcVal> val) {
         this();
-        for (TimcVal v : val) add(v);
+        addAll(val);
     }
 
     public List<TimcVal> getVal() {

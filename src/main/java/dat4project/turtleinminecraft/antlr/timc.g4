@@ -116,11 +116,11 @@ build_in_func:
 	| 'backward' '(' expression? ')'		# BackwardFunc
 	| 'up' '(' expression? ')'				# UpFunc
 	| 'down' '(' expression? ')'			# DownFunc
-	| 'look' '(' expression ')' 				# LookFunc
-	| 'turn' '(' expression ')'		# TurnFunc
+	| 'look' '(' expression ')' 			# LookFunc
+	| 'turn' '(' expression ')'				# TurnFunc
 	| 'print' '(' expression? ')'			# PrintFunc
 	| 'facing' '(' ')'						# FacingFunc
-	| 'position' '(' ')'	# PositionFunc
+	| 'position' '(' ')'					# PositionFunc
 	| 'length' '(' expression ')'           # LengthFunc;
 
 parameters: ID (',' ID)*;
