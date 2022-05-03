@@ -5,16 +5,20 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class BlockVal extends TimcVal {
-    private Block block;
+    private Block val;
 
     public BlockVal(String blockString) {
         super(TimcType.BLOCK);
-        block = Registry.BLOCK.get(new Identifier(blockString));
+        val = Registry.BLOCK.get(new Identifier(blockString));
     }
 
     public BlockVal(Block block) {
         super(TimcType.BLOCK);
-        this.block = block;
+        val = block;
+    }
+
+    public Block getVal() {
+        return val;
     }
 
     @Override

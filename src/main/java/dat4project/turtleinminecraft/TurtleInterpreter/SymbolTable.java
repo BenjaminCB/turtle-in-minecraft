@@ -33,7 +33,7 @@ public class SymbolTable {
             "turn"
     );
 
-    private final List<String> builtVariables = Arrays.asList(
+    private final List<String> builtInVariables = Arrays.asList(
             "PLACING",
             "EATING",
             "ACTIVE_BLOCK"
@@ -60,8 +60,30 @@ public class SymbolTable {
     public void put(String name, TimcVal val) {
         if (restrictedWords.contains(name)) {
             throw new TimcException(name + ": is a restricted word");
-        } else if (builtVariables.contains(name)) {
-            // TODO insert into command block
+        } else if (builtInVariables.contains(name)) {
+            switch (name) {
+                case "PLACING" -> {
+                    if (val instanceof BoolVal b) {
+                        tcbEntity.placing = b.getVal();
+                    } else {
+                        throw new TimcException("tried to overwrite PLACING with non bool");
+                    }
+                }
+                case "EATING" -> {
+                    if (val instanceof BoolVal b) {
+                        tcbEntity.eating = b.getVal();
+                    } else {
+                        throw new TimcException("tried to overwrite EATING with non bool");
+                    }
+                }
+                default -> {
+                    if (val instanceof BlockVal b) {
+                        tcbEntity.activeBlock = b.getVal();
+                    } else {
+                        throw new TimcException("tried to overwrite ACTIVE_BLOCK with non block");
+                    }
+                }
+            }
         } else {
             tables.peek().put(name, val);
         }
@@ -72,8 +94,18 @@ public class SymbolTable {
     public TimcVal get(String name) {
         TimcVal res = null;
 
-        if (builtVariables.contains(name)) {
-            // TODO get from command block
+        if (builtInVariables.contains(name)) {
+            switch (name) {
+                case "PLACING" -> {
+                    res = new BoolVal(tcbEntity.placing);
+                }
+                case "EATING" -> {
+                    res = new BoolVal(tcbEntity.eating);
+                }
+                default -> {
+                    res = new BlockVal(tcbEntity.activeBlock);
+                }
+            }
         } else {
             for (Map<String, TimcVal> table : tables) {
                 if (table.containsKey(name)) {
