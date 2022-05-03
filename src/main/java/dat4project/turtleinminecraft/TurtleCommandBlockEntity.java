@@ -31,7 +31,9 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
     private BlockState turtleState;
     private Direction turtleDirection;
     private boolean latched = false;
-
+    public boolean placing = false;
+    public boolean eating = false;
+    public Block activeBlock = Blocks.AIR;
 
     public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
         super(Timc.TurtleCommandBlockEntity, pos, state);
