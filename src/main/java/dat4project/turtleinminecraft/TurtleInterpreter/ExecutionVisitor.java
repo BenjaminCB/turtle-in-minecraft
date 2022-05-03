@@ -5,10 +5,6 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.MessageType;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -576,7 +572,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) {
         RelDir dir = RelDir.FRONT;
 
-        if(ctx.getChildCount() != 0) {
+        if(ctx.expression() != null) {
             TimcVal val = visit(ctx.expression());
             if (val instanceof NumberVal numVal) {
                 for (int i = 0; i < numVal.getVal(); i++) {
@@ -597,7 +593,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { 
         RelDir dir = RelDir.BACK;
 
-        if(ctx.getChildCount() != 0) {
+        if(ctx.expression() != null) {
             TimcVal val = visit(ctx.expression());
             if (val instanceof NumberVal numVal) {
                 for (int i = 0; i < numVal.getVal(); i++) {
@@ -618,7 +614,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { 
         RelDir dir = RelDir.UP;
 
-        if(ctx.getChildCount() != 0) {
+        if(ctx.expression() != null) {
             TimcVal val = visit(ctx.expression());
             if (val instanceof NumberVal numVal) {
                 for (int i = 0; i < numVal.getVal(); i++) {
@@ -639,7 +635,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { 
         RelDir dir = RelDir.DOWN;
 
-        if(ctx.getChildCount() != 0) {
+        if(ctx.expression() != null) {
             TimcVal val = visit(ctx.expression());
             if (val instanceof NumberVal numVal) {
                 for (int i = 0; i < numVal.getVal(); i++) {

@@ -35,7 +35,7 @@ public class SymbolTable {
 
     private final List<String> builtInVariables = Arrays.asList(
             "PLACING",
-            "EATING",
+            "BREAKING",
             "ACTIVE_BLOCK"
     );
 
@@ -69,16 +69,16 @@ public class SymbolTable {
                         throw new TimcException("tried to overwrite PLACING with non bool");
                     }
                 }
-                case "EATING" -> {
+                case "BREAKING" -> {
                     if (val instanceof BoolVal b) {
-                        tcbEntity.eating = b.getVal();
+                        tcbEntity.breaking = b.getVal();
                     } else {
                         throw new TimcException("tried to overwrite EATING with non bool");
                     }
                 }
                 default -> {
                     if (val instanceof BlockVal b) {
-                        tcbEntity.activeBlock = b.getVal();
+                        tcbEntity.setActiveBlock(b.getVal());;
                     } else {
                         throw new TimcException("tried to overwrite ACTIVE_BLOCK with non block");
                     }
@@ -99,11 +99,11 @@ public class SymbolTable {
                 case "PLACING" -> {
                     res = new BoolVal(tcbEntity.placing);
                 }
-                case "EATING" -> {
-                    res = new BoolVal(tcbEntity.eating);
+                case "BREAKING" -> {
+                    res = new BoolVal(tcbEntity.breaking);
                 }
                 default -> {
-                    res = new BlockVal(tcbEntity.activeBlock);
+                    res = new BlockVal(tcbEntity.getActiveBlock());
                 }
             }
         } else {

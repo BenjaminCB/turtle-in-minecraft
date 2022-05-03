@@ -1,6 +1,7 @@
 package dat4project.turtleinminecraft;
 
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
+import dat4project.turtleinminecraft.TurtleInterpreter.TimcInterpreter;
 import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal.AbsDir;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,7 +12,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.MessageType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -26,34 +29,27 @@ import net.minecraft.world.World;
 public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
-    private BlockPos turtlePos;
-    private BlockState turtleState;
-    private BlockState placingBlockState;
+    private BlockState activeBlockState;
     private BlockState savedBlockState;
+    private BlockState turtleState;
     private Direction turtleDirection;
-    private boolean placing;
-    private boolean breaking;
+    private BlockPos turtlePos;
+    private boolean rsLatch;
+    public boolean placing;
+    public boolean breaking;
 
     public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
         super(Timc.TurtleCommandBlockEntity, pos, state);
-        
-        turtleDirection = state.get(TurtleCommandBlock.FACING);
-        turtlePos = pos.add(turtleDirection.getVector());
-        turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
-        
-        placing = false;
-        breaking = false;
-        placingBlockState = Blocks.AIR.getDefaultState();
-        savedBlockState = world.getBlockState(pos);
-
-        world.setBlockState(turtlePos, turtleState);
     }
+
+    public void setActiveBlock(Block block) { activeBlockState = block.getDefaultState(); }
+
+    public Block getActiveBlock() { return activeBlockState.getBlock(); }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, inventory);
         super.writeNbt(nbt);
-
     }
 
     @Override
@@ -77,7 +73,49 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 	}
 
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
-        // Entity code executed each tick
+        if(!world.isClient) {
+            if(world.isReceivingRedstonePower(pos) && !entity.rsLatch) {
+                entity.world = world;
+                entity.initializeTurtle(pos, state);
+                entity.startTurtle();
+            }
+            else if(!world.isReceivingRedstonePower(pos) && entity.rsLatch) {
+                world.setBlockState(entity.turtlePos, entity.savedBlockState);
+                entity.rsLatch = false;
+            }
+        }
+    }
+
+    private void initializeTurtle(BlockPos pos, BlockState state) {
+        turtleDirection = state.get(TurtleCommandBlock.FACING);
+        turtlePos = pos.add(turtleDirection.getVector());
+        turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
+        setActiveBlock(Blocks.AIR);
+        placing = false;
+        breaking = false;
+    }
+
+    private void startTurtle() {
+        rsLatch = true;
+        savedBlockState = world.getBlockState(turtlePos);
+        world.setBlockState(turtlePos, turtleState);
+        
+        ItemStack item = getStack(0);
+        if(item.isOf(Items.WRITTEN_BOOK) || item.isOf(Items.WRITABLE_BOOK)) {
+            // Read contents of book
+            String prog = new String();
+            NbtList nbtList = item.getNbt().getList("pages", 8);
+            for (int i = 0; i < nbtList.size(); ++i) {
+                prog = prog.concat(nbtList.getString(i));
+            }
+            
+            // Run interpreter/executionvisitor
+            TimcInterpreter timcInterpreter = new TimcInterpreter(prog, this);
+            timcInterpreter.execute();
+        }
+        else {
+            print("Insert a book with TIMC code to execute");
+        }
     }
 
     /**
@@ -86,9 +124,8 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
      */
     public void move(RelDir relDir) {
         BlockPos newPos = turtlePos.add(TimcUtil.relDirToMcDir(turtleDirection, relDir).getVector());
-
         if (placing) {
-            world.setBlockState(turtlePos, placingBlockState);
+            world.setBlockState(turtlePos, activeBlockState);
         }
         else {
             if (breaking) {
@@ -97,6 +134,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
             world.setBlockState(turtlePos, savedBlockState);
         }
         savedBlockState = world.getBlockState(newPos);
+        turtlePos = newPos;
         world.setBlockState(newPos, turtleState);
     }
 
@@ -107,8 +145,8 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
     public void turn(RelDir relDir) {
         if(relDir != RelDir.UP && relDir != RelDir.DOWN) {
             turtleDirection = TimcUtil.relDirToMcDir(turtleDirection, relDir);
-            BlockState newTurtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
-            world.setBlockState(turtlePos, newTurtleState);
+            turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
+            world.setBlockState(turtlePos, turtleState);
         }
     }
 
@@ -118,8 +156,8 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
      */
     public void turn(AbsDir absDir) {
         turtleDirection = TimcUtil.absDirToMcDir(absDir);
-        BlockState newTurtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
-        world.setBlockState(turtlePos, newTurtleState);
+        turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
+        world.setBlockState(turtlePos, turtleState);
     }
 
     /**
