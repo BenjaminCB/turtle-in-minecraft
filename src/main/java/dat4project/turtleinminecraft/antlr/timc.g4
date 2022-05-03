@@ -10,14 +10,7 @@ STRING: '"' [^"]* '"';
 NOTHING: 'nothing';
 ID: [a-zA-Z_][0-9a-zA-Z_]*;
 
-BLOCK:
-	'DIRT'
-	| 'SAND'
-	| 'STONE'
-	| 'BRICK'
-	| 'GLASS'
-	| 'WOOD'
-	| 'PLANK';
+BLOCK: 'BLOCK:' + [A-Z_]*;
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 

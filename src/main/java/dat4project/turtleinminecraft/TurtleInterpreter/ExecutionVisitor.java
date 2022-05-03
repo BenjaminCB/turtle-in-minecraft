@@ -10,9 +10,9 @@ import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
+import dat4project.turtleinminecraft.antlr.timcParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.checkerframework.checker.units.qual.A;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -454,17 +454,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitBlockConst(timcParser.BlockConstContext ctx) {
-        TimcVal res;
-        switch(ctx.BLOCK().getText()) {
-            case "DIRT"  -> res = new BlockVal(BlockVal.BlockType.DIRT);
-            case "SAND"  -> res = new BlockVal(BlockVal.BlockType.SAND);
-            case "STONE" -> res = new BlockVal(BlockVal.BlockType.STONE);
-            case "BRICK" -> res = new BlockVal(BlockVal.BlockType.BRICK);
-            case "GLASS" -> res = new BlockVal(BlockVal.BlockType.GLASS);
-            case "WOOD"  -> res = new BlockVal(BlockVal.BlockType.WOOD);
-            default      -> res = new BlockVal(BlockVal.BlockType.PLANK);
-        }
-        return res;
+        String blockString = ctx.getText().replace("BLOCK:", "");
+        return new BlockVal(blockString);
     }
 
     @Override public TimcVal visitRelDirConst(timcParser.RelDirConstContext ctx) {
