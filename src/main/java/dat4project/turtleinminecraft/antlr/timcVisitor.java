@@ -273,19 +273,19 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAbsDirConst(timcParser.AbsDirConstContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ArrayConst}
-	 * labeled alternative in {@link timcParser#constant}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayConst(timcParser.ArrayConstContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code NothingConst}
 	 * labeled alternative in {@link timcParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNothingConst(timcParser.NothingConstContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ArrayConst}
+	 * labeled alternative in {@link timcParser#constant}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayConst(timcParser.ArrayConstContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AnonFuncConst}
 	 * labeled alternative in {@link timcParser#constant}.

@@ -20,11 +20,11 @@ public class timcParser extends Parser {
 		T__9=10, T__10=11, T__11=12, T__12=13, T__13=14, T__14=15, T__15=16, T__16=17, 
 		T__17=18, T__18=19, T__19=20, T__20=21, T__21=22, T__22=23, T__23=24, 
 		T__24=25, T__25=26, T__26=27, T__27=28, T__28=29, T__29=30, T__30=31, 
-		WS=32, LINE_COMMENT=33, COMMENT=34, NUMBER=35, BOOL=36, STRING=37, NOTHING=38, 
-		ID=39, BLOCK=40, RELDIR=41, ABSDIR=42, ASSIGN=43, ADDASSIGN=44, SUBASSIGN=45, 
-		MULTASSIGN=46, DIVASSIGN=47, MODASSIGN=48, POWERASSIGN=49, NOT=50, SUB=51, 
-		POWER=52, MULT=53, DIV=54, MOD=55, ADD=56, CONCAT=57, LT=58, LTEQ=59, 
-		GT=60, GTEQ=61, EQ=62, NEQ=63, AND=64, OR=65;
+		WS=32, COMMENT=33, NUMBER=34, BOOL=35, STRING=36, NOTHING=37, BLOCK=38, 
+		RELDIR=39, ABSDIR=40, NOT=41, SUB=42, POWER=43, MULT=44, DIV=45, MOD=46, 
+		ADD=47, CONCAT=48, LT=49, LTEQ=50, GT=51, GTEQ=52, EQ=53, NEQ=54, AND=55, 
+		OR=56, ASSIGN=57, ADDASSIGN=58, SUBASSIGN=59, MULTASSIGN=60, DIVASSIGN=61, 
+		MODASSIGN=62, POWERASSIGN=63, ID=64;
 	public static final int
 		RULE_array = 0, RULE_statements = 1, RULE_statement = 2, RULE_control_structure = 3, 
 		RULE_assignment = 4, RULE_identifier = 5, RULE_identifier_list = 6, RULE_expression_list = 7, 
@@ -46,10 +46,10 @@ public class timcParser extends Parser {
 			"'end'", "'while'", "'repeat'", "'foreach'", "'in'", "'switch'", "'case'", 
 			"'default'", "'('", "')'", "'function'", "'fn'", "'->'", "'forward'", 
 			"'backward'", "'up'", "'down'", "'look'", "'turn'", "'print'", "'facing'", 
-			"'position'", "'length'", null, null, null, null, null, null, "'nothing'", 
-			null, null, null, null, "'='", "'+='", "'-='", "'*='", "'/='", "'%='", 
-			"'^='", "'not'", "'-'", "'^'", "'*'", "'/'", "'%'", "'+'", "'++'", "'<'", 
-			"'<='", "'>'", "'>='", "'=='", "'!='", "'and'", "'or'"
+			"'position'", "'length'", null, null, null, null, null, "'nothing'", 
+			null, null, null, "'not'", "'-'", "'^'", "'*'", "'/'", "'%'", "'+'", 
+			"'++'", "'<'", "'<='", "'>'", "'>='", "'=='", "'!='", "'and'", "'or'", 
+			"'='", "'+='", "'-='", "'*='", "'/='", "'%='", "'^='"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -57,11 +57,11 @@ public class timcParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, "WS", "LINE_COMMENT", 
-			"COMMENT", "NUMBER", "BOOL", "STRING", "NOTHING", "ID", "BLOCK", "RELDIR", 
-			"ABSDIR", "ASSIGN", "ADDASSIGN", "SUBASSIGN", "MULTASSIGN", "DIVASSIGN", 
-			"MODASSIGN", "POWERASSIGN", "NOT", "SUB", "POWER", "MULT", "DIV", "MOD", 
-			"ADD", "CONCAT", "LT", "LTEQ", "GT", "GTEQ", "EQ", "NEQ", "AND", "OR"
+			null, null, null, null, null, null, null, null, "WS", "COMMENT", "NUMBER", 
+			"BOOL", "STRING", "NOTHING", "BLOCK", "RELDIR", "ABSDIR", "NOT", "SUB", 
+			"POWER", "MULT", "DIV", "MOD", "ADD", "CONCAT", "LT", "LTEQ", "GT", "GTEQ", 
+			"EQ", "NEQ", "AND", "OR", "ASSIGN", "ADDASSIGN", "SUBASSIGN", "MULTASSIGN", 
+			"DIVASSIGN", "MODASSIGN", "POWERASSIGN", "ID"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -140,7 +140,7 @@ public class timcParser extends Parser {
 			setState(41);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+			while (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 				{
 				{
 				setState(31);
@@ -215,7 +215,7 @@ public class timcParser extends Parser {
 				setState(49); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__13) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__27) | (1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0) );
+			} while ( ((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__3 - 1)) | (1L << (T__4 - 1)) | (1L << (T__5 - 1)) | (1L << (T__9 - 1)) | (1L << (T__10 - 1)) | (1L << (T__11 - 1)) | (1L << (T__13 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -436,7 +436,7 @@ public class timcParser extends Parser {
 				setState(64);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__3) | (1L << T__4) | (1L << T__5) | (1L << T__9) | (1L << T__10) | (1L << T__11) | (1L << T__13) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << T__21) | (1L << T__22) | (1L << T__23) | (1L << T__24) | (1L << T__25) | (1L << T__26) | (1L << T__27) | (1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__3 - 1)) | (1L << (T__4 - 1)) | (1L << (T__5 - 1)) | (1L << (T__9 - 1)) | (1L << (T__10 - 1)) | (1L << (T__11 - 1)) | (1L << (T__13 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(63);
 					statements();
@@ -1362,20 +1362,20 @@ public class timcParser extends Parser {
 				match(ABSDIR);
 				}
 				break;
-			case T__0:
-				_localctx = new ArrayConstContext(_localctx);
+			case NOTHING:
+				_localctx = new NothingConstContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(218);
-				array();
+				match(NOTHING);
 				}
 				break;
-			case NOTHING:
-				_localctx = new NothingConstContext(_localctx);
+			case T__0:
+				_localctx = new ArrayConstContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(219);
-				match(NOTHING);
+				array();
 				}
 				break;
 			case T__18:
@@ -1658,7 +1658,7 @@ public class timcParser extends Parser {
 				setState(262);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(261);
 					expression_list();
@@ -1684,7 +1684,7 @@ public class timcParser extends Parser {
 				setState(270);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(269);
 					expression_list();
@@ -1795,7 +1795,7 @@ public class timcParser extends Parser {
 				setState(279);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(278);
 					expression(0);
@@ -1817,7 +1817,7 @@ public class timcParser extends Parser {
 				setState(285);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(284);
 					expression(0);
@@ -1839,7 +1839,7 @@ public class timcParser extends Parser {
 				setState(291);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(290);
 					expression(0);
@@ -1861,7 +1861,7 @@ public class timcParser extends Parser {
 				setState(297);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(296);
 					expression(0);
@@ -1911,7 +1911,7 @@ public class timcParser extends Parser {
 				setState(313);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__16) | (1L << T__18) | (1L << T__19) | (1L << NUMBER) | (1L << BOOL) | (1L << STRING) | (1L << NOTHING) | (1L << ID) | (1L << BLOCK) | (1L << RELDIR) | (1L << ABSDIR) | (1L << NOT) | (1L << SUB))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(312);
 					expression(0);
@@ -2054,7 +2054,7 @@ public class timcParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3C\u0154\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3B\u0154\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\3\2\3\2\3\2\7\2"+
 		"%\n\2\f\2\16\2(\13\2\7\2*\n\2\f\2\16\2-\13\2\3\2\3\2\3\3\6\3\62\n\3\r"+
@@ -2079,8 +2079,8 @@ public class timcParser extends Parser {
 		"\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u013c\n\17\3\17\3\17\3\17\3\17"+
 		"\3\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u014a\n\17\3\20\3\20\3\20"+
 		"\7\20\u014f\n\20\f\20\16\20\u0152\13\20\3\20\2\3\22\21\2\4\6\b\n\f\16"+
-		"\20\22\24\26\30\32\34\36\2\b\3\2.\63\3\2\64\65\3\2\679\4\2\65\65:;\3\2"+
-		"<?\3\2@A\2\u0186\2 \3\2\2\2\4\61\3\2\2\2\6<\3\2\2\2\b\u0081\3\2\2\2\n"+
+		"\20\22\24\26\30\32\34\36\2\b\3\2<A\3\2+,\3\2.\60\4\2,,\61\62\3\2\63\66"+
+		"\3\2\678\2\u0186\2 \3\2\2\2\4\61\3\2\2\2\6<\3\2\2\2\b\u0081\3\2\2\2\n"+
 		"\u008f\3\2\2\2\f\u0091\3\2\2\2\16\u009b\3\2\2\2\20\u00a3\3\2\2\2\22\u00b5"+
 		"\3\2\2\2\24\u00df\3\2\2\2\26\u00ee\3\2\2\2\30\u0103\3\2\2\2\32\u0114\3"+
 		"\2\2\2\34\u0149\3\2\2\2\36\u014b\3\2\2\2 +\7\3\2\2!&\5\22\n\2\"#\7\4\2"+
@@ -2095,18 +2095,18 @@ public class timcParser extends Parser {
 		"\2LM\3\2\2\2MR\3\2\2\2NL\3\2\2\2OP\7\n\2\2PQ\7\t\2\2QS\5\4\3\2RO\3\2\2"+
 		"\2RS\3\2\2\2ST\3\2\2\2TU\7\13\2\2U\u0082\3\2\2\2VW\7\f\2\2WX\5\22\n\2"+
 		"XY\7\t\2\2YZ\5\4\3\2Z[\7\13\2\2[\u0082\3\2\2\2\\]\7\r\2\2]^\5\22\n\2^"+
-		"_\7\t\2\2_`\5\4\3\2`a\7\13\2\2a\u0082\3\2\2\2bc\7\16\2\2cd\7)\2\2de\7"+
+		"_\7\t\2\2_`\5\4\3\2`a\7\13\2\2a\u0082\3\2\2\2bc\7\16\2\2cd\7B\2\2de\7"+
 		"\17\2\2ef\5\22\n\2fg\7\t\2\2gh\5\4\3\2hi\7\13\2\2i\u0082\3\2\2\2jk\7\20"+
 		"\2\2kl\5\22\n\2lu\7\t\2\2mn\7\21\2\2no\5\22\n\2op\7\t\2\2pq\5\4\3\2qr"+
 		"\7\13\2\2rt\3\2\2\2sm\3\2\2\2tw\3\2\2\2us\3\2\2\2uv\3\2\2\2v}\3\2\2\2"+
 		"wu\3\2\2\2xy\7\22\2\2yz\7\t\2\2z{\5\4\3\2{|\7\13\2\2|~\3\2\2\2}x\3\2\2"+
 		"\2}~\3\2\2\2~\177\3\2\2\2\177\u0080\7\13\2\2\u0080\u0082\3\2\2\2\u0081"+
 		">\3\2\2\2\u0081V\3\2\2\2\u0081\\\3\2\2\2\u0081b\3\2\2\2\u0081j\3\2\2\2"+
-		"\u0082\t\3\2\2\2\u0083\u0084\5\f\7\2\u0084\u0085\7-\2\2\u0085\u0086\5"+
+		"\u0082\t\3\2\2\2\u0083\u0084\5\f\7\2\u0084\u0085\7;\2\2\u0085\u0086\5"+
 		"\22\n\2\u0086\u0090\3\2\2\2\u0087\u0088\5\f\7\2\u0088\u0089\t\2\2\2\u0089"+
 		"\u008a\5\22\n\2\u008a\u0090\3\2\2\2\u008b\u008c\5\16\b\2\u008c\u008d\7"+
-		"-\2\2\u008d\u008e\5\20\t\2\u008e\u0090\3\2\2\2\u008f\u0083\3\2\2\2\u008f"+
-		"\u0087\3\2\2\2\u008f\u008b\3\2\2\2\u0090\13\3\2\2\2\u0091\u0098\7)\2\2"+
+		";\2\2\u008d\u008e\5\20\t\2\u008e\u0090\3\2\2\2\u008f\u0083\3\2\2\2\u008f"+
+		"\u0087\3\2\2\2\u008f\u008b\3\2\2\2\u0090\13\3\2\2\2\u0091\u0098\7B\2\2"+
 		"\u0092\u0093\7\3\2\2\u0093\u0094\5\22\n\2\u0094\u0095\7\5\2\2\u0095\u0097"+
 		"\3\2\2\2\u0096\u0092\3\2\2\2\u0097\u009a\3\2\2\2\u0098\u0096\3\2\2\2\u0098"+
 		"\u0099\3\2\2\2\u0099\r\3\2\2\2\u009a\u0098\3\2\2\2\u009b\u00a0\5\f\7\2"+
@@ -2117,26 +2117,26 @@ public class timcParser extends Parser {
 		"\u00a9\3\2\2\2\u00a9\21\3\2\2\2\u00aa\u00a8\3\2\2\2\u00ab\u00ac\b\n\1"+
 		"\2\u00ac\u00ad\7\23\2\2\u00ad\u00ae\5\22\n\2\u00ae\u00af\7\24\2\2\u00af"+
 		"\u00b6\3\2\2\2\u00b0\u00b6\5\32\16\2\u00b1\u00b2\t\3\2\2\u00b2\u00b6\5"+
-		"\22\n\f\u00b3\u00b6\5\24\13\2\u00b4\u00b6\7)\2\2\u00b5\u00ab\3\2\2\2\u00b5"+
+		"\22\n\f\u00b3\u00b6\5\24\13\2\u00b4\u00b6\7B\2\2\u00b5\u00ab\3\2\2\2\u00b5"+
 		"\u00b0\3\2\2\2\u00b5\u00b1\3\2\2\2\u00b5\u00b3\3\2\2\2\u00b5\u00b4\3\2"+
-		"\2\2\u00b6\u00d3\3\2\2\2\u00b7\u00b8\f\13\2\2\u00b8\u00b9\7\66\2\2\u00b9"+
+		"\2\2\u00b6\u00d3\3\2\2\2\u00b7\u00b8\f\13\2\2\u00b8\u00b9\7-\2\2\u00b9"+
 		"\u00d2\5\22\n\13\u00ba\u00bb\f\n\2\2\u00bb\u00bc\t\4\2\2\u00bc\u00d2\5"+
 		"\22\n\13\u00bd\u00be\f\t\2\2\u00be\u00bf\t\5\2\2\u00bf\u00d2\5\22\n\n"+
 		"\u00c0\u00c1\f\b\2\2\u00c1\u00c2\t\6\2\2\u00c2\u00d2\5\22\n\t\u00c3\u00c4"+
 		"\f\7\2\2\u00c4\u00c5\t\7\2\2\u00c5\u00d2\5\22\n\b\u00c6\u00c7\f\6\2\2"+
-		"\u00c7\u00c8\7B\2\2\u00c8\u00d2\5\22\n\7\u00c9\u00ca\f\5\2\2\u00ca\u00cb"+
-		"\7C\2\2\u00cb\u00d2\5\22\n\6\u00cc\u00cd\f\16\2\2\u00cd\u00ce\7\3\2\2"+
+		"\u00c7\u00c8\79\2\2\u00c8\u00d2\5\22\n\7\u00c9\u00ca\f\5\2\2\u00ca\u00cb"+
+		"\7:\2\2\u00cb\u00d2\5\22\n\6\u00cc\u00cd\f\16\2\2\u00cd\u00ce\7\3\2\2"+
 		"\u00ce\u00cf\5\22\n\2\u00cf\u00d0\7\5\2\2\u00d0\u00d2\3\2\2\2\u00d1\u00b7"+
 		"\3\2\2\2\u00d1\u00ba\3\2\2\2\u00d1\u00bd\3\2\2\2\u00d1\u00c0\3\2\2\2\u00d1"+
 		"\u00c3\3\2\2\2\u00d1\u00c6\3\2\2\2\u00d1\u00c9\3\2\2\2\u00d1\u00cc\3\2"+
 		"\2\2\u00d2\u00d5\3\2\2\2\u00d3\u00d1\3\2\2\2\u00d3\u00d4\3\2\2\2\u00d4"+
-		"\23\3\2\2\2\u00d5\u00d3\3\2\2\2\u00d6\u00e0\7%\2\2\u00d7\u00e0\7&\2\2"+
-		"\u00d8\u00e0\7\'\2\2\u00d9\u00e0\7*\2\2\u00da\u00e0\7+\2\2\u00db\u00e0"+
-		"\7,\2\2\u00dc\u00e0\5\2\2\2\u00dd\u00e0\7(\2\2\u00de\u00e0\5\30\r\2\u00df"+
+		"\23\3\2\2\2\u00d5\u00d3\3\2\2\2\u00d6\u00e0\7$\2\2\u00d7\u00e0\7%\2\2"+
+		"\u00d8\u00e0\7&\2\2\u00d9\u00e0\7(\2\2\u00da\u00e0\7)\2\2\u00db\u00e0"+
+		"\7*\2\2\u00dc\u00e0\7\'\2\2\u00dd\u00e0\5\2\2\2\u00de\u00e0\5\30\r\2\u00df"+
 		"\u00d6\3\2\2\2\u00df\u00d7\3\2\2\2\u00df\u00d8\3\2\2\2\u00df\u00d9\3\2"+
 		"\2\2\u00df\u00da\3\2\2\2\u00df\u00db\3\2\2\2\u00df\u00dc\3\2\2\2\u00df"+
 		"\u00dd\3\2\2\2\u00df\u00de\3\2\2\2\u00e0\25\3\2\2\2\u00e1\u00e2\7\25\2"+
-		"\2\u00e2\u00e3\7)\2\2\u00e3\u00e5\7\23\2\2\u00e4\u00e6\5\36\20\2\u00e5"+
+		"\2\u00e2\u00e3\7B\2\2\u00e3\u00e5\7\23\2\2\u00e4\u00e6\5\36\20\2\u00e5"+
 		"\u00e4\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e7\3\2\2\2\u00e7\u00e8\7\24"+
 		"\2\2\u00e8\u00e9\7\t\2\2\u00e9\u00ea\5\4\3\2\u00ea\u00eb\7\13\2\2\u00eb"+
 		"\u00ef\3\2\2\2\u00ec\u00ef\5\30\r\2\u00ed\u00ef\5\34\17\2\u00ee\u00e1"+
@@ -2144,10 +2144,10 @@ public class timcParser extends Parser {
 		"\u00f1\7\25\2\2\u00f1\u00f3\7\23\2\2\u00f2\u00f4\5\36\20\2\u00f3\u00f2"+
 		"\3\2\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5\u00f6\7\24\2\2"+
 		"\u00f6\u00f7\7\t\2\2\u00f7\u00f8\5\4\3\2\u00f8\u00f9\7\13\2\2\u00f9\u0104"+
-		"\3\2\2\2\u00fa\u00fe\7\26\2\2\u00fb\u00fd\7)\2\2\u00fc\u00fb\3\2\2\2\u00fd"+
+		"\3\2\2\2\u00fa\u00fe\7\26\2\2\u00fb\u00fd\7B\2\2\u00fc\u00fb\3\2\2\2\u00fd"+
 		"\u0100\3\2\2\2\u00fe\u00fc\3\2\2\2\u00fe\u00ff\3\2\2\2\u00ff\u0101\3\2"+
 		"\2\2\u0100\u00fe\3\2\2\2\u0101\u0102\7\27\2\2\u0102\u0104\5\22\n\2\u0103"+
-		"\u00f0\3\2\2\2\u0103\u00fa\3\2\2\2\u0104\31\3\2\2\2\u0105\u0106\7)\2\2"+
+		"\u00f0\3\2\2\2\u0103\u00fa\3\2\2\2\u0104\31\3\2\2\2\u0105\u0106\7B\2\2"+
 		"\u0106\u0108\7\23\2\2\u0107\u0109\5\20\t\2\u0108\u0107\3\2\2\2\u0108\u0109"+
 		"\3\2\2\2\u0109\u010a\3\2\2\2\u010a\u0115\7\24\2\2\u010b\u010c\7\23\2\2"+
 		"\u010c\u010d\5\30\r\2\u010d\u010e\7\24\2\2\u010e\u0110\7\23\2\2\u010f"+
@@ -2172,8 +2172,8 @@ public class timcParser extends Parser {
 		"\22\n\2\u0147\u0148\7\24\2\2\u0148\u014a\3\2\2\2\u0149\u0116\3\2\2\2\u0149"+
 		"\u011c\3\2\2\2\u0149\u0122\3\2\2\2\u0149\u0128\3\2\2\2\u0149\u012e\3\2"+
 		"\2\2\u0149\u0133\3\2\2\2\u0149\u0138\3\2\2\2\u0149\u013e\3\2\2\2\u0149"+
-		"\u0141\3\2\2\2\u0149\u0144\3\2\2\2\u014a\35\3\2\2\2\u014b\u0150\7)\2\2"+
-		"\u014c\u014d\7\4\2\2\u014d\u014f\7)\2\2\u014e\u014c\3\2\2\2\u014f\u0152"+
+		"\u0141\3\2\2\2\u0149\u0144\3\2\2\2\u014a\35\3\2\2\2\u014b\u0150\7B\2\2"+
+		"\u014c\u014d\7\4\2\2\u014d\u014f\7B\2\2\u014e\u014c\3\2\2\2\u014f\u0152"+
 		"\3\2\2\2\u0150\u014e\3\2\2\2\u0150\u0151\3\2\2\2\u0151\37\3\2\2\2\u0152"+
 		"\u0150\3\2\2\2#&+\63<BLRu}\u0081\u008f\u0098\u00a0\u00a8\u00b5\u00d1\u00d3"+
 		"\u00df\u00e5\u00ee\u00f3\u00fe\u0103\u0108\u0110\u0114\u0119\u011f\u0125"+
