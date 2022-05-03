@@ -579,7 +579,28 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { return visitChildren(ctx); }
     @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { return visitChildren(ctx); }
 
-    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
+        TimcVal val = visit(ctx.expression());
+        TimcVal res = null;
+
+        if (val instanceof RelDirVal dir) {
+            res = new BlockVal(
+                    TurtleCommandBlockEntity.look(tcbEntity.getWorld(),
+                    tcbEntity,
+                    dir.getVal())
+            );
+        } else if (val instanceof AbsDirVal dir) {
+            res = new BlockVal(
+                    TurtleCommandBlockEntity.look(tcbEntity.getWorld(),
+                    tcbEntity,
+                    dir.getVal())
+            );
+        } else {
+            throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
+        }
+
+        return res;
+    }
 
     @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
