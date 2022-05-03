@@ -1,25 +1,47 @@
 grammar timc;
 
 WS: [ \t\r\n]* -> skip;
-LINE_COMMENT: '//' .*? '\r'? '\n' -> skip;
 COMMENT: '/*' .*? '*/' -> skip;
 
+//Tokens
 NUMBER: [0-9]+;
 BOOL: 'true' | 'false';
-STRING: '"' [^"]* '"';
+STRING: '"' ('\\' ["\\n] | ~["\\\r\n])* '"';
 NOTHING: 'nothing';
-ID: [a-zA-Z_][0-9a-zA-Z_]*;
-
-BLOCK:
-	'DIRT'
-	| 'SAND'
-	| 'STONE'
-	| 'BRICK'
-	| 'GLASS'
-	| 'WOOD'
-	| 'PLANK';
+BLOCK: 'BLOCK:' + [A-Z_]*;
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
+
+//Expression tokens
+NOT: 'not';
+SUB: '-';
+POWER: '^';
+MULT: '*';
+DIV: '/';
+MOD: '%';
+ADD: '+';
+CONCAT: '++';
+LT: '<';
+LTEQ: '<=';
+GT: '>';
+GTEQ: '>=';
+EQ: '==';
+NEQ: '!=';
+AND: 'and';
+OR: 'or';
+
+//Assignment tokens
+ASSIGN: '=' ;
+ADDASSIGN: '+=' ;
+SUBASSIGN: '-=' ;
+MULTASSIGN: '*=' ;
+DIVASSIGN: '/=' ;
+MODASSIGN: '%=' ;
+POWERASSIGN: '^=' ;
+
+//ID token defined last, to prevent conflict with other tokens
+ID: [a-zA-Z_][0-9a-zA-Z_]*;
+
 
 array: '[' (expression (',' expression)*)* ']';
 
@@ -45,21 +67,14 @@ control_structure:
 	)* ('default' 'do' statements 'end')? 'end'             # SwitchCtrl;
 
 assignment:
-	identifier op = (ASSIGN | ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression # SingleAssign
+	identifier ASSIGN expression # SingleAssign
+	| identifier op = (ADDASSIGN | SUBASSIGN | MULTASSIGN | DIVASSIGN | MODASSIGN | POWERASSIGN) expression # CompoundAssign
 	| identifier_list ASSIGN expression_list # MultiAssign
 	;
 
 identifier: ID('[' expression ']')* ;
 identifier_list: identifier (',' identifier)* ;
 expression_list: expression (',' expression)* ;
-
-ASSIGN: '=' ;
-ADDASSIGN: '+=' ;
-SUBASSIGN: '-=' ;
-MULTASSIGN: '*=' ;
-DIVASSIGN: '/=' ;
-MODASSIGN: '%=' ;
-POWERASSIGN: '^=' ;
 
 expression:
 	'(' expression ')'										# ParenExpr
@@ -76,23 +91,6 @@ expression:
 	| constant												# ConstExpr
 	| ID						        					# IdExpr;
 
-NOT: 'not';
-SUB: '-';
-POWER: '^';
-MULT: '*';
-DIV: '/';
-MOD: '%';
-ADD: '+';
-CONCAT: '++';
-LT: '<';
-LTEQ: '<=';
-GT: '>';
-GTEQ: '>=';
-EQ: '==';
-NEQ: '!=';
-AND: 'and';
-OR: 'or';
-
 constant:
 	NUMBER					        # NumberConst
 	| BOOL					        # BoolConst
@@ -100,8 +98,8 @@ constant:
 	| BLOCK					        # BlockConst
 	| RELDIR				        # RelDirConst
 	| ABSDIR				        # AbsDirConst
-	| array				        	# ArrayConst
 	| NOTHING                       # NothingConst
+	| array				        	# ArrayConst
 	| anonymous_function	                        # AnonFuncConst;
 
 function:
@@ -114,21 +112,19 @@ anonymous_function:
 	| 'fn' ID* '->' expression				# LambdaAnonFunc;
 
 function_application:
-	ID '(' arguments? ')'					# IdFuncApp
-	| '(' anonymous_function ')' '(' arguments? ')'	        # ConstFuncApp;
+	ID '(' expression_list? ')'					# IdFuncApp
+	| '(' anonymous_function ')' '(' expression_list? ')'	        # ConstFuncApp;
 
 build_in_func:
 	'forward' '(' expression? ')'			# ForwardFunc
 	| 'backward' '(' expression? ')'		# BackwardFunc
 	| 'up' '(' expression? ')'				# UpFunc
 	| 'down' '(' expression? ')'			# DownFunc
-	| 'look' '(' expression ')' 				# LookFunc
-	| 'turn' '(' expression ')'		# TurnFunc
+	| 'look' '(' expression ')' 			# LookFunc
+	| 'turn' '(' expression ')'				# TurnFunc
 	| 'print' '(' expression? ')'			# PrintFunc
 	| 'facing' '(' ')'						# FacingFunc
-	| 'position' '(' ')'	# PositionFunc
+	| 'position' '(' ')'					# PositionFunc
 	| 'length' '(' expression ')'           # LengthFunc;
 
 parameters: ID (',' ID)*;
-
-arguments: expression (',' expression)*;

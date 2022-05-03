@@ -1,13 +1,10 @@
 package dat4project.turtleinminecraft;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
+import io.github.cottonmc.cotton.gui.client.CottonInventoryScreen;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
+/*
 public class TurtleScreen extends HandledScreen<TurtleScreenHandler> {
     private static final Identifier texture =
             new Identifier("timc", "textures/turtle_gui.png");
@@ -31,5 +28,12 @@ public class TurtleScreen extends HandledScreen<TurtleScreenHandler> {
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
+    }
+}*/
+
+// cotton GUI
+public class TurtleCommandBlockScreen extends CottonInventoryScreen<TurtleCommandBlockGUI> {
+    public TurtleCommandBlockScreen(TurtleCommandBlockGUI gui, PlayerEntity player, Text title) {
+        super(gui, player, title);
     }
 }

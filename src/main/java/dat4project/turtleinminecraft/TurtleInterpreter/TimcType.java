@@ -9,5 +9,6 @@ public enum TimcType {
     ABSOLUTE_DIRECTION,
     RELATIVE_DIRECTION,
     ARRAY,
+    LIST,
     FUNCTION
 }

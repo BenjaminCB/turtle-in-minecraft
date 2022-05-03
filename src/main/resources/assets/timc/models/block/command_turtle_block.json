@@ -1,0 +1,12 @@
+{
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "up": "timc:block/command_turtle_block_top",
+        "down": "timc:block/command_turtle_block_bottom",
+        "north": "timc:block/command_turtle_block_front",
+        "south": "timc:block/command_turtle_block_back",
+        "east": "timc:block/command_turtle_block_left",
+        "west": "timc:block/command_turtle_block_right",
+        "particle": "timc:block/command_turtle_block_back"
+    }
+  }

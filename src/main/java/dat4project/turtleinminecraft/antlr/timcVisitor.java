@@ -108,6 +108,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSingleAssign(timcParser.SingleAssignContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code CompoundAssign}
+	 * labeled alternative in {@link timcParser#assignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompoundAssign(timcParser.CompoundAssignContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code MultiAssign}
 	 * labeled alternative in {@link timcParser#assignment}.
 	 * @param ctx the parse tree
@@ -266,19 +273,19 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAbsDirConst(timcParser.AbsDirConstContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ArrayConst}
-	 * labeled alternative in {@link timcParser#constant}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayConst(timcParser.ArrayConstContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code NothingConst}
 	 * labeled alternative in {@link timcParser#constant}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNothingConst(timcParser.NothingConstContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ArrayConst}
+	 * labeled alternative in {@link timcParser#constant}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayConst(timcParser.ArrayConstContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code AnonFuncConst}
 	 * labeled alternative in {@link timcParser#constant}.
@@ -411,10 +418,4 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitParameters(timcParser.ParametersContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link timcParser#arguments}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArguments(timcParser.ArgumentsContext ctx);
 }
