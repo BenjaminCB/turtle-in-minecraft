@@ -1,29 +1,21 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
 public class BlockVal extends TimcVal {
-    private BlockType val;
+    private Block block;
 
-    public BlockVal(BlockType val) {
+    public BlockVal(String blockString) {
         super(TimcType.BLOCK);
-        this.val = val;
-    }
-
-    public BlockType getVal() {
-        return val;
+        // If no block exists with ID, get returns a default value (Blocks.AIR)
+        block = Registry.BLOCK.get(new Identifier(blockString));
     }
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
+        // TODO: compare blockvals
         return false;
-    }
-
-    public static enum BlockType {
-        DIRT,
-        SAND,
-        STONE,
-        BRICK,
-        GLASS,
-        WOOD,
-        PLANK
     }
 }

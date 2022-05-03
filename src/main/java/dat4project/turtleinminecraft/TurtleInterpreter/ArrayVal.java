@@ -1,7 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ArrayVal extends TimcVal {
