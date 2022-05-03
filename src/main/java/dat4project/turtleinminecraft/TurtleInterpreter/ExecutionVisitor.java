@@ -17,7 +17,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     private boolean hasReturned;
     private final TurtleCommandBlockEntity tcbEntity;
 
-
     public ExecutionVisitor(TurtleCommandBlockEntity tcbEntity) {
         this.tcbEntity = tcbEntity;
         symbolTable = new SymbolTable(tcbEntity);
@@ -140,6 +139,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
        }
        return null;
     }
+    
     @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) { 
         String identifier = ctx.ID().getText();
         TimcVal o = visit(ctx.expression());
@@ -159,7 +159,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null; 
     }
 
-    // maybe refactor into a version that does not copy arrays
+    // TODO: maybe refactor into a version that does not copy arrays
     @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) {
         TimcVal match = visit(ctx.expression(0));
 
@@ -192,7 +192,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    // TODO decide whether array index should be allowed in declaration, currently is not
+    // TODO: decide whether array index should be allowed in declaration, currently is not
     @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
         TimcVal assignee = visit(ctx.expression());
         if (assignee instanceof ListVal)
@@ -266,14 +266,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
+    
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
+    
     private List<TimcVal> getExpression_list(timcParser.Expression_listContext ctx) {
         return getExpression(ctx.expression());
     }
 
-    // TODO error handling
+    // TODO: error handling
     @Override public TimcVal visitTermExpr(timcParser.TermExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -443,7 +445,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
     }
 
-    // might also be capturing the "" within the value
+    // TODO: remove leading and trailing 
     @Override public TimcVal visitStringConst(timcParser.StringConstContext ctx) {
         return new StringVal(ctx.STRING().getText());
     }
@@ -489,11 +491,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return visit(ctx.anonymous_function());
     }
 
-    // TODO add return nothing to end
+    // TODO: add return nothing to end
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
         FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
 
-        // TODO don't think this solves the recursion problem
+        // TODO: don't think this solves the recursion problem
         func.getDeclarationTable().put(ctx.ID().getText(), func);
         return null;
     }
@@ -501,14 +503,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) {
         return visit(ctx.anonymous_function());
     }
+
     @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) {
         return visit(ctx.build_in_func());
     }
+
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) {
         // Copy pasta from visitDclFunc, as they do the same
         FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
         return null;
     }
+
     @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
@@ -554,7 +559,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (params.size() != args.size())
                 throw new TimcException(ctx.getText() + ": too many or too few arguments applied");
 
-            // TODO check for recursion error
+            // TODO: check for recursion error
             symbolTable.enterScope();
             for (int i = 0; i < params.size(); i++) {
                 symbolTable.put(params.get(i), args.get(i));
@@ -703,7 +708,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         
         return posArr; 
     }
-
     
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
         TimcVal o = visit(ctx.expression());
@@ -718,6 +722,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
+    
     private List<String> getParameters(timcParser.ParametersContext ctx) {
         List<String> res = new ArrayList<>();
         for (TerminalNode node : ctx.ID()) {

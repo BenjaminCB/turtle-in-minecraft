@@ -1,7 +1,7 @@
 package dat4project.turtleinminecraft;
 
-import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.TurtleInterpreter.TimcInterpreter;
+import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal.AbsDir;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,13 +14,16 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.MessageType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.state.property.Property;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -28,7 +31,6 @@ import net.minecraft.world.World;
 
 public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
-
     private BlockState activeBlockState;
     private BlockState savedBlockState;
     private BlockState turtleState;
@@ -42,35 +44,61 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         super(Timc.TurtleCommandBlockEntity, pos, state);
     }
 
-    public void setActiveBlock(Block block) { activeBlockState = block.getDefaultState(); }
-
-    public Block getActiveBlock() { return activeBlockState.getBlock(); }
-
-    @Override
-    public void writeNbt(NbtCompound nbt) {
+    @Override public void writeNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, inventory);
+
+        // position to nbt
+        nbt.putLong("turtlePosition", turtlePos.asLong());
+
+        // direction to nbt
+        nbt.putInt("turtleDirection", turtleDirection.getId());
+
+        // blockstates to nbt
+        nbt.putInt("turtleState", Block.getRawIdFromState(turtleState));
+        nbt.putInt("savedBlockState", Block.getRawIdFromState(savedBlockState));
+        nbt.putInt("activeBlockState", Block.getRawIdFromState(activeBlockState));
+
+        // booleans to nbt
+        nbt.putBoolean("placing", placing);
+        nbt.putBoolean("breaking", breaking);
+        nbt.putBoolean("rslatch", rsLatch);
+        
         super.writeNbt(nbt);
     }
 
-    @Override
-    public void readNbt(NbtCompound nbt) {
+    @Override public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
+
+        // position from nbt
+        turtlePos = BlockPos.fromLong(nbt.getLong("turtlePosition"));
+
+        // direction from nbt
+        turtleDirection = Direction.byId(nbt.getInt("turtleDirection"));
+
+        // blockstates from nbt
+        turtleState = Block.getStateFromRawId(nbt.getInt("turtleState"));
+        savedBlockState = Block.getStateFromRawId(nbt.getInt("savedBlockState"));
+        activeBlockState = Block.getStateFromRawId(nbt.getInt("activeBlockState"));
+
+        // booleans from nbt
+        placing = nbt.getBoolean("placing");
+        breaking = nbt.getBoolean("breaking");
+        rsLatch = nbt.getBoolean("rslatch");
+
         Inventories.readNbt(nbt, inventory);
     }
 
-    @Override
-    public Text getDisplayName() {
+    @Override public Text getDisplayName() {
         return new LiteralText("Graphics Turtle");
     }
+
+	@Override public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
+	}
 
     public DefaultedList<ItemStack> getItems() {
         return inventory;
     }
-
-	@Override
-	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
-	}
 
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
         if(!world.isClient) {
@@ -117,6 +145,18 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
             print("Insert a book with TIMC code to execute");
         }
     }
+
+    /**
+     * Sets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#placing} is {@value true}
+     * @param block New active block
+     */
+    public void setActiveBlock(Block block) { activeBlockState = block.getDefaultState(); }
+
+    /**
+     * Gets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#placing} is {@value true}
+     * @return Current active block
+     */
+    public Block getActiveBlock() { return activeBlockState.getBlock(); }
 
     /**
      * Moves the Turtle 1 block distance in the relative direction
@@ -190,8 +230,8 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
      */
     public void print(String s) {
         MinecraftClient mc = MinecraftClient.getInstance();
-        LiteralText message = new LiteralText("timc: " + s);
-        mc.inGameHud.addChatMessage(MessageType.SYSTEM, message, mc.player.getUuid());
+        LiteralText message = new LiteralText("TIMC -> " + s);
+        mc.inGameHud.addChatMessage(MessageType.SYSTEM, message, Util.NIL_UUID);
     }
 
     /**
