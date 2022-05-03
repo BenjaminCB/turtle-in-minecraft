@@ -1,22 +1,20 @@
 package dat4project.turtleinminecraft;
 
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
-public class TurtleBlock extends BlockWithEntity {
-    public static final DirectionProperty FACING;
+public class TurtleBlock extends Block {
+    public static final DirectionProperty FACING = Properties.FACING;
+    public static final Identifier ID = new Identifier("timc", "graphics_turtle_block");
 
     public TurtleBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)));
+        this.setDefaultState((BlockState)(this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
     }
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return (BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
@@ -25,6 +23,10 @@ public class TurtleBlock extends BlockWithEntity {
         builder.add(FACING);
     }
 
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
 
     /*@Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
@@ -40,23 +42,5 @@ public class TurtleBlock extends BlockWithEntity {
         }
         return ActionResult.SUCCESS;
     }*/
-
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new TurtleBlockEntity(pos, state);
-    }
-
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, Timc.GraphicsTurtleBlockEntity, TurtleBlockEntity::tick);
-    }
-    static {
-        FACING = HorizontalFacingBlock.FACING;
-    }
 
 }

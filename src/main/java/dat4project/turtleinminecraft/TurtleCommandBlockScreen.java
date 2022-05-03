@@ -32,8 +32,8 @@ public class TurtleScreen extends HandledScreen<TurtleScreenHandler> {
 }*/
 
 // cotton GUI
-public class TurtleScreen extends CottonInventoryScreen<ExampleGUI> {
-    public TurtleScreen(ExampleGUI gui, PlayerEntity player, Text title) {
+public class TurtleCommandBlockScreen extends CottonInventoryScreen<TurtleCommandBlockGUI> {
+    public TurtleCommandBlockScreen(TurtleCommandBlockGUI gui, PlayerEntity player, Text title) {
         super(gui, player, title);
     }
 }
