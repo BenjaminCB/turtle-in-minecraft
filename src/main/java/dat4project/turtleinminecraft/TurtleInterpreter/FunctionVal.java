@@ -29,4 +29,9 @@ public class FunctionVal extends TimcVal {
     protected boolean timcValEquals(TimcVal o) {
         return o == this;
     }
+
+    @Override
+    protected String timcToString() {
+        return "this is a function, for more information come back in a later version of TIMC";
+    }
 }

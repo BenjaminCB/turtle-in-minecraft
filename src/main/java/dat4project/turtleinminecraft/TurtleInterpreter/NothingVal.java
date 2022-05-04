@@ -9,4 +9,9 @@ public class NothingVal extends TimcVal {
     protected boolean timcValEquals(TimcVal o) {
         return o instanceof NothingVal;
     }
+
+    @Override
+    protected String timcToString() {
+        return "nothing";
+    }
 }

@@ -17,6 +17,11 @@ public class AbsDirVal extends TimcVal {
         return (o instanceof AbsDirVal a) && val.equals(a.val);
     }
 
+    @Override
+    protected String timcToString() {
+        return val.toString();
+    }
+
     public static enum AbsDir {
         NORTH,
         SOUTH,
