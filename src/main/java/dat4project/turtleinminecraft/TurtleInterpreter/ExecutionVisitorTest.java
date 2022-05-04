@@ -1,6 +1,5 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import dat4project.turtleinminecraft.antlr.timcParser;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +24,6 @@ class ExecutionVisitorTest {
     @Test
     @Disabled
     void NameOfMethodTest(){
-        ExecutionVisitor TestClass = new ExecutionVisitor();
         assertEquals(1,1);
     }
 

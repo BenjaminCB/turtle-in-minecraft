@@ -36,7 +36,8 @@ public class SymbolTable {
     private final List<String> builtInVariables = Arrays.asList(
             "PLACING",
             "BREAKING",
-            "ACTIVE_BLOCK"
+            "ACTIVE_BLOCK",
+            "TIMEOUT"
     );
 
     public TimcVal ret;
@@ -64,23 +65,31 @@ public class SymbolTable {
             switch (name) {
                 case "PLACING" -> {
                     if (val instanceof BoolVal b) {
-                        tcbEntity.placing = b.getVal();
+                        tcbEntity.turtlePlacing = b.getVal();
                     } else {
-                        throw new TimcException("tried to overwrite PLACING with non bool");
+                        throw new TimcException("Cannot assing PLACING to non-boolean value");
                     }
                 }
                 case "BREAKING" -> {
                     if (val instanceof BoolVal b) {
-                        tcbEntity.breaking = b.getVal();
+                        tcbEntity.turtleBreaking = b.getVal();
                     } else {
-                        throw new TimcException("tried to overwrite EATING with non bool");
+                        throw new TimcException("Cannot assign BREAKING to non-boolean value");
+                    }
+                }
+                case "TIMEOUT" -> {
+                    if (val instanceof NumberVal n) {
+                        tcbEntity.turtleTimeout = n.getVal();
+                    }
+                    else {
+                        throw new TimcException("Cannot assign TIMEOUT to non-number value");
                     }
                 }
                 default -> {
                     if (val instanceof BlockVal b) {
                         tcbEntity.setActiveBlock(b.getVal());;
                     } else {
-                        throw new TimcException("tried to overwrite ACTIVE_BLOCK with non block");
+                        throw new TimcException("Cannot assign ACTIVE_BLOCK to non-block value");
                     }
                 }
             }
@@ -97,10 +106,13 @@ public class SymbolTable {
         if (builtInVariables.contains(name)) {
             switch (name) {
                 case "PLACING" -> {
-                    res = new BoolVal(tcbEntity.placing);
+                    res = new BoolVal(tcbEntity.turtlePlacing);
                 }
                 case "BREAKING" -> {
-                    res = new BoolVal(tcbEntity.breaking);
+                    res = new BoolVal(tcbEntity.turtleBreaking);
+                }
+                case "TIMEOUT" -> {
+                    res = new NumberVal(tcbEntity.turtleTimeout);
                 }
                 default -> {
                     res = new BlockVal(tcbEntity.getActiveBlock());

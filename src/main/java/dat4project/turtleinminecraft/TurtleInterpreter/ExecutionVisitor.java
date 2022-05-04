@@ -6,9 +6,7 @@ import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import net.minecraft.util.math.BlockPos;
-
 import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.util.*;
 
 public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
