@@ -1,6 +1,4 @@
-package dat4project.turtleinminecraft.antlr;
-
-// Generated from timc.g4 by ANTLR 4.9.2
+// Generated from /Users/tor/Git/comsci/turtle-in-minecraft/src/main/java/dat4project/turtleinminecraft/antlr/timc.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class timcParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -128,11 +126,6 @@ public class timcParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_array; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitArray(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ArrayContext array() throws RecognitionException {
@@ -200,11 +193,6 @@ public class timcParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statements; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitStatements(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final StatementsContext statements() throws RecognitionException {
@@ -257,63 +245,33 @@ public class timcParser extends Parser {
 			return getRuleContext(Control_structureContext.class,0);
 		}
 		public CtrlStmtContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitCtrlStmt(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ExprStmtContext extends StatementContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public ExprStmtContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitExprStmt(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AssignStmtContext extends StatementContext {
 		public AssignmentContext assignment() {
 			return getRuleContext(AssignmentContext.class,0);
 		}
 		public AssignStmtContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitAssignStmt(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class BreakStmtContext extends StatementContext {
 		public BreakStmtContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBreakStmt(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class FuncStmtContext extends StatementContext {
 		public FunctionContext function() {
 			return getRuleContext(FunctionContext.class,0);
 		}
 		public FuncStmtContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitFuncStmt(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class RetStmtContext extends StatementContext {
 		public Expression_listContext expression_list() {
 			return getRuleContext(Expression_listContext.class,0);
 		}
 		public RetStmtContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitRetStmt(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final StatementContext statement() throws RecognitionException {
@@ -405,11 +363,6 @@ public class timcParser extends Parser {
 			return getRuleContext(StatementsContext.class,0);
 		}
 		public RepeatCtrlContext(Control_structureContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitRepeatCtrl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ForeachCtrlContext extends Control_structureContext {
 		public TerminalNode ID() { return getToken(timcParser.ID, 0); }
@@ -420,11 +373,6 @@ public class timcParser extends Parser {
 			return getRuleContext(StatementsContext.class,0);
 		}
 		public ForeachCtrlContext(Control_structureContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitForeachCtrl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class IfCtrlContext extends Control_structureContext {
 		public List<ExpressionContext> expression() {
@@ -440,11 +388,6 @@ public class timcParser extends Parser {
 			return getRuleContext(StatementsContext.class,i);
 		}
 		public IfCtrlContext(Control_structureContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitIfCtrl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class SwitchCtrlContext extends Control_structureContext {
 		public List<ExpressionContext> expression() {
@@ -460,11 +403,6 @@ public class timcParser extends Parser {
 			return getRuleContext(StatementsContext.class,i);
 		}
 		public SwitchCtrlContext(Control_structureContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitSwitchCtrl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class WhileCtrlContext extends Control_structureContext {
 		public ExpressionContext expression() {
@@ -474,11 +412,6 @@ public class timcParser extends Parser {
 			return getRuleContext(StatementsContext.class,0);
 		}
 		public WhileCtrlContext(Control_structureContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitWhileCtrl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Control_structureContext control_structure() throws RecognitionException {
@@ -691,11 +624,6 @@ public class timcParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public SingleAssignContext(AssignmentContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitSingleAssign(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class CompoundAssignContext extends AssignmentContext {
 		public Token op;
@@ -712,11 +640,6 @@ public class timcParser extends Parser {
 		public TerminalNode MODASSIGN() { return getToken(timcParser.MODASSIGN, 0); }
 		public TerminalNode POWERASSIGN() { return getToken(timcParser.POWERASSIGN, 0); }
 		public CompoundAssignContext(AssignmentContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitCompoundAssign(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class MultiAssignContext extends AssignmentContext {
 		public Identifier_listContext identifier_list() {
@@ -727,11 +650,6 @@ public class timcParser extends Parser {
 			return getRuleContext(Expression_listContext.class,0);
 		}
 		public MultiAssignContext(AssignmentContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitMultiAssign(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
@@ -812,11 +730,6 @@ public class timcParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_identifier; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitIdentifier(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final IdentifierContext identifier() throws RecognitionException {
@@ -870,11 +783,6 @@ public class timcParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_identifier_list; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitIdentifier_list(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Identifier_listContext identifier_list() throws RecognitionException {
@@ -926,11 +834,6 @@ public class timcParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expression_list; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitExpression_list(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Expression_listContext expression_list() throws RecognitionException {
@@ -994,11 +897,6 @@ public class timcParser extends Parser {
 		public TerminalNode SUB() { return getToken(timcParser.SUB, 0); }
 		public TerminalNode CONCAT() { return getToken(timcParser.CONCAT, 0); }
 		public TermExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitTermExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AndExprContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -1009,42 +907,22 @@ public class timcParser extends Parser {
 		}
 		public TerminalNode AND() { return getToken(timcParser.AND, 0); }
 		public AndExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitAndExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ConstExprContext extends ExpressionContext {
 		public ConstantContext constant() {
 			return getRuleContext(ConstantContext.class,0);
 		}
 		public ConstExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitConstExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class IdExprContext extends ExpressionContext {
 		public TerminalNode ID() { return getToken(timcParser.ID, 0); }
 		public IdExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitIdExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class FuncAppExprContext extends ExpressionContext {
 		public Function_applicationContext function_application() {
 			return getRuleContext(Function_applicationContext.class,0);
 		}
 		public FuncAppExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitFuncAppExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class CompExprContext extends ExpressionContext {
 		public Token op;
@@ -1059,11 +937,6 @@ public class timcParser extends Parser {
 		public TerminalNode GT() { return getToken(timcParser.GT, 0); }
 		public TerminalNode GTEQ() { return getToken(timcParser.GTEQ, 0); }
 		public CompExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitCompExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class UnaryExprContext extends ExpressionContext {
 		public Token op;
@@ -1073,11 +946,6 @@ public class timcParser extends Parser {
 		public TerminalNode NOT() { return getToken(timcParser.NOT, 0); }
 		public TerminalNode SUB() { return getToken(timcParser.SUB, 0); }
 		public UnaryExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitUnaryExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class OrExprContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -1088,11 +956,6 @@ public class timcParser extends Parser {
 		}
 		public TerminalNode OR() { return getToken(timcParser.OR, 0); }
 		public OrExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitOrExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class IndexExprContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -1102,11 +965,6 @@ public class timcParser extends Parser {
 			return getRuleContext(ExpressionContext.class,i);
 		}
 		public IndexExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitIndexExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class PowerExprContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
@@ -1117,11 +975,6 @@ public class timcParser extends Parser {
 		}
 		public TerminalNode POWER() { return getToken(timcParser.POWER, 0); }
 		public PowerExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitPowerExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class EqExprContext extends ExpressionContext {
 		public Token op;
@@ -1134,22 +987,12 @@ public class timcParser extends Parser {
 		public TerminalNode EQ() { return getToken(timcParser.EQ, 0); }
 		public TerminalNode NEQ() { return getToken(timcParser.NEQ, 0); }
 		public EqExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitEqExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ParenExprContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public ParenExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitParenExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class FactorExprContext extends ExpressionContext {
 		public Token op;
@@ -1163,11 +1006,6 @@ public class timcParser extends Parser {
 		public TerminalNode DIV() { return getToken(timcParser.DIV, 0); }
 		public TerminalNode MOD() { return getToken(timcParser.MOD, 0); }
 		public FactorExprContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitFactorExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -1433,85 +1271,40 @@ public class timcParser extends Parser {
 			return getRuleContext(Anonymous_functionContext.class,0);
 		}
 		public AnonFuncConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitAnonFuncConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class BlockConstContext extends ConstantContext {
 		public TerminalNode BLOCK() { return getToken(timcParser.BLOCK, 0); }
 		public BlockConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBlockConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class BoolConstContext extends ConstantContext {
 		public TerminalNode BOOL() { return getToken(timcParser.BOOL, 0); }
 		public BoolConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBoolConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class StringConstContext extends ConstantContext {
 		public TerminalNode STRING() { return getToken(timcParser.STRING, 0); }
 		public StringConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitStringConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NothingConstContext extends ConstantContext {
 		public TerminalNode NOTHING() { return getToken(timcParser.NOTHING, 0); }
 		public NothingConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitNothingConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ArrayConstContext extends ConstantContext {
 		public ArrayContext array() {
 			return getRuleContext(ArrayContext.class,0);
 		}
 		public ArrayConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitArrayConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class RelDirConstContext extends ConstantContext {
 		public TerminalNode RELDIR() { return getToken(timcParser.RELDIR, 0); }
 		public RelDirConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitRelDirConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NumberConstContext extends ConstantContext {
 		public TerminalNode NUMBER() { return getToken(timcParser.NUMBER, 0); }
 		public NumberConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitNumberConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AbsDirConstContext extends ConstantContext {
 		public TerminalNode ABSDIR() { return getToken(timcParser.ABSDIR, 0); }
 		public AbsDirConstContext(ConstantContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitAbsDirConst(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ConstantContext constant() throws RecognitionException {
@@ -1625,22 +1418,12 @@ public class timcParser extends Parser {
 			return getRuleContext(Build_in_funcContext.class,0);
 		}
 		public BuildInFuncContext(FunctionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBuildInFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class AnonFuncContext extends FunctionContext {
 		public Anonymous_functionContext anonymous_function() {
 			return getRuleContext(Anonymous_functionContext.class,0);
 		}
 		public AnonFuncContext(FunctionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitAnonFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class DclFuncContext extends FunctionContext {
 		public TerminalNode ID() { return getToken(timcParser.ID, 0); }
@@ -1651,11 +1434,6 @@ public class timcParser extends Parser {
 			return getRuleContext(ParametersContext.class,0);
 		}
 		public DclFuncContext(FunctionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitDclFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FunctionContext function() throws RecognitionException {
@@ -1745,11 +1523,6 @@ public class timcParser extends Parser {
 			return getToken(timcParser.ID, i);
 		}
 		public LambdaAnonFuncContext(Anonymous_functionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitLambdaAnonFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class StmtAnonFuncContext extends Anonymous_functionContext {
 		public StatementsContext statements() {
@@ -1759,11 +1532,6 @@ public class timcParser extends Parser {
 			return getRuleContext(ParametersContext.class,0);
 		}
 		public StmtAnonFuncContext(Anonymous_functionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitStmtAnonFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Anonymous_functionContext anonymous_function() throws RecognitionException {
@@ -1860,11 +1628,6 @@ public class timcParser extends Parser {
 			return getRuleContext(Expression_listContext.class,0);
 		}
 		public IdFuncAppContext(Function_applicationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitIdFuncApp(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ConstFuncAppContext extends Function_applicationContext {
 		public Anonymous_functionContext anonymous_function() {
@@ -1874,11 +1637,6 @@ public class timcParser extends Parser {
 			return getRuleContext(Expression_listContext.class,0);
 		}
 		public ConstFuncAppContext(Function_applicationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitConstFuncApp(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Function_applicationContext function_application() throws RecognitionException {
@@ -1968,104 +1726,54 @@ public class timcParser extends Parser {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public PrintFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitPrintFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class PositionFuncContext extends Build_in_funcContext {
 		public PositionFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitPositionFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class TurnFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TurnFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitTurnFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ForwardFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public ForwardFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitForwardFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class DownFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public DownFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitDownFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LengthFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public LengthFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitLengthFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class UpFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public UpFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitUpFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class FacingFuncContext extends Build_in_funcContext {
 		public FacingFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitFacingFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class BackwardFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public BackwardFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBackwardFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LookFuncContext extends Build_in_funcContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
 		public LookFuncContext(Build_in_funcContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitLookFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Build_in_funcContext build_in_func() throws RecognitionException {
@@ -2276,11 +1984,6 @@ public class timcParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_parameters; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitParameters(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ParametersContext parameters() throws RecognitionException {

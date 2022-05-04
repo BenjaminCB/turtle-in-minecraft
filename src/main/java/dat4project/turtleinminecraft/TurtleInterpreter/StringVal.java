@@ -12,12 +12,16 @@ public class StringVal extends TimcVal {
         return val;
     }
 
+    public static StringVal operation(StringVal a, StringVal b, int oper) {
+        switch (oper) {
+            default -> {
+                return new StringVal(a.getVal().concat(b.getVal()));
+            }
+        }
+    }
+
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof StringVal s) {
-            return val.equals(s.getVal());
-        } else {
-            return false;
-        }
+        return (o instanceof StringVal s) && val.equals(s.val);
     }
 }
