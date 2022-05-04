@@ -209,7 +209,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
         return null;
     }
-
+    // TODO: Compound assignment doesnt seem to work.
     @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
         String id = ctx.identifier().ID().getText();
         TimcVal v = symbolTable.get(id);
