@@ -657,15 +657,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
         TimcVal expr = visit(ctx.expression());
         BlockVal val = null;
-        Timc.LOGGER.info(expr.getType().name());
         if(expr instanceof RelDirVal dir) {
             val = new BlockVal(tcbEntity.look(dir.getVal()));
         }
         else {
             throw new TimcException(ctx.expression().getText() + ": expected reldir");
         }
-        Timc.LOGGER.info(val.getType().name());
-        Timc.LOGGER.info(val.getVal().toString());
         return val; 
     }
 
