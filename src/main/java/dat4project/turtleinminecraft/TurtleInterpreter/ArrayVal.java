@@ -5,6 +5,8 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.lang.model.util.ElementScanner14;
+
 public class ArrayVal extends TimcVal {
     private List<TimcVal> val;
     private TimcType elementType = null;
@@ -75,12 +77,44 @@ public class ArrayVal extends TimcVal {
         }
     }
 
-    public static ArrayVal operation(ArrayVal a, ArrayVal b, int oper) {
+    public static ArrayVal operation(ArrayVal a, TimcVal b, int oper) {
         // currently only has one operation
-        List<TimcVal> temp = new ArrayList<>(a.getVal().size() + b.getVal().size());
-        temp.addAll(a.getVal());
-        temp.addAll(b.getVal());
-        return new ArrayVal(temp);
+        
+        if (b instanceof ArrayVal c) {
+            
+            int leftNesting = 0;
+            TimcVal e = c.getVal().get(0);;
+            while (e instanceof ArrayVal d) {
+                e = d.getVal().get(0);
+                leftNesting++;
+            }
+            int RightNesting = 0;
+            e = a.getVal().get(0);;
+            while (e instanceof ArrayVal d) {
+                e = d.getVal().get(0);
+                leftNesting++;
+            }
+            if (leftNesting == RightNesting) {
+                List<TimcVal> temp = new ArrayList<>(a.getVal().size() + c.getVal().size());
+                temp.addAll(a.getVal());
+                temp.addAll(c.getVal());
+                return new ArrayVal(temp);
+            } else if (leftNesting == RightNesting - 1) {
+                a.add(c);
+                return a;
+            } else{
+                throw new TimcException("Not matching nesting in two arrays");
+            }         
+
+        } else {
+            a.add(b);
+            return a;
+        }
+    }
+    
+
+    public TimcType getInnerType(){
+        return elementType;
     }
 
     @Override
@@ -96,4 +130,6 @@ public class ArrayVal extends TimcVal {
         }
         return false;
     }
+
+
 }
