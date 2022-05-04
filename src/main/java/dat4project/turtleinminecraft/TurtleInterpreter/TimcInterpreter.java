@@ -8,28 +8,25 @@ import dat4project.turtleinminecraft.antlr.timcParser.StatementsContext;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-public class TimcInterpreter {
-    public final String prog;
-    public final timcLexer lexer;
-    public final timcParser parser;
-    public final ExecutionVisitor executor;
-    public final StatementsContext tree;
+public class TimcInterpreter implements Runnable {
+    private final StatementsContext tree;
+    private final ExecutionVisitor executor;
     private final TurtleCommandBlockEntity tcbEntity;
 
     public TimcInterpreter(String prog, TurtleCommandBlockEntity tcbEntity) {
-        this.prog = prog;
         this.tcbEntity = tcbEntity;
         executor = new ExecutionVisitor(tcbEntity);
 
         // could not recognize without the whole thing
         CharStream stream = org.antlr.v4.runtime.CharStreams.fromString(prog);
-        lexer = new timcLexer(stream);
+        timcLexer lexer = new timcLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        parser = new timcParser(tokens);
+        timcParser parser = new timcParser(tokens);
         tree = parser.statements();
     }
 
-    public void execute() {
+    @Override
+    public void run() {
         try {
             executor.visit(tree);
         } catch (TimcException e) {

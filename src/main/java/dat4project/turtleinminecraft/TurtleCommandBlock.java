@@ -32,7 +32,6 @@ public class TurtleCommandBlock extends BlockWithEntity{
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-
     }
 
     @Override

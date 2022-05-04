@@ -14,13 +14,11 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.MessageType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.state.property.Property;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -31,14 +29,18 @@ import net.minecraft.world.World;
 
 public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    
+    private Thread interpretThread;
+    private boolean rsLock;
+
     private BlockState activeBlockState;
     private BlockState savedBlockState;
     private BlockState turtleState;
     private Direction turtleDirection;
     private BlockPos turtlePos;
-    private boolean rsLatch;
-    public boolean placing;
-    public boolean breaking;
+    public boolean turtleBreaking;
+    public boolean turtlePlacing;
+    public int turtleTimeout;
 
     public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
         super(Timc.TurtleCommandBlockEntity, pos, state);
@@ -53,15 +55,18 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         // direction to nbt
         nbt.putInt("turtleDirection", turtleDirection.getId());
 
+        // timeout to nbt
+        nbt.putInt("turtleTimeout", turtleTimeout);
+
         // blockstates to nbt
         nbt.putInt("turtleState", Block.getRawIdFromState(turtleState));
         nbt.putInt("savedBlockState", Block.getRawIdFromState(savedBlockState));
         nbt.putInt("activeBlockState", Block.getRawIdFromState(activeBlockState));
 
         // booleans to nbt
-        nbt.putBoolean("placing", placing);
-        nbt.putBoolean("breaking", breaking);
-        nbt.putBoolean("rslatch", rsLatch);
+        nbt.putBoolean("placing", turtlePlacing);
+        nbt.putBoolean("breaking", turtleBreaking);
+        nbt.putBoolean("rslock", rsLock);
         
         super.writeNbt(nbt);
     }
@@ -75,15 +80,18 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         // direction from nbt
         turtleDirection = Direction.byId(nbt.getInt("turtleDirection"));
 
+        // timeout from nbt
+        turtleTimeout = nbt.getInt("turtleTimeout");
+
         // blockstates from nbt
         turtleState = Block.getStateFromRawId(nbt.getInt("turtleState"));
         savedBlockState = Block.getStateFromRawId(nbt.getInt("savedBlockState"));
         activeBlockState = Block.getStateFromRawId(nbt.getInt("activeBlockState"));
 
         // booleans from nbt
-        placing = nbt.getBoolean("placing");
-        breaking = nbt.getBoolean("breaking");
-        rsLatch = nbt.getBoolean("rslatch");
+        turtlePlacing = nbt.getBoolean("placing");
+        turtleBreaking = nbt.getBoolean("breaking");
+        rsLock = nbt.getBoolean("rslock");
 
         Inventories.readNbt(nbt, inventory);
     }
@@ -102,14 +110,17 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
         if(!world.isClient) {
-            if(world.isReceivingRedstonePower(pos) && !entity.rsLatch) {
+            if(world.isReceivingRedstonePower(pos) && !entity.rsLock) {
                 entity.world = world;
                 entity.initializeTurtle(pos, state);
                 entity.startTurtle();
             }
-            else if(!world.isReceivingRedstonePower(pos) && entity.rsLatch) {
+            else if(!world.isReceivingRedstonePower(pos) && entity.rsLock) {
+                if(entity.interpretThread != null) {
+                    entity.interpretThread.stop();
+                }
                 world.setBlockState(entity.turtlePos, entity.savedBlockState);
-                entity.rsLatch = false;
+                entity.rsLock = false;
             }
         }
     }
@@ -119,15 +130,16 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         turtlePos = pos.add(turtleDirection.getVector());
         turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
         setActiveBlock(Blocks.AIR);
-        placing = false;
-        breaking = false;
+        turtlePlacing = false;
+        turtleBreaking = false;
+        turtleTimeout = 500;
     }
 
     private void startTurtle() {
-        rsLatch = true;
+        rsLock = true;
         savedBlockState = world.getBlockState(turtlePos);
         world.setBlockState(turtlePos, turtleState);
-        
+
         ItemStack item = getStack(0);
         if(item.isOf(Items.WRITTEN_BOOK) || item.isOf(Items.WRITABLE_BOOK)) {
             // Read contents of book
@@ -136,10 +148,11 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
             for (int i = 0; i < nbtList.size(); ++i) {
                 prog = prog.concat(nbtList.getString(i));
             }
-            
-            // Run interpreter/executionvisitor
+            Timc.LOGGER.info(prog);
+            // Create interpreter and execute on separate thread
             TimcInterpreter timcInterpreter = new TimcInterpreter(prog, this);
-            timcInterpreter.execute();
+            interpretThread = new Thread(timcInterpreter, "TIMC_INTERPRETER_THREAD");
+            interpretThread.start();
         }
         else {
             print("Insert a book with TIMC code to execute");
@@ -147,13 +160,13 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
     }
 
     /**
-     * Sets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#placing} is {@value true}
+     * Sets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#turtlePlacing} is {@value true}
      * @param block New active block
      */
     public void setActiveBlock(Block block) { activeBlockState = block.getDefaultState(); }
 
     /**
-     * Gets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#placing} is {@value true}
+     * Gets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#turtlePlacing} is {@value true}
      * @return Current active block
      */
     public Block getActiveBlock() { return activeBlockState.getBlock(); }
@@ -163,12 +176,14 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
      * @param relDir Relative direction to move the turtle
      */
     public void move(RelDir relDir) {
+        timeout();
+
         BlockPos newPos = turtlePos.add(TimcUtil.relDirToMcDir(turtleDirection, relDir).getVector());
-        if (placing) {
+        if (turtlePlacing) {
             world.setBlockState(turtlePos, activeBlockState);
         }
         else {
-            if (breaking) {
+            if (turtleBreaking) {
                 world.breakBlock(newPos, true);
             }
             world.setBlockState(turtlePos, savedBlockState);
@@ -187,6 +202,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
             turtleDirection = TimcUtil.relDirToMcDir(turtleDirection, relDir);
             turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
             world.setBlockState(turtlePos, turtleState);
+            timeout();
         }
     }
 
@@ -198,6 +214,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         turtleDirection = TimcUtil.absDirToMcDir(absDir);
         turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
         world.setBlockState(turtlePos, turtleState);
+        timeout();
     }
 
     /**
@@ -242,4 +259,16 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
         return turtlePos;
     }
 
+    /**
+     * Sleeps the {@link #interpretThread} for {@link #turtleTimeout} milliseconds
+     */
+    private void timeout() {
+        if(Thread.currentThread() == interpretThread && turtleTimeout > 0) {
+            try {
+                Thread.sleep(turtleTimeout);
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+        }
+    }
 }
