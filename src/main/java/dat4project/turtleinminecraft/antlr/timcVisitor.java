@@ -308,13 +308,6 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAnonFunc(timcParser.AnonFuncContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code BuildInFunc}
-	 * labeled alternative in {@link timcParser#function}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBuildInFunc(timcParser.BuildInFuncContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code StmtAnonFunc}
 	 * labeled alternative in {@link timcParser#anonymous_function}.
 	 * @param ctx the parse tree
@@ -342,6 +335,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitConstFuncApp(timcParser.ConstFuncAppContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code BuildInFunc}
+	 * labeled alternative in {@link timcParser#function_application}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuildInFunc(timcParser.BuildInFuncContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ForwardFunc}
 	 * labeled alternative in {@link timcParser#build_in_func}.

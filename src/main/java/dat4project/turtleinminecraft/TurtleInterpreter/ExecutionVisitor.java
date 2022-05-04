@@ -1,5 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.Timc;
 import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
@@ -211,7 +212,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
         return null;
     }
-
+    // TODO: Compound assignment doesnt seem to work.
     @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
         String id = ctx.identifier().ID().getText();
         TimcVal v = symbolTable.get(id);
@@ -661,14 +662,15 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
         TimcVal expr = visit(ctx.expression());
         BlockVal val = null;
-
+        Timc.LOGGER.info(expr.getType().name());
         if(expr instanceof RelDirVal dir) {
             val = new BlockVal(tcbEntity.look(dir.getVal()));
         }
         else {
             throw new TimcException(ctx.expression().getText() + ": expected reldir");
         }
-
+        Timc.LOGGER.info(val.getType().name());
+        Timc.LOGGER.info(val.getVal().toString());
         return val; 
     }
 
