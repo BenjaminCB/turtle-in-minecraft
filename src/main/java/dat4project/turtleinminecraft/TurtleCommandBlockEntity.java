@@ -3,6 +3,8 @@ package dat4project.turtleinminecraft;
 import dat4project.turtleinminecraft.TurtleInterpreter.TimcInterpreter;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal.AbsDir;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerStopping;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,6 +21,7 @@ import net.minecraft.network.MessageType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -27,9 +30,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
+public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory, ServerStopping {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     
+    private static int interpretThreadCounter = 1;
     private Thread interpretThread;
     private boolean rsLock;
 
@@ -44,6 +48,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 
     public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
         super(Timc.TurtleCommandBlockEntity, pos, state);
+        ServerLifecycleEvents.SERVER_STOPPING.register(this);
     }
 
     @Override public void writeNbt(NbtCompound nbt) {
@@ -104,6 +109,10 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
 	}
 
+    @Override public void onServerStopping(MinecraftServer server) {
+        stopInterpretThread();
+    }
+
     public DefaultedList<ItemStack> getItems() {
         return inventory;
     }
@@ -116,9 +125,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
                 entity.startTurtle();
             }
             else if(!world.isReceivingRedstonePower(pos) && entity.rsLock) {
-                if(entity.interpretThread != null) {
-                    entity.interpretThread.stop();
-                }
+                entity.stopInterpretThread();
                 world.setBlockState(entity.turtlePos, entity.savedBlockState);
                 entity.rsLock = false;
             }
@@ -142,20 +149,38 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 
         ItemStack item = getStack(0);
         if(item.isOf(Items.WRITTEN_BOOK) || item.isOf(Items.WRITABLE_BOOK)) {
-            // Read contents of book
             String prog = new String();
             NbtList nbtList = item.getNbt().getList("pages", 8);
             for (int i = 0; i < nbtList.size(); ++i) {
                 prog = prog.concat(nbtList.getString(i));
             }
-            Timc.LOGGER.info(prog);
-            // Create interpreter and execute on separate thread
-            TimcInterpreter timcInterpreter = new TimcInterpreter(prog, this);
-            interpretThread = new Thread(timcInterpreter, "TIMC_INTERPRETER_THREAD");
-            interpretThread.start();
+
+            startInterpretThread(new TimcInterpreter(prog, this));
         }
         else {
             print("Insert a book with TIMC code to execute");
+        }
+    }
+
+    /**
+     * Creates, assigns and starts a new Thread with the Runnable {@link TimcInterpreter} task to {@link #interpretThread}
+     * @param timcInterpreter Interpreter instance to execute on separate thread
+     */
+    private void startInterpretThread(TimcInterpreter timcInterpreter) {
+        interpretThread = new Thread(timcInterpreter, "TIMC_INTERPRETER_" + interpretThreadCounter++);
+        interpretThread.start();
+    }
+
+    /**
+     * Stops the current {@link #interpretThread} if it exists and is running
+     */
+    private void stopInterpretThread() {
+        try {
+            if(interpretThread != null && interpretThread.isAlive()) {
+                interpretThread.stop();
+            }
+        } catch (Exception e) {
+            //TODO: handle exception
         }
     }
 
@@ -199,10 +224,10 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
      */
     public void turn(RelDir relDir) {
         if(relDir != RelDir.UP && relDir != RelDir.DOWN) {
+            timeout();
             turtleDirection = TimcUtil.relDirToMcDir(turtleDirection, relDir);
             turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
             world.setBlockState(turtlePos, turtleState);
-            timeout();
         }
     }
 
@@ -211,10 +236,10 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
      * @param absDir Absolute direction to turn the Turtle to
      */
     public void turn(AbsDir absDir) {
+        timeout();
         turtleDirection = TimcUtil.absDirToMcDir(absDir);
         turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
         world.setBlockState(turtlePos, turtleState);
-        timeout();
     }
 
     /**
@@ -265,10 +290,14 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
     private void timeout() {
         if(Thread.currentThread() == interpretThread && turtleTimeout > 0) {
             try {
+                while(MinecraftClient.getInstance().isPaused()) {
+                    Thread.sleep(50);
+                }
                 Thread.sleep(turtleTimeout);
             } catch (Exception e) {
                 //TODO: handle exception
             }
         }
     }
+
 }
