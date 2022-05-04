@@ -1,9 +1,8 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import org.checkerframework.checker.units.qual.A;
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ArrayVal extends TimcVal {
@@ -17,7 +16,7 @@ public class ArrayVal extends TimcVal {
 
     public ArrayVal(List<TimcVal> val) {
         this();
-        for (TimcVal v : val) add(v);
+        addAll(val);
     }
 
     public List<TimcVal> getVal() {
@@ -25,7 +24,7 @@ public class ArrayVal extends TimcVal {
     }
 
     public TimcVal getNested(List<TimcVal> is) {
-        if (is.isEmpty()) System.exit(0);
+        if (is.isEmpty()) throw new TimcException("not index to get value");
         TimcVal i = is.remove(0);
         TimcVal res = null;
         if (i instanceof NumberVal n) {
@@ -34,10 +33,10 @@ public class ArrayVal extends TimcVal {
             } else if (val.get(n.getVal()) instanceof ArrayVal a) {
                 res = a.getNested(is);
             } else {
-                System.exit(0);
+                throw new TimcException("too many indexes applied");
             }
         } else {
-            System.exit(0);
+            throw new TimcException("index is not a number");
         }
 
         return res;
@@ -45,7 +44,7 @@ public class ArrayVal extends TimcVal {
 
     public void add(TimcVal val) {
         if (this.val.isEmpty()) elementType = val.getType();
-        if (elementType != val.getType()) System.exit(0);
+        if (elementType != val.getType()) throw new TimcException("type mismatch in array add");
         this.val.add(val);
     }
 
@@ -54,22 +53,25 @@ public class ArrayVal extends TimcVal {
     }
 
     public void setNested(List<TimcVal> is, TimcVal val) {
-        if (is.isEmpty()) System.exit(0);
+        if (is.isEmpty()) throw new TimcException("not index to set value");
         if (is.remove(0) instanceof NumberVal n) {
             if (is.size() == 1) {
-                if (val.getType() != elementType) System.exit(0);
-                if (n.getVal() > this.val.size()) System.exit(0);
+                if (val.getType() != elementType)
+                    throw new TimcException("tried to set value with incorrect type");
+                if (n.getVal() > this.val.size())
+                    throw new TimcException("tried to set index that is to large");
+
                 this.val.set(n.getVal(), val);
             } else {
                 if (this.val.get(n.getVal()) instanceof ArrayVal a) {
                     is.remove(0);
                     a.setNested(is, val);
                 } else {
-                    System.exit(0);
+                    throw new TimcException("tried to set value in non array");
                 }
             }
         } else {
-            System.exit(0);
+            throw new TimcException("index is not a number");
         }
     }
 
@@ -89,14 +91,9 @@ public class ArrayVal extends TimcVal {
                 for (int i = 0; i < a; i++) {
                     if(!arr.val.get(i).equals(this.val.get(i))) return false;
                 }
-            } else {
-                System.exit(0);
-                return false;
+                return true;
             }
-        } else {
-            System.exit(0);
-            return false;
         }
-        return true;
+        return false;
     }
 }

@@ -1,19 +1,52 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import java.util.Deque;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
+import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 
-public class SymbolTable<T> {
+import java.util.*;
+
+public class SymbolTable {
     // not using a stack as the iterator is in the wrong order
-    private Deque<Map<String, T>> tables;
-    public T ret;
+    private Deque<Map<String, TimcVal>> tables;
+    private final List<String> restrictedWords = Arrays.asList(
+            "if",
+            "do",
+            "end",
+            "while",
+            "foreach",
+            "repeat",
+            "break",
+            "return",
+            "function",
+            "fn",
+            "length",
+            "switch",
+            "case",
+            "forward",
+            "backward",
+            "up",
+            "down",
+            "look",
+            "print",
+            "facing",
+            "position",
+            "turn"
+    );
 
-    public SymbolTable() {
+    private final List<String> builtInVariables = Arrays.asList(
+            "PLACING",
+            "BREAKING",
+            "ACTIVE_BLOCK"
+    );
+
+    public TimcVal ret;
+    private final TurtleCommandBlockEntity tcbEntity;
+
+    public SymbolTable(TurtleCommandBlockEntity tcbEntity) {
+        this.tcbEntity = tcbEntity;
         tables = new ArrayDeque<>();
         tables.push(new HashMap<>());
-        ret = null;
+        ret = new NothingVal();
     }
 
     public void enterScope() {
@@ -24,27 +57,67 @@ public class SymbolTable<T> {
         tables.pop();
     }
 
-    public void put(String name, T val) {
-        tables.peek().put(name, val);
+    public void put(String name, TimcVal val) {
+        if (restrictedWords.contains(name)) {
+            throw new TimcException(name + ": is a restricted word");
+        } else if (builtInVariables.contains(name)) {
+            switch (name) {
+                case "PLACING" -> {
+                    if (val instanceof BoolVal b) {
+                        tcbEntity.placing = b.getVal();
+                    } else {
+                        throw new TimcException("tried to overwrite PLACING with non bool");
+                    }
+                }
+                case "BREAKING" -> {
+                    if (val instanceof BoolVal b) {
+                        tcbEntity.breaking = b.getVal();
+                    } else {
+                        throw new TimcException("tried to overwrite EATING with non bool");
+                    }
+                }
+                default -> {
+                    if (val instanceof BlockVal b) {
+                        tcbEntity.setActiveBlock(b.getVal());;
+                    } else {
+                        throw new TimcException("tried to overwrite ACTIVE_BLOCK with non block");
+                    }
+                }
+            }
+        } else {
+            tables.peek().put(name, val);
+        }
     }
 
     // go through the call stack looking for the symbol
     // if the symbol is not found returns null
-    public T get(String name) {
-        T res = null;
+    public TimcVal get(String name) {
+        TimcVal res = null;
 
-        for (Map<String, T> table : tables) {
-            if (table.containsKey(name)) {
-                res = table.get(name);
-                break;
+        if (builtInVariables.contains(name)) {
+            switch (name) {
+                case "PLACING" -> {
+                    res = new BoolVal(tcbEntity.placing);
+                }
+                case "BREAKING" -> {
+                    res = new BoolVal(tcbEntity.breaking);
+                }
+                default -> {
+                    res = new BlockVal(tcbEntity.getActiveBlock());
+                }
             }
+        } else {
+            for (Map<String, TimcVal> table : tables) {
+                if (table.containsKey(name)) {
+                    res = table.get(name);
+                    break;
+                }
+            }
+
+            if (res == null) throw new TimcException(name + ": is undefined");
         }
 
         return res;
-    }
-
-    public Boolean contains(String name) {
-        return get(name) != null;
     }
 }
 

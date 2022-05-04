@@ -284,14 +284,14 @@ public class timcBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements t
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitArrayConst(timcParser.ArrayConstContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNothingConst(timcParser.NothingConstContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitNothingConst(timcParser.NothingConstContext ctx) { return visitChildren(ctx); }
+	@Override public T visitArrayConst(timcParser.ArrayConstContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

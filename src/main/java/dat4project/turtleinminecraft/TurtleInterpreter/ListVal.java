@@ -40,22 +40,13 @@ public class ListVal extends TimcVal {
     protected boolean timcValEquals(TimcVal o) {
         if(o instanceof ListVal arr){
             int a = arr.val.size();
-            if(a == this.val.size()){
-
+            if(a == this.val.size()) {
                 for (int i = 0; i < a; i++) {
                     if(!arr.val.get(i).equals(this.val.get(i))) return false;
                 }
-
-            } else {   
-                System.exit(0);
-                return false;
-            }
-
-            
-        }else {   
-            System.exit(0);
-            return false;
-        }
-        return true;
+                return true;
+            }  
+        } 
+        return false;
     }
 }

@@ -27,11 +27,11 @@ public class NumberVal extends TimcVal {
                 return new NumberVal(n.getVal() * m.getVal());
             }
             case timcParser.DIV -> {
-                if (m.getVal() == 0) throw new ArithmeticException("division by zero");
+                if (m.getVal() == 0) throw new TimcException("division by zero");
                 return new NumberVal(n.getVal() / m.getVal());
             }
             case timcParser.MOD -> {
-                if (m.getVal() == 0) throw new ArithmeticException("division by zero");
+                if (m.getVal() == 0) throw new TimcException("division by zero");
                 return new NumberVal(n.getVal() % m.getVal());
             }
             default -> {
@@ -50,10 +50,6 @@ public class NumberVal extends TimcVal {
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof NumberVal n) {
-            return val == n.getVal();
-        } else {
-            return false;
-        }
+        return (o instanceof NumberVal n) && (val == n.val);
     }
 }

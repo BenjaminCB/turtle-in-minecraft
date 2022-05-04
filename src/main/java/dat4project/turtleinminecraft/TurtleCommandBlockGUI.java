@@ -8,10 +8,10 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandlerContext;
 
 
-public class ExampleGUI extends SyncedGuiDescription {
+public class TurtleCommandBlockGUI extends SyncedGuiDescription {
     private static final int INV_SIZE = 1;
 
-    public ExampleGUI(int syncId, PlayerInventory playerInventory, ScreenHandlerContext ctx) {
+    public TurtleCommandBlockGUI(int syncId, PlayerInventory playerInventory, ScreenHandlerContext ctx) {
         super(Timc.SCREEN_HANDLER_TYPE, syncId, playerInventory, getBlockInventory(ctx, INV_SIZE), getBlockPropertyDelegate(ctx));
     
         WGridPanel root = new WGridPanel();
