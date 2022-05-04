@@ -446,7 +446,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     // TODO: remove leading and trailing 
     @Override public TimcVal visitStringConst(timcParser.StringConstContext ctx) {
-        return new StringVal(ctx.STRING().getText());
+        String string = ctx.STRING().getText();
+        return new StringVal(string.substring(1, string.length()-1));
     }
 
     @Override public TimcVal visitBlockConst(timcParser.BlockConstContext ctx) {
