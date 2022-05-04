@@ -100,20 +100,20 @@ constant:
 	| ABSDIR				        # AbsDirConst
 	| NOTHING                       # NothingConst
 	| array				        	# ArrayConst
-	| anonymous_function	                        # AnonFuncConst;
+	| anonymous_function	        # AnonFuncConst;
 
 function:
 	'function' ID '(' parameters? ')' 'do' statements 'end' # DclFunc
-	| anonymous_function				        # AnonFunc
-	| build_in_func 							# BuildInFunc;
+	| anonymous_function				        			# AnonFunc;
 
 anonymous_function:
 	'function' '(' parameters? ')' 'do' statements 'end'	# StmtAnonFunc
-	| 'fn' ID* '->' expression				# LambdaAnonFunc;
+	| 'fn' ID* '->' expression								# LambdaAnonFunc;
 
 function_application:
-	ID '(' expression_list? ')'					# IdFuncApp
-	| '(' anonymous_function ')' '(' expression_list? ')'	        # ConstFuncApp;
+	ID '(' expression_list? ')'										# IdFuncApp
+	| '(' anonymous_function ')' '(' expression_list? ')'	        # ConstFuncApp
+	| build_in_func 												# BuildInFunc;
 
 build_in_func:
 	'forward' '(' expression? ')'			# ForwardFunc

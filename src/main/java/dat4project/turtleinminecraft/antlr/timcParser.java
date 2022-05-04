@@ -147,7 +147,7 @@ public class timcParser extends Parser {
 			setState(41);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+			while (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 				{
 				{
 				setState(31);
@@ -1620,17 +1620,6 @@ public class timcParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class BuildInFuncContext extends FunctionContext {
-		public Build_in_funcContext build_in_func() {
-			return getRuleContext(Build_in_funcContext.class,0);
-		}
-		public BuildInFuncContext(FunctionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBuildInFunc(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class AnonFuncContext extends FunctionContext {
 		public Anonymous_functionContext anonymous_function() {
 			return getRuleContext(Anonymous_functionContext.class,0);
@@ -1663,7 +1652,7 @@ public class timcParser extends Parser {
 		enterRule(_localctx, 20, RULE_function);
 		int _la;
 		try {
-			setState(236);
+			setState(235);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,19,_ctx) ) {
 			case 1:
@@ -1702,14 +1691,6 @@ public class timcParser extends Parser {
 				{
 				setState(234);
 				anonymous_function();
-				}
-				break;
-			case 3:
-				_localctx = new BuildInFuncContext(_localctx);
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(235);
-				build_in_func();
 				}
 				break;
 			}
@@ -1771,34 +1752,34 @@ public class timcParser extends Parser {
 		enterRule(_localctx, 22, RULE_anonymous_function);
 		int _la;
 		try {
-			setState(257);
+			setState(256);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__18:
 				_localctx = new StmtAnonFuncContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(238);
+				setState(237);
 				match(T__18);
-				setState(239);
+				setState(238);
 				match(T__16);
-				setState(241);
+				setState(240);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				if (_la==ID) {
 					{
-					setState(240);
+					setState(239);
 					parameters();
 					}
 				}
 
-				setState(243);
+				setState(242);
 				match(T__17);
-				setState(244);
+				setState(243);
 				match(T__6);
-				setState(245);
+				setState(244);
 				statements();
-				setState(246);
+				setState(245);
 				match(T__8);
 				}
 				break;
@@ -1806,25 +1787,25 @@ public class timcParser extends Parser {
 				_localctx = new LambdaAnonFuncContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(248);
+				setState(247);
 				match(T__19);
-				setState(252);
+				setState(251);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==ID) {
 					{
 					{
-					setState(249);
+					setState(248);
 					match(ID);
 					}
 					}
-					setState(254);
+					setState(253);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(255);
+				setState(254);
 				match(T__20);
-				setState(256);
+				setState(255);
 				expression(0);
 				}
 				break;
@@ -1852,6 +1833,17 @@ public class timcParser extends Parser {
 		public Function_applicationContext() { }
 		public void copyFrom(Function_applicationContext ctx) {
 			super.copyFrom(ctx);
+		}
+	}
+	public static class BuildInFuncContext extends Function_applicationContext {
+		public Build_in_funcContext build_in_func() {
+			return getRuleContext(Build_in_funcContext.class,0);
+		}
+		public BuildInFuncContext(Function_applicationContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof timcVisitor ) return ((timcVisitor<? extends T>)visitor).visitBuildInFunc(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 	public static class IdFuncAppContext extends Function_applicationContext {
@@ -1893,21 +1885,21 @@ public class timcParser extends Parser {
 				_localctx = new IdFuncAppContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(259);
+				setState(258);
 				match(ID);
-				setState(260);
+				setState(259);
 				match(T__16);
-				setState(262);
+				setState(261);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
-					setState(261);
+					setState(260);
 					expression_list();
 					}
 				}
 
-				setState(264);
+				setState(263);
 				match(T__17);
 				}
 				break;
@@ -1915,26 +1907,43 @@ public class timcParser extends Parser {
 				_localctx = new ConstFuncAppContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
+				setState(264);
+				match(T__16);
 				setState(265);
-				match(T__16);
-				setState(266);
 				anonymous_function();
-				setState(267);
+				setState(266);
 				match(T__17);
-				setState(268);
+				setState(267);
 				match(T__16);
-				setState(270);
+				setState(269);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
-					setState(269);
+					setState(268);
 					expression_list();
 					}
 				}
 
-				setState(272);
+				setState(271);
 				match(T__17);
+				}
+				break;
+			case T__21:
+			case T__22:
+			case T__23:
+			case T__24:
+			case T__25:
+			case T__26:
+			case T__27:
+			case T__28:
+			case T__29:
+			case T__30:
+				_localctx = new BuildInFuncContext(_localctx);
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(273);
+				build_in_func();
 				}
 				break;
 			default:
@@ -2087,7 +2096,7 @@ public class timcParser extends Parser {
 				setState(279);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(278);
 					expression(0);
@@ -2109,7 +2118,7 @@ public class timcParser extends Parser {
 				setState(285);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(284);
 					expression(0);
@@ -2131,7 +2140,7 @@ public class timcParser extends Parser {
 				setState(291);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(290);
 					expression(0);
@@ -2153,7 +2162,7 @@ public class timcParser extends Parser {
 				setState(297);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(296);
 					expression(0);
@@ -2203,7 +2212,7 @@ public class timcParser extends Parser {
 				setState(313);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
+				if (((((_la - 1)) & ~0x3f) == 0 && ((1L << (_la - 1)) & ((1L << (T__0 - 1)) | (1L << (T__16 - 1)) | (1L << (T__18 - 1)) | (1L << (T__19 - 1)) | (1L << (T__21 - 1)) | (1L << (T__22 - 1)) | (1L << (T__23 - 1)) | (1L << (T__24 - 1)) | (1L << (T__25 - 1)) | (1L << (T__26 - 1)) | (1L << (T__27 - 1)) | (1L << (T__28 - 1)) | (1L << (T__29 - 1)) | (1L << (T__30 - 1)) | (1L << (NUMBER - 1)) | (1L << (BOOL - 1)) | (1L << (STRING - 1)) | (1L << (NOTHING - 1)) | (1L << (BLOCK - 1)) | (1L << (RELDIR - 1)) | (1L << (ABSDIR - 1)) | (1L << (NOT - 1)) | (1L << (SUB - 1)) | (1L << (ID - 1)))) != 0)) {
 					{
 					setState(312);
 					expression(0);
@@ -2367,10 +2376,10 @@ public class timcParser extends Parser {
 		"\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n"+
 		"\3\n\3\n\7\n\u00d2\n\n\f\n\16\n\u00d5\13\n\3\13\3\13\3\13\3\13\3\13\3"+
 		"\13\3\13\3\13\3\13\5\13\u00e0\n\13\3\f\3\f\3\f\3\f\5\f\u00e6\n\f\3\f\3"+
-		"\f\3\f\3\f\3\f\3\f\3\f\5\f\u00ef\n\f\3\r\3\r\3\r\5\r\u00f4\n\r\3\r\3\r"+
-		"\3\r\3\r\3\r\3\r\3\r\7\r\u00fd\n\r\f\r\16\r\u0100\13\r\3\r\3\r\5\r\u0104"+
-		"\n\r\3\16\3\16\3\16\5\16\u0109\n\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16"+
-		"\u0111\n\16\3\16\3\16\5\16\u0115\n\16\3\17\3\17\3\17\5\17\u011a\n\17\3"+
+		"\f\3\f\3\f\3\f\3\f\5\f\u00ee\n\f\3\r\3\r\3\r\5\r\u00f3\n\r\3\r\3\r\3\r"+
+		"\3\r\3\r\3\r\3\r\7\r\u00fc\n\r\f\r\16\r\u00ff\13\r\3\r\3\r\5\r\u0103\n"+
+		"\r\3\16\3\16\3\16\5\16\u0108\n\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u0110"+
+		"\n\16\3\16\3\16\3\16\5\16\u0115\n\16\3\17\3\17\3\17\5\17\u011a\n\17\3"+
 		"\17\3\17\3\17\3\17\5\17\u0120\n\17\3\17\3\17\3\17\3\17\5\17\u0126\n\17"+
 		"\3\17\3\17\3\17\3\17\5\17\u012c\n\17\3\17\3\17\3\17\3\17\3\17\3\17\3\17"+
 		"\3\17\3\17\3\17\3\17\3\17\3\17\3\17\5\17\u013c\n\17\3\17\3\17\3\17\3\17"+
@@ -2379,7 +2388,7 @@ public class timcParser extends Parser {
 		"\20\22\24\26\30\32\34\36\2\b\3\2<A\3\2+,\3\2.\60\4\2,,\61\62\3\2\63\66"+
 		"\3\2\678\2\u0186\2 \3\2\2\2\4\61\3\2\2\2\6<\3\2\2\2\b\u0081\3\2\2\2\n"+
 		"\u008f\3\2\2\2\f\u0091\3\2\2\2\16\u009b\3\2\2\2\20\u00a3\3\2\2\2\22\u00b5"+
-		"\3\2\2\2\24\u00df\3\2\2\2\26\u00ee\3\2\2\2\30\u0103\3\2\2\2\32\u0114\3"+
+		"\3\2\2\2\24\u00df\3\2\2\2\26\u00ed\3\2\2\2\30\u0102\3\2\2\2\32\u0114\3"+
 		"\2\2\2\34\u0149\3\2\2\2\36\u014b\3\2\2\2 +\7\3\2\2!&\5\22\n\2\"#\7\4\2"+
 		"\2#%\5\22\n\2$\"\3\2\2\2%(\3\2\2\2&$\3\2\2\2&\'\3\2\2\2\'*\3\2\2\2(&\3"+
 		"\2\2\2)!\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,.\3\2\2\2-+\3\2\2\2./\7"+
@@ -2436,21 +2445,21 @@ public class timcParser extends Parser {
 		"\2\u00e2\u00e3\7B\2\2\u00e3\u00e5\7\23\2\2\u00e4\u00e6\5\36\20\2\u00e5"+
 		"\u00e4\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e7\3\2\2\2\u00e7\u00e8\7\24"+
 		"\2\2\u00e8\u00e9\7\t\2\2\u00e9\u00ea\5\4\3\2\u00ea\u00eb\7\13\2\2\u00eb"+
-		"\u00ef\3\2\2\2\u00ec\u00ef\5\30\r\2\u00ed\u00ef\5\34\17\2\u00ee\u00e1"+
-		"\3\2\2\2\u00ee\u00ec\3\2\2\2\u00ee\u00ed\3\2\2\2\u00ef\27\3\2\2\2\u00f0"+
-		"\u00f1\7\25\2\2\u00f1\u00f3\7\23\2\2\u00f2\u00f4\5\36\20\2\u00f3\u00f2"+
-		"\3\2\2\2\u00f3\u00f4\3\2\2\2\u00f4\u00f5\3\2\2\2\u00f5\u00f6\7\24\2\2"+
-		"\u00f6\u00f7\7\t\2\2\u00f7\u00f8\5\4\3\2\u00f8\u00f9\7\13\2\2\u00f9\u0104"+
-		"\3\2\2\2\u00fa\u00fe\7\26\2\2\u00fb\u00fd\7B\2\2\u00fc\u00fb\3\2\2\2\u00fd"+
-		"\u0100\3\2\2\2\u00fe\u00fc\3\2\2\2\u00fe\u00ff\3\2\2\2\u00ff\u0101\3\2"+
-		"\2\2\u0100\u00fe\3\2\2\2\u0101\u0102\7\27\2\2\u0102\u0104\5\22\n\2\u0103"+
-		"\u00f0\3\2\2\2\u0103\u00fa\3\2\2\2\u0104\31\3\2\2\2\u0105\u0106\7B\2\2"+
-		"\u0106\u0108\7\23\2\2\u0107\u0109\5\20\t\2\u0108\u0107\3\2\2\2\u0108\u0109"+
-		"\3\2\2\2\u0109\u010a\3\2\2\2\u010a\u0115\7\24\2\2\u010b\u010c\7\23\2\2"+
-		"\u010c\u010d\5\30\r\2\u010d\u010e\7\24\2\2\u010e\u0110\7\23\2\2\u010f"+
-		"\u0111\5\20\t\2\u0110\u010f\3\2\2\2\u0110\u0111\3\2\2\2\u0111\u0112\3"+
-		"\2\2\2\u0112\u0113\7\24\2\2\u0113\u0115\3\2\2\2\u0114\u0105\3\2\2\2\u0114"+
-		"\u010b\3\2\2\2\u0115\33\3\2\2\2\u0116\u0117\7\30\2\2\u0117\u0119\7\23"+
+		"\u00ee\3\2\2\2\u00ec\u00ee\5\30\r\2\u00ed\u00e1\3\2\2\2\u00ed\u00ec\3"+
+		"\2\2\2\u00ee\27\3\2\2\2\u00ef\u00f0\7\25\2\2\u00f0\u00f2\7\23\2\2\u00f1"+
+		"\u00f3\5\36\20\2\u00f2\u00f1\3\2\2\2\u00f2\u00f3\3\2\2\2\u00f3\u00f4\3"+
+		"\2\2\2\u00f4\u00f5\7\24\2\2\u00f5\u00f6\7\t\2\2\u00f6\u00f7\5\4\3\2\u00f7"+
+		"\u00f8\7\13\2\2\u00f8\u0103\3\2\2\2\u00f9\u00fd\7\26\2\2\u00fa\u00fc\7"+
+		"B\2\2\u00fb\u00fa\3\2\2\2\u00fc\u00ff\3\2\2\2\u00fd\u00fb\3\2\2\2\u00fd"+
+		"\u00fe\3\2\2\2\u00fe\u0100\3\2\2\2\u00ff\u00fd\3\2\2\2\u0100\u0101\7\27"+
+		"\2\2\u0101\u0103\5\22\n\2\u0102\u00ef\3\2\2\2\u0102\u00f9\3\2\2\2\u0103"+
+		"\31\3\2\2\2\u0104\u0105\7B\2\2\u0105\u0107\7\23\2\2\u0106\u0108\5\20\t"+
+		"\2\u0107\u0106\3\2\2\2\u0107\u0108\3\2\2\2\u0108\u0109\3\2\2\2\u0109\u0115"+
+		"\7\24\2\2\u010a\u010b\7\23\2\2\u010b\u010c\5\30\r\2\u010c\u010d\7\24\2"+
+		"\2\u010d\u010f\7\23\2\2\u010e\u0110\5\20\t\2\u010f\u010e\3\2\2\2\u010f"+
+		"\u0110\3\2\2\2\u0110\u0111\3\2\2\2\u0111\u0112\7\24\2\2\u0112\u0115\3"+
+		"\2\2\2\u0113\u0115\5\34\17\2\u0114\u0104\3\2\2\2\u0114\u010a\3\2\2\2\u0114"+
+		"\u0113\3\2\2\2\u0115\33\3\2\2\2\u0116\u0117\7\30\2\2\u0117\u0119\7\23"+
 		"\2\2\u0118\u011a\5\22\n\2\u0119\u0118\3\2\2\2\u0119\u011a\3\2\2\2\u011a"+
 		"\u011b\3\2\2\2\u011b\u014a\7\24\2\2\u011c\u011d\7\31\2\2\u011d\u011f\7"+
 		"\23\2\2\u011e\u0120\5\22\n\2\u011f\u011e\3\2\2\2\u011f\u0120\3\2\2\2\u0120"+
@@ -2473,7 +2482,7 @@ public class timcParser extends Parser {
 		"\u014c\u014d\7\4\2\2\u014d\u014f\7B\2\2\u014e\u014c\3\2\2\2\u014f\u0152"+
 		"\3\2\2\2\u0150\u014e\3\2\2\2\u0150\u0151\3\2\2\2\u0151\37\3\2\2\2\u0152"+
 		"\u0150\3\2\2\2#&+\63<BLRu}\u0081\u008f\u0098\u00a0\u00a8\u00b5\u00d1\u00d3"+
-		"\u00df\u00e5\u00ee\u00f3\u00fe\u0103\u0108\u0110\u0114\u0119\u011f\u0125"+
+		"\u00df\u00e5\u00ed\u00f2\u00fd\u0102\u0107\u010f\u0114\u0119\u011f\u0125"+
 		"\u012b\u013b\u0149\u0150";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
