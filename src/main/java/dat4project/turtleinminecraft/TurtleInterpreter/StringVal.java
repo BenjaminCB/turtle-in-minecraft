@@ -24,4 +24,9 @@ public class StringVal extends TimcVal {
     protected boolean timcValEquals(TimcVal o) {
         return (o instanceof StringVal s) && val.equals(s.val);
     }
+
+    @Override
+    protected String timcToString() {
+        return val;
+    }
 }

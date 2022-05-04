@@ -96,4 +96,9 @@ public class ArrayVal extends TimcVal {
         }
         return false;
     }
+
+    @Override
+    protected String timcToString() {
+        return "array:" + val.toString();
+    }
 }

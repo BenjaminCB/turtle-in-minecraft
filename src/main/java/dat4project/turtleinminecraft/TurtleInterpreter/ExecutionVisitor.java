@@ -680,11 +680,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
-        if (val instanceof StringVal s) {
-            tcbEntity.print(s.getVal());
-        } else {
-            throw new TimcException(ctx.expression().getText() + ": expected string");
-        }
+        tcbEntity.print(val.toString());
         return null;
     }
 

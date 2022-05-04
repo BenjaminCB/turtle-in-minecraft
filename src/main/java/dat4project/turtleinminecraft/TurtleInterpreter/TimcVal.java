@@ -19,4 +19,11 @@ public abstract class TimcVal {
     }
 
     protected abstract boolean timcValEquals(TimcVal o);
+
+    @Override
+    public String toString() {
+        return timcToString();
+    }
+
+    protected abstract String timcToString();
 }

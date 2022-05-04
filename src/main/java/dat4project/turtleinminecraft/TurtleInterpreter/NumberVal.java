@@ -4,14 +4,14 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.antlr.timcParser;
 
 public class NumberVal extends TimcVal {
-    private int val;
+    private Integer val;
 
-    public NumberVal(int val) {
+    public NumberVal(Integer val) {
         super(TimcType.NUMBER);
         this.val = val;
     }
 
-    public int getVal() {
+    public Integer getVal() {
         return val;
     }
 
@@ -51,5 +51,10 @@ public class NumberVal extends TimcVal {
     @Override
     protected boolean timcValEquals(TimcVal o) {
         return (o instanceof NumberVal n) && (val == n.val);
+    }
+
+    @Override
+    protected String timcToString() {
+        return val.toString();
     }
 }

@@ -49,4 +49,9 @@ public class ListVal extends TimcVal {
         } 
         return false;
     }
+
+    @Override
+    protected String timcToString() {
+        return "list:" + val.toString();
+    }
 }
