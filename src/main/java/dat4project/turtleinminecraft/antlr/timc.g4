@@ -88,7 +88,8 @@ expression_list: expression (',' expression)* ;
 expression:
 	'(' expression ')'										# ParenExpr
 	| expression '[' expression ']'                         # IndexExpr
-	| function_application									# FuncAppExpr
+	| expression '(' expression_list? ')'                   # FuncAppExpr
+	| build_in_func                                         # BuildInFuncExpr
 	| <assoc = right> op = (NOT | SUB) expression			# UnaryExpr
 	| <assoc = right> expression POWER expression			# PowerExpr
 	| expression op = (MULT | DIV | MOD) expression			# FactorExpr
@@ -118,11 +119,6 @@ function:
 anonymous_function:
 	'function' '(' parameters? ')' 'do' statements 'end'	# StmtAnonFunc
 	| 'fn' ID* '->' expression								# LambdaAnonFunc;
-
-function_application:
-	ID '(' expression_list? ')'										# IdFuncApp
-	| '(' anonymous_function ')' '(' expression_list? ')'	        # ConstFuncApp
-	| build_in_func 												# BuildInFunc;
 
 build_in_func:
 	'forward' '(' expression? ')'			# ForwardFunc
