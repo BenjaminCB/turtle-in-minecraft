@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.lang.model.util.ElementScanner14;
 
+import org.checkerframework.checker.units.qual.C;
+import org.checkerframework.checker.units.qual.Length;
+
 public class ArrayVal extends TimcVal {
     private List<TimcVal> val;
     private TimcType elementType = null;
@@ -79,32 +82,49 @@ public class ArrayVal extends TimcVal {
 
     public static ArrayVal operation(ArrayVal a, TimcVal b, int oper) {
         // currently only has one operation
-        
         if (b instanceof ArrayVal c) {
-            
             int leftNesting = 0;
-            TimcVal e = c.getVal().get(0);;
-            while (e instanceof ArrayVal d) {
-                e = d.getVal().get(0);
-                leftNesting++;
+             
+            if (c.getVal().size() != 0 ? c.getVal().get(0) instanceof ArrayVal f : false) {
+                ArrayVal e = c;
+                while (true) {
+                    if (e.getVal().size() == 0) break;
+
+                    if (e.getVal().get(0) instanceof ArrayVal k) {
+                        e = k;
+                        leftNesting++;
+                    }
+                    else break;
+                }
             }
             int RightNesting = 0;
-            e = a.getVal().get(0);;
-            while (e instanceof ArrayVal d) {
-                e = d.getVal().get(0);
-                leftNesting++;
+            if (a.getVal().size() != 0 ? a.getVal().get(0) instanceof ArrayVal f : false) {
+                ArrayVal e = a;
+                while (true) {
+                    if (e.getVal().size() == 0) break;
+                    
+                    if (e.getVal().get(0) instanceof ArrayVal k) {
+                        e = k;
+                        RightNesting++;
+                    }
+                    else break;
+                }
             }
+                
             if (leftNesting == RightNesting) {
                 List<TimcVal> temp = new ArrayList<>(a.getVal().size() + c.getVal().size());
                 temp.addAll(a.getVal());
                 temp.addAll(c.getVal());
                 return new ArrayVal(temp);
-            } else if (leftNesting == RightNesting - 1) {
+            } else if (leftNesting == (RightNesting - 1)) {
+                System.out.println("Shit");
                 a.add(c);
                 return a;
             } else{
                 throw new TimcException("Not matching nesting in two arrays");
-            }         
+            }   
+            
+                  
 
         } else {
             a.add(b);
