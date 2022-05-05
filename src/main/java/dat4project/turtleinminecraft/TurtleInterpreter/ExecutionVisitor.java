@@ -61,8 +61,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
-        ListVal values = new ListVal(getExpression_list(ctx.expression_list()));
-        symbolTable.ret = values;
+        List<TimcVal> vals = getExpression_list(ctx.expression_list());
+        if (vals.size() > 1) {
+            symbolTable.ret = new ListVal(vals);
+        } else {
+            symbolTable.ret = vals.get(0);
+        }
         hasReturned = true;
         return null;
     }
