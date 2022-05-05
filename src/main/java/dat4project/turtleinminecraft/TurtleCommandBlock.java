@@ -59,7 +59,6 @@ public class TurtleCommandBlock extends BlockWithEntity{
                 // update comparators
                 world.updateComparators(pos,this);
             }
-            //super.onStateReplaced(state, world, pos, newState, moved);
         }
     }
 
