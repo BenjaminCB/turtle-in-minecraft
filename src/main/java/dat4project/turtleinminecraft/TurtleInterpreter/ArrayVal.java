@@ -58,11 +58,10 @@ public class ArrayVal extends TimcVal {
             if (is.size() == 1) {
                 if (val.getType() != elementType)
                     throw new TimcException("tried to set value with incorrect type");
-                if (n.getVal() > this.val.size())
-                    throw new TimcException("tried to set index that is to large");
-
                 this.val.set(n.getVal(), val);
             } else {
+                if (n.getVal() > this.val.size())
+                    throw new TimcException("tried to set index that is too large");
                 if (this.val.get(n.getVal()) instanceof ArrayVal a) {
                     is.remove(0);
                     a.setNested(is, val);
