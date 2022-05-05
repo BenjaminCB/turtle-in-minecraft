@@ -1,4 +1,4 @@
 Parser((fn a -> a*2)(2))
-Parser(x)do
+function Parser(x) do
 	x++
 end

@@ -451,7 +451,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     // TODO: remove leading and trailing 
     @Override public TimcVal visitStringConst(timcParser.StringConstContext ctx) {
-        return new StringVal(ctx.STRING().getText());
+        String string = ctx.STRING().getText();
+        return new StringVal(string.substring(1, string.length()-1));
     }
 
     @Override public TimcVal visitBlockConst(timcParser.BlockConstContext ctx) {
@@ -662,15 +663,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
         TimcVal expr = visit(ctx.expression());
         BlockVal val = null;
-        Timc.LOGGER.info(expr.getType().name());
         if(expr instanceof RelDirVal dir) {
             val = new BlockVal(tcbEntity.look(dir.getVal()));
         }
         else {
             throw new TimcException(ctx.expression().getText() + ": expected reldir");
         }
-        Timc.LOGGER.info(val.getType().name());
-        Timc.LOGGER.info(val.getVal().toString());
         return val; 
     }
 
@@ -688,11 +686,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
-        if (val instanceof StringVal s) {
-            tcbEntity.print(s.getVal());
-        } else {
-            throw new TimcException(ctx.expression().getText() + ": expected string");
-        }
+        tcbEntity.print(val.toString());
         return null;
     }
 

@@ -25,4 +25,9 @@ public class BlockVal extends TimcVal {
     protected boolean timcValEquals(TimcVal o) {
         return (o instanceof BlockVal b) && val.equals(b.val);
     }
+
+    @Override
+    protected String timcToString() {
+        return val.toString();
+    }
 }

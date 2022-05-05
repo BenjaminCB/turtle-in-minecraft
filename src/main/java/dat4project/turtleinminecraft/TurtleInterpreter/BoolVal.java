@@ -47,4 +47,9 @@ public class BoolVal extends TimcVal {
     protected boolean timcValEquals(TimcVal o) {
         return (o instanceof BoolVal b) && (val == b.val);
     }
+
+    @Override
+    protected String timcToString() {
+        return val ? "true" : "false";
+    }
 }

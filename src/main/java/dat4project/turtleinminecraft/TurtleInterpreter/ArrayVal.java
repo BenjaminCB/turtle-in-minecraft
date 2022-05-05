@@ -117,7 +117,6 @@ public class ArrayVal extends TimcVal {
                 temp.addAll(c.getVal());
                 return new ArrayVal(temp);
             } else if (leftNesting == (RightNesting - 1)) {
-                System.out.println("Shit");
                 a.add(c);
                 return a;
             } else{
