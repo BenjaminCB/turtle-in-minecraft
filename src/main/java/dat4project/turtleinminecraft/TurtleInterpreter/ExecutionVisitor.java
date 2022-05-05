@@ -598,7 +598,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { 
@@ -619,7 +619,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { 
@@ -640,7 +640,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { 
@@ -661,7 +661,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
