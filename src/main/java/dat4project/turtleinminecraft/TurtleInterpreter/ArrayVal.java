@@ -76,7 +76,7 @@ public class ArrayVal extends TimcVal {
         if (is.isEmpty()) throw new TimcException("not index to set value");
         if (is.remove(0) instanceof NumberVal n) {
             if (n.getVal() < 0) throw new TimcException("negative index in when setting array val");
-            if (is.size() == 1) {
+            if (is.size() == 0) {
                 if (val.getType() != elementType)
                     throw new TimcException("tried to set value with incorrect type");
                 if (n.getVal() > this.val.size())
@@ -110,7 +110,7 @@ public class ArrayVal extends TimcVal {
                         leftNesting++;
                     }
                     else {
-                        
+
                         break;
                     }
 
@@ -121,7 +121,7 @@ public class ArrayVal extends TimcVal {
                 ArrayVal e = a;
                 while (true) {
                     if (e.getVal().size() == 0) break;
-                    
+
                     if (e.getVal().get(0) instanceof ArrayVal k) {
                         e = k;
                         RightNesting++;
@@ -129,7 +129,7 @@ public class ArrayVal extends TimcVal {
                     else break;
                 }
             }
-                
+
             if (leftNesting == RightNesting) {
                 List<TimcVal> temp = new ArrayList<>(a.getVal().size() + c.getVal().size());
                 temp.addAll(a.getVal());
@@ -140,16 +140,16 @@ public class ArrayVal extends TimcVal {
                 return a;
             } else{
                 throw new TimcException("Not matching nesting in two arrays");
-            }   
-            
-                  
+            }
+
+
 
         } else {
             a.add(b);
             return a;
         }
     }
-    
+
 
     public TimcType getInnerType(){
         return elementType;
