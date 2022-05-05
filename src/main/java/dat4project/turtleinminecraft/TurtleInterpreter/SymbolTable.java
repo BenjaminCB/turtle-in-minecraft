@@ -41,7 +41,7 @@ public class SymbolTable {
     );
 
     public TimcVal ret;
-    private final TurtleCommandBlockEntity tcbEntity;
+    public final TurtleCommandBlockEntity tcbEntity;
 
     public SymbolTable(TurtleCommandBlockEntity tcbEntity) {
         this.tcbEntity = tcbEntity;

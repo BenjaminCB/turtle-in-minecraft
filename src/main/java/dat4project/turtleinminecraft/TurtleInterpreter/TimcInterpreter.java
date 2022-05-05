@@ -8,6 +8,7 @@ import dat4project.turtleinminecraft.antlr.timcParser.StatementsContext;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStreamRewriter;
 
 public class TimcInterpreter implements Runnable {
     private final String prog;
