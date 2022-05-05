@@ -6,6 +6,7 @@ import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import net.minecraft.util.math.BlockPos;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.*;
 
@@ -502,10 +503,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     // TODO: add return nothing to end
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
-        FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
+        FunctionVal func = new FunctionVal(
+                getParameters(ctx.parameters()),
+                ctx.statements(),
+                symbolTable.clone()
+        );
 
         // TODO: don't think this solves the recursion problem
-        func.getDeclarationTable().put(ctx.ID().getText(), func);
+        String id = ctx.ID().getText();
+        func.getDeclarationTable().put(id, func);
+        symbolTable.put(id, func);
         return null;
     }
 
@@ -519,11 +526,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) {
         // Copy pasta from visitDclFunc, as they do the same
-        FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
-        return null;
+        FunctionVal func = new FunctionVal(
+                getParameters(ctx.parameters()),
+                ctx.statements(),
+                symbolTable.clone()
+        );
+        return func;
     }
 
-    @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) {
+        return visitChildren(ctx);
+    }
 
     @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
         String id = ctx.ID().getText();

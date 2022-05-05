@@ -5,7 +5,7 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 
 import java.util.*;
 
-public class SymbolTable {
+public class SymbolTable implements Cloneable {
     // not using a stack as the iterator is in the wrong order
     private Deque<Map<String, TimcVal>> tables;
     private final List<String> restrictedWords = Arrays.asList(
@@ -130,6 +130,15 @@ public class SymbolTable {
         }
 
         return res;
+    }
+
+    @Override
+    public SymbolTable clone() {
+        try {
+            return (SymbolTable) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new TimcException("unable to clone symboltable");
+        }
     }
 }
 
