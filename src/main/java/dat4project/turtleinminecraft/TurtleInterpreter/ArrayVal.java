@@ -60,8 +60,9 @@ public class ArrayVal extends TimcVal {
             }
         }
         else if (val instanceof ArrayVal a){
-            if(a.getNesting() != nesting - 1) throw new TimcException("Nesting does not match");
-            if(a.getInnerType() != elementType) throw new TimcException("Inner elements type mismatch in array add");
+            if (a.getNesting() != nesting - 1) {throw new TimcException("Nesting does not match");}
+            if (elementType == null) { elementType = a.getInnerType(); }
+            else if (elementType != a.getInnerType()) throw new TimcException("Inner types does not matchs");
         }else if (elementType != val.getType()) {
             throw new TimcException("type mismatch in array add");
         }

@@ -6,29 +6,39 @@ import dat4project.turtleinminecraft.antlr.timcLexer;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcParser.StatementsContext;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 public class TimcInterpreter implements Runnable {
-    private final StatementsContext tree;
-    private final ExecutionVisitor executor;
+    private final String prog;
     private final TurtleCommandBlockEntity tcbEntity;
+    private final ExecutionVisitor visitor;
 
     public TimcInterpreter(String prog, TurtleCommandBlockEntity tcbEntity) {
         this.tcbEntity = tcbEntity;
-        executor = new ExecutionVisitor(tcbEntity);
-
-        // could not recognize without the whole thing
-        CharStream stream = org.antlr.v4.runtime.CharStreams.fromString(prog);
-        timcLexer lexer = new timcLexer(stream);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        timcParser parser = new timcParser(tokens);
-        tree = parser.statements();
+        this.prog = prog;
+        this.visitor = new ExecutionVisitor(tcbEntity);
     }
-
+    
     @Override
     public void run() {
         try {
-            executor.visit(tree);
+            CharStream stream = CharStreams.fromString(prog);
+            timcLexer lexer = new timcLexer(stream);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            timcParser parser = new timcParser(tokens);
+            StatementsContext tree = parser.statements();
+
+            if(lexer.errors.isEmpty()) {
+                visitor.visit(tree);
+            }
+            else {
+                tcbEntity.print("Parser failed due to " + lexer.errors.size() + " syntax errors!");
+                for (String string : lexer.errors) {
+                    tcbEntity.print(string);
+                }
+            }
+
         } catch (TimcException e) {
             tcbEntity.print(e.getMessage());
         }
