@@ -34,6 +34,7 @@ public class ArrayVal extends TimcVal {
         TimcVal i = is.remove(0);
         TimcVal res = null;
         if (i instanceof NumberVal n) {
+            if (n.getVal() < 0) throw new TimcException("tried to get array value with negative index");
             if (is.isEmpty()) {
                 res = val.get(n.getVal());
             } else if (val.get(n.getVal()) instanceof ArrayVal a) {
@@ -74,6 +75,7 @@ public class ArrayVal extends TimcVal {
     public void setNested(List<TimcVal> is, TimcVal val) {
         if (is.isEmpty()) throw new TimcException("not index to set value");
         if (is.remove(0) instanceof NumberVal n) {
+            if (n.getVal() < 0) throw new TimcException("negative index in when setting array val");
             if (is.size() == 1) {
                 if (val.getType() != elementType)
                     throw new TimcException("tried to set value with incorrect type");

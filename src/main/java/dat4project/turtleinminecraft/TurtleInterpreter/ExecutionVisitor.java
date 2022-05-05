@@ -401,6 +401,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         
         if (visit(ctx.expression(0)) instanceof ArrayVal arr) {
             if (visit(ctx.expression(1)) instanceof NumberVal n) {
+                if (n.getVal() < 0) throw new TimcException("tried to access with negative index");
                 value = arr.getVal().get(n.getVal());
             } else {
                 throw new TimcException(ctx.expression(1).getText() + ": is not a number");
