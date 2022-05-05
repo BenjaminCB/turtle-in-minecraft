@@ -1,6 +1,9 @@
 package dat4project.turtleinminecraft.antlr;
 
 // Generated from timc.g4 by ANTLR 4.9.2
+ 
+	import java.util.*;
+
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
