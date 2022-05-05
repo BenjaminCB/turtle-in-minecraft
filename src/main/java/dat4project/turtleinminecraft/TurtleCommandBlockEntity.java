@@ -205,13 +205,16 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
 
         BlockPos newPos = turtlePos.add(TimcUtil.relDirToMcDir(turtleDirection, relDir).getVector());
         if (turtlePlacing) {
+            // Place active block at current turtle position if placing is true
             world.setBlockState(turtlePos, activeBlockState);
         }
         else {
-            if (turtleBreaking) {
-                world.breakBlock(newPos, true);
-            }
+            // otherwise put back the currently saved blockstate
             world.setBlockState(turtlePos, savedBlockState);
+        }
+        if (turtleBreaking) {
+            // Break next block at new position if breaking is true
+            world.breakBlock(newPos, true);
         }
         savedBlockState = world.getBlockState(newPos);
         turtlePos = newPos;

@@ -1,6 +1,5 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import dat4project.turtleinminecraft.Timc;
 import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
@@ -9,6 +8,8 @@ import dat4project.turtleinminecraft.antlr.timcParser;
 import net.minecraft.util.math.BlockPos;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.*;
+
+import com.ibm.icu.impl.UResource.Array;
 
 public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     private SymbolTable symbolTable;
@@ -61,8 +62,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
-        ListVal values = new ListVal(getExpression_list(ctx.expression_list()));
-        symbolTable.ret = values;
+        List<TimcVal> vals = getExpression_list(ctx.expression_list());
+        if (vals.size() > 1) {
+            symbolTable.ret = new ListVal(vals);
+        } else {
+            symbolTable.ret = vals.get(0);
+        }
         hasReturned = true;
         return null;
     }
@@ -286,9 +291,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             res = NumberVal.operation(n1, n2, oper);
         } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
             res = StringVal.operation(s1, s2, oper);
-        } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
-            res = ArrayVal.operation(a1, a2, oper);
-        } else {
+ //       } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
+  //          res = ArrayVal.operation(a1, a2, oper);
+        } else if (isConcat && left instanceof ArrayVal a1 && (right instanceof ArrayVal b1 || right.getType() == a1.getInnerType())) {
+            res= ArrayVal.operation(a1, right, oper);
+        }
+         else {
             throw new TimcException(ctx.getText() + ": type mismatch");
         }
         return res;
@@ -393,6 +401,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         
         if (visit(ctx.expression(0)) instanceof ArrayVal arr) {
             if (visit(ctx.expression(1)) instanceof NumberVal n) {
+                if (n.getVal() < 0) throw new TimcException("tried to access with negative index");
                 value = arr.getVal().get(n.getVal());
             } else {
                 throw new TimcException(ctx.expression(1).getText() + ": is not a number");
@@ -433,7 +442,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitNumberConst(timcParser.NumberConstContext ctx) {
-        return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
+        try {
+            return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
+        } catch (NumberFormatException e) {
+            throw new TimcException(ctx.NUMBER().getText() + ": cannot parse as number");
+        }
     }
 
     @Override public TimcVal visitBoolConst(timcParser.BoolConstContext ctx) {
@@ -444,7 +457,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
     }
 
-    // TODO: remove leading and trailing 
     @Override public TimcVal visitStringConst(timcParser.StringConstContext ctx) {
         String string = ctx.STRING().getText();
         return new StringVal(string.substring(1, string.length()-1));
@@ -589,7 +601,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { 
@@ -610,7 +622,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { 
@@ -631,7 +643,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { 
@@ -652,7 +664,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
@@ -676,13 +688,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         } else {
             throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
         }
-        return null;
+        return new NothingVal();
     }
 
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
         tcbEntity.print(val.toString());
-        return null;
+        return new NothingVal();
     }
 
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { 
