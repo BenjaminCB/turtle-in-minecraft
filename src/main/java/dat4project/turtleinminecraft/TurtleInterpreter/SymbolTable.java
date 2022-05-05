@@ -89,7 +89,7 @@ public class SymbolTable {
                     if (val instanceof BlockVal b) {
                         tcbEntity.setActiveBlock(b.getVal());;
                     } else {
-                        throw new TimcException("Cannot assign ACTIVE_BLOCK to non-block value");
+                        throw new TimcException("Cannot assign SPAWN to non-block value");
                     }
                 }
             }
