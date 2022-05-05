@@ -506,7 +506,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         FunctionVal func = new FunctionVal(
                 getParameters(ctx.parameters()),
                 ctx.statements(),
-                symbolTable.clone()
+                new SymbolTable(symbolTable)
         );
 
         // TODO: don't think this solves the recursion problem
@@ -529,7 +529,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         FunctionVal func = new FunctionVal(
                 getParameters(ctx.parameters()),
                 ctx.statements(),
-                symbolTable.clone()
+                new SymbolTable(symbolTable)
         );
         return func;
     }
