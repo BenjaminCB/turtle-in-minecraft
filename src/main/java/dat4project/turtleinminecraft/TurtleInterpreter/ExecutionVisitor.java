@@ -5,13 +5,9 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
-import dat4project.turtleinminecraft.antlr.timcParser.ExpressionContext;
 import net.minecraft.util.math.BlockPos;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.*;
-
-import com.ibm.icu.impl.UResource.Array;
 
 public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     private SymbolTable symbolTable;

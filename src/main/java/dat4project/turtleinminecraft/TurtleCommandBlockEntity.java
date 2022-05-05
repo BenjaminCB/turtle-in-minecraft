@@ -1,7 +1,5 @@
 package dat4project.turtleinminecraft;
 
-import com.google.gson.*;
-
 import dat4project.turtleinminecraft.TurtleInterpreter.TimcInterpreter;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal.AbsDir;
@@ -187,7 +185,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
                 interpretThread.stop();
             }
         } catch (Exception e) {
-            //TODO: handle exception
+            Timc.LOGGER.info(e.getMessage());
         }
     }
 
@@ -305,7 +303,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
                 }
                 Thread.sleep(turtleTimeout);
             } catch (Exception e) {
-                //TODO: handle exception
+                Timc.LOGGER.info(e.getMessage());
             }
         }
     }
