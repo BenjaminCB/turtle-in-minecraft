@@ -13,6 +13,7 @@ import org.checkerframework.checker.units.qual.Length;
 public class ArrayVal extends TimcVal {
     private List<TimcVal> val;
     private TimcType elementType = null;
+    private int nesting = 0;
 
     public ArrayVal() {
         super(TimcType.ARRAY);
@@ -48,8 +49,21 @@ public class ArrayVal extends TimcVal {
     }
 
     public void add(TimcVal val) {
-        if (this.val.isEmpty()) elementType = val.getType();
-        if (elementType != val.getType()) throw new TimcException("type mismatch in array add");
+        if (this.val.isEmpty()) {
+            if (val instanceof ArrayVal a) {
+                nesting = a.getNesting() + 1;
+                elementType = a.getInnerType();
+            } else {
+                nesting = 0;
+                elementType = val.getType();
+            }
+        }
+        else if (val instanceof ArrayVal a){
+            if(a.getNesting() != nesting - 1) throw new TimcException("Nesting does not match");
+            if(a.getInnerType() != elementType) throw new TimcException("Inner elements type mismatch in array add");
+        }else if (elementType != val.getType()) {
+            throw new TimcException("type mismatch in array add");
+        }
         this.val.add(val);
     }
 
@@ -84,7 +98,6 @@ public class ArrayVal extends TimcVal {
         // currently only has one operation
         if (b instanceof ArrayVal c) {
             int leftNesting = 0;
-             
             if (c.getVal().size() != 0 ? c.getVal().get(0) instanceof ArrayVal f : false) {
                 ArrayVal e = c;
                 while (true) {
@@ -94,7 +107,11 @@ public class ArrayVal extends TimcVal {
                         e = k;
                         leftNesting++;
                     }
-                    else break;
+                    else {
+                        
+                        break;
+                    }
+
                 }
             }
             int RightNesting = 0;
@@ -136,6 +153,10 @@ public class ArrayVal extends TimcVal {
         return elementType;
     }
 
+    public int getNesting(){
+        return nesting;
+    }
+
     @Override
     protected boolean timcValEquals(TimcVal o) {
         if(o instanceof ArrayVal arr){
@@ -152,7 +173,7 @@ public class ArrayVal extends TimcVal {
 
     @Override
     protected String timcToString(){
-        return "array: " + val.toString();
+        return "Array: " + val.toString();
     }
 
 
