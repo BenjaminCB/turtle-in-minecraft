@@ -5,11 +5,6 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.lang.model.util.ElementScanner14;
-
-import org.checkerframework.checker.units.qual.C;
-import org.checkerframework.checker.units.qual.Length;
-
 public class ArrayVal extends TimcVal {
     private List<TimcVal> val;
     private TimcType elementType = null;
