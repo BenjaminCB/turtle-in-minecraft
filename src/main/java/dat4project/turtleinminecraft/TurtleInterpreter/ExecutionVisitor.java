@@ -401,6 +401,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         
         if (visit(ctx.expression(0)) instanceof ArrayVal arr) {
             if (visit(ctx.expression(1)) instanceof NumberVal n) {
+                if (n.getVal() < 0) throw new TimcException("tried to access with negative index");
                 value = arr.getVal().get(n.getVal());
             } else {
                 throw new TimcException(ctx.expression(1).getText() + ": is not a number");
@@ -600,7 +601,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { 
@@ -621,7 +622,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { 
@@ -642,7 +643,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { 
@@ -663,7 +664,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             tcbEntity.move(dir);
         }
 
-        return null; 
+        return new NothingVal();
     }
 
     @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
@@ -687,13 +688,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         } else {
             throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
         }
-        return null;
+        return new NothingVal();
     }
 
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
         tcbEntity.print(val.toString());
-        return null;
+        return new NothingVal();
     }
 
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { 
