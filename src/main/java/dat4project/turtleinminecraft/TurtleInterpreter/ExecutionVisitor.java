@@ -1,6 +1,5 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
-import dat4project.turtleinminecraft.Timc;
 import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
@@ -433,7 +432,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitNumberConst(timcParser.NumberConstContext ctx) {
-        return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
+        try {
+            return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
+        } catch (NumberFormatException e) {
+            throw new TimcException(ctx.NUMBER().getText() + ": cannot parse as number");
+        }
     }
 
     @Override public TimcVal visitBoolConst(timcParser.BoolConstContext ctx) {
@@ -444,7 +447,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
     }
 
-    // TODO: remove leading and trailing 
     @Override public TimcVal visitStringConst(timcParser.StringConstContext ctx) {
         String string = ctx.STRING().getText();
         return new StringVal(string.substring(1, string.length()-1));
