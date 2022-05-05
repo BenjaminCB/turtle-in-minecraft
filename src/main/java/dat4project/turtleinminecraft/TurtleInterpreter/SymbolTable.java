@@ -36,7 +36,7 @@ public class SymbolTable {
     private final List<String> builtInVariables = Arrays.asList(
             "PLACING",
             "BREAKING",
-            "ACTIVE_BLOCK",
+            "SPAWN",
             "TIMEOUT"
     );
 
