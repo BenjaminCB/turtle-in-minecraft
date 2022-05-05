@@ -687,13 +687,13 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         } else {
             throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
         }
-        return null;
+        return new NothingVal();
     }
 
     @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
         TimcVal val = visit(ctx.expression());
         tcbEntity.print(val.toString());
-        return null;
+        return new NothingVal();
     }
 
     @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { 
