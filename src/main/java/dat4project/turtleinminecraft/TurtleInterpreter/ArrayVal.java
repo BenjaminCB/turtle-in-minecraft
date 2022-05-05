@@ -55,14 +55,16 @@ public class ArrayVal extends TimcVal {
     public void setNested(List<TimcVal> is, TimcVal val) {
         if (is.isEmpty()) throw new TimcException("not index to set value");
         if (is.remove(0) instanceof NumberVal n) {
-            if (is.size() == 1) {
+            if (is.size() == 0) {
+                if (n.getVal() >= this.val.size())
+                    throw new TimcException("tried to set index that is too large");
                 if (val.getType() != elementType)
                     throw new TimcException("tried to set value with incorrect type");
                 this.val.set(n.getVal(), val);
             } else {
-                if (n.getVal() > this.val.size())
-                    throw new TimcException("tried to set index that is too large");
+
                 if (this.val.get(n.getVal()) instanceof ArrayVal a) {
+
                     is.remove(0);
                     a.setNested(is, val);
                 } else {
