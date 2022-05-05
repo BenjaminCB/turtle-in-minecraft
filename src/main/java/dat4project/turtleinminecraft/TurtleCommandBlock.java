@@ -12,6 +12,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -47,6 +48,18 @@ public class TurtleCommandBlock extends BlockWithEntity{
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return checkType(type, Timc.TurtleCommandBlockEntity, TurtleCommandBlockEntity::tick);
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.getBlock() != newState.getBlock()) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof TurtleCommandBlockEntity) {
+                ItemScatterer.spawn(world, pos, (TurtleCommandBlockEntity)blockEntity);
+                // update comparators
+                world.updateComparators(pos,this);
+            }
+        }
     }
 
     // cotton GUI
