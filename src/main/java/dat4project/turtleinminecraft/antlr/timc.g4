@@ -1,9 +1,14 @@
 grammar timc;
 
-WS: [ \t\r\n]* -> skip;
-COMMENT: '/*' .*? '*/' -> skip;
+@header { 
+	import java.util.*;
+}
 
-//Tokens
+@lexer::members { 
+	public List<String> errors = new ArrayList<String>();
+}
+
+//Generic Tokens
 NUMBER: [0-9]+;
 BOOL: 'true' | 'false';
 STRING: '"' ('\\' ["\\n] | ~["\\\r\n])* '"';
@@ -11,7 +16,6 @@ NOTHING: 'nothing';
 BLOCK: 'BLOCK:' + [A-Z_]*;
 RELDIR: 'UP' | 'DOWN' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT';
 ABSDIR: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
-
 //Expression tokens
 NOT: 'not';
 SUB: '-';
@@ -29,7 +33,6 @@ EQ: '==';
 NEQ: '!=';
 AND: 'and';
 OR: 'or';
-
 //Assignment tokens
 ASSIGN: '=' ;
 ADDASSIGN: '+=' ;
@@ -38,9 +41,15 @@ MULTASSIGN: '*=' ;
 DIVASSIGN: '/=' ;
 MODASSIGN: '%=' ;
 POWERASSIGN: '^=' ;
-
-//ID token defined last, to prevent conflict with other tokens
+//ID, WS, COMMENT and INVALID tokens defined last, to prevent conflict with other tokens
 ID: [a-zA-Z_][0-9a-zA-Z_]*;
+WS: [ \t\r\n]* -> skip;
+COMMENT: '/*' .*? '*/' -> skip;
+//INVALID catches all unused characters and raises an error
+INVALID
+	: . {errors.add("Invalid character: '" + getText() + "' on line: " + 
+			getLine() + ", index: " + getCharPositionInLine());}
+	;
 
 
 array: '[' (expression (',' expression)*)* ']';
