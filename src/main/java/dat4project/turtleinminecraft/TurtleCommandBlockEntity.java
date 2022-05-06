@@ -24,6 +24,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Text.Serializer;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -152,9 +153,13 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
             String prog = new String();
             NbtList nbtList = item.getNbt().getList("pages", 8);
             for (int i = 0; i < nbtList.size(); ++i) {
-                prog = prog.concat(nbtList.getString(i));
+                String page = nbtList.getString(i);
+                // if the book is a written book pages are stored as serialized json
+                if (item.isOf(Items.WRITTEN_BOOK)) {
+                    page = Serializer.fromJson(page).asString();
+                }
+                prog = prog.concat(page);
             }
-
             startInterpretThread(new TimcInterpreter(prog, this));
         }
         else {
@@ -180,7 +185,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
                 interpretThread.stop();
             }
         } catch (Exception e) {
-            //TODO: handle exception
+            Timc.LOGGER.info(e.getMessage());
         }
     }
 
@@ -298,7 +303,7 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
                 }
                 Thread.sleep(turtleTimeout);
             } catch (Exception e) {
-                //TODO: handle exception
+                Timc.LOGGER.info(e.getMessage());
             }
         }
     }

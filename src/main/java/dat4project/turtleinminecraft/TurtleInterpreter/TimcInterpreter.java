@@ -5,6 +5,7 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.antlr.timcLexer;
 import dat4project.turtleinminecraft.antlr.timcParser;
 import dat4project.turtleinminecraft.antlr.timcParser.StatementsContext;
+import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -24,10 +25,15 @@ public class TimcInterpreter implements Runnable {
     @Override
     public void run() {
         try {
+            ANTLRErrorListener listener = new TimcErrorListener();
             CharStream stream = CharStreams.fromString(prog);
             timcLexer lexer = new timcLexer(stream);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(listener);
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             timcParser parser = new timcParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(listener);
             StatementsContext tree = parser.statements();
 
             if(lexer.errors.isEmpty()) {
