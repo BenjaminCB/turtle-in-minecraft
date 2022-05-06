@@ -1,0 +1,44 @@
+function copy(x,y) do
+e = y
+b = [[]]
+while e > 0 do
+  c = []
+  f = x
+  while f > 0 do
+   f = f - 1
+c = c ++ [look(FRONT)]
+   forward(1) 
+  end
+  turn(RIGHT)
+  turn(RIGHT)
+  forward(x)
+  up(1)
+  turn(RIGHT)
+  turn(RIGHT)
+e = e-1
+b = b++[c]
+end
+forward(2*x+1)
+down(y+1)
+
+print(b)
+foreach q in b do
+   PLACING = true
+ foreach a in q do
+  SPAWN = a
+  forward(1)
+  end
+  PLACING = false
+  turn(RIGHT)
+  turn(RIGHT)
+  forward(x)
+  turn(RIGHT)
+  turn(RIGHT)
+  up(1)
+end
+
+end
+print("Shit")
+print(look(FRONT))
+TIMEOUT = 50
+copy(15,15)
