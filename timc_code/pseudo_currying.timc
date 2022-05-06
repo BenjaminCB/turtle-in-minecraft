@@ -8,12 +8,12 @@ snd = fn a b -> b
 print(tup(fst))
 print(tup(snd))
 
-foldr = function (f) do
+foldl = function (f) do
   return function (b) do
     return function (xs) do
       res = b
       foreach x in xs do
-        res = f(x,res)
+        res = f(res,x)
       end
       return res
     end
@@ -22,8 +22,8 @@ end
 
 plus = fn a b -> a + b
 
-sum = foldr(plus)(0)
-product = foldr(fn a b -> a * b)(1)
+sum = foldl(plus)(0)
+product = foldl(fn a b -> a * b)(1)
 
 xs = [1,2,3,4]
 print(sum(xs))
