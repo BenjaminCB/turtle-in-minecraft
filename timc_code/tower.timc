@@ -1,0 +1,31 @@
+blocks = []
+while true do
+  block = look(LEFT)
+  if block == BLOCK:AIR do
+    break
+  end
+  blocks = blocks ++ [block]
+  forward()
+end
+
+forward(3)
+
+function ring(size, block) do
+  PLACING = true
+  SPAWN = block
+  repeat 4 do
+    forward(size - 1)
+    turn(LEFT)
+  end
+  up()
+end
+
+function rings(size, blocks) do
+  foreach block in blocks do
+    ring(size, block)
+  end
+end
+
+TIMEOUT = 100
+
+rings(5, blocks)
