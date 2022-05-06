@@ -41,12 +41,21 @@ public class SymbolTable {
     );
 
     public TimcVal ret;
-    private final TurtleCommandBlockEntity tcbEntity;
+    public final TurtleCommandBlockEntity tcbEntity;
 
     public SymbolTable(TurtleCommandBlockEntity tcbEntity) {
         this.tcbEntity = tcbEntity;
         tables = new ArrayDeque<>();
         tables.push(new HashMap<>());
+        ret = new NothingVal();
+    }
+
+    public SymbolTable(SymbolTable t) {
+        tcbEntity = t.tcbEntity;
+        tables = new ArrayDeque<>();
+        for (Map<String, TimcVal> m : t.tables) {
+            tables.push(new HashMap<>(m));
+        }
         ret = new NothingVal();
     }
 

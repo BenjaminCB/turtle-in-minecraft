@@ -1,0 +1,9 @@
+t_tuple = fn a -> fn b -> fn f -> f(a,b)
+
+tup = t_tuple(1)(2)
+
+fst = fn a b -> a
+snd = fn a b -> b
+
+print(tup(fst))
+print(tup(snd))

@@ -5,7 +5,9 @@ import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
+import dat4project.turtleinminecraft.antlr.timcParser.ExpressionContext;
 import net.minecraft.util.math.BlockPos;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.*;
 
@@ -20,6 +22,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     public ExecutionVisitor(TurtleCommandBlockEntity tcbEntity) {
         this.tcbEntity = tcbEntity;
         symbolTable = new SymbolTable(tcbEntity);
+    }
+
+    public ExecutionVisitor(SymbolTable t) {
+        symbolTable = t;
+        tcbEntity = t.tcbEntity;
     }
 
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
@@ -276,7 +283,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
     
     private List<TimcVal> getExpression_list(timcParser.Expression_listContext ctx) {
-        return getExpression(ctx.expression());
+        return ctx == null ? Collections.emptyList() : getExpression(ctx.expression());
     }
 
     // TODO: error handling
@@ -291,8 +298,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             res = NumberVal.operation(n1, n2, oper);
         } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
             res = StringVal.operation(s1, s2, oper);
- //       } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
-  //          res = ArrayVal.operation(a1, a2, oper);
         } else if (isConcat && left instanceof ArrayVal a1 && (right instanceof ArrayVal b1 || right.getType() == a1.getInnerType())) {
             res= ArrayVal.operation(a1, right, oper);
         }
@@ -338,10 +343,6 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return val;
     }
 
-    @Override public TimcVal visitFuncAppExpr(timcParser.FuncAppExprContext ctx) {
-        return visit(ctx.function_application());
-    }
-
     @Override public TimcVal visitEqExpr(timcParser.EqExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -377,6 +378,21 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     @Override public TimcVal visitParenExpr(timcParser.ParenExprContext ctx) {
         return visit(ctx.expression());
+    }
+
+    @Override public TimcVal visitFuncAppExpr(timcParser.FuncAppExprContext ctx) {
+        if (visit(ctx.expression()) instanceof FunctionVal f) {
+            List<TimcVal> args = getExpression_list(ctx.expression_list());
+            TimcVal retVal = f.execute(args);
+            hasReturned = false;
+            return retVal;
+        } else {
+            throw new TimcException(ctx.expression().getText() + ": was used a function");
+        }
+    }
+
+    @Override public TimcVal visitBuildInFuncExpr(timcParser.BuildInFuncExprContext ctx) {
+        return visit(ctx.build_in_func());
     }
 
     @Override public TimcVal visitUnaryExpr(timcParser.UnaryExprContext ctx) {
@@ -502,10 +518,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
 
     // TODO: add return nothing to end
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
-        FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
+        FunctionVal func = new FunctionVal(
+                getParameters(ctx.parameters()),
+                ctx.statements(),
+                new SymbolTable(symbolTable)
+        );
 
         // TODO: don't think this solves the recursion problem
-        func.getDeclarationTable().put(ctx.ID().getText(), func);
+        String id = ctx.ID().getText();
+        func.getDeclarationTable().put(id, func);
+        symbolTable.put(id, func);
         return null;
     }
 
@@ -513,74 +535,23 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return visit(ctx.anonymous_function());
     }
 
-    @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) {
-        return visit(ctx.build_in_func());
-    }
-
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) {
         // Copy pasta from visitDclFunc, as they do the same
-        FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
-        return null;
+        FunctionVal func = new FunctionVal(
+                getParameters(ctx.parameters()),
+                ctx.statements(),
+                new SymbolTable(symbolTable)
+        );
+        return func;
     }
 
-    @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) { return visitChildren(ctx); }
-
-    @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
-        String id = ctx.ID().getText();
-        TimcVal val = symbolTable.get(id);
-
-        // check for undefined reference and type error
-        if (val.getType() != TimcType.FUNCTION)
-            throw new TimcException(id + ": is not a function");
-
-        List<TimcVal> args = getExpression_list(ctx.expression_list());
-
-        // save current table and retrieve function value
-        SymbolTable savedTable = symbolTable;
-        FunctionVal func = (FunctionVal) val;
-        symbolTable = func.getDeclarationTable();
-
-        // has the correct amount arguments been applied to the function
-        if (args.size() != func.getParams().size())
-            throw new TimcException(id + ": too many or few arguments applied");
-
-        // execute function body
-        symbolTable.enterScope();
-        for (int i = 0; i < args.size(); i++) {
-            symbolTable.put(func.getParams().get(i), args.get(i));
-        }
-        symbolTable.ret = new NothingVal();
-        visitStatements(func.getCtx());
-        symbolTable.exitScope();
-        hasReturned = false;
-    
-        // return to normal with new return value
-        savedTable.ret = symbolTable.ret;
-        symbolTable = savedTable;
-
-        return symbolTable.ret;
-    }
-
-    @Override public TimcVal visitConstFuncApp(timcParser.ConstFuncAppContext ctx) {
-        if (visit(ctx.anonymous_function()) instanceof FunctionVal f) {
-            List<String> params = f.getParams();
-            List<TimcVal> args = getExpression_list(ctx.expression_list());
-            if (params.size() != args.size())
-                throw new TimcException(ctx.getText() + ": too many or too few arguments applied");
-
-            // TODO: check for recursion error
-            symbolTable.enterScope();
-            for (int i = 0; i < params.size(); i++) {
-                symbolTable.put(params.get(i), args.get(i));
-            }
-            visit(f.getCtx());
-            symbolTable.exitScope();
-            hasReturned = false;
-        } else {
-            throw new TimcException(ctx.getText() + ": anon function is not a function");
-        }
-
-        return symbolTable.ret;
+    @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) {
+        FunctionVal func = new FunctionVal(
+                ctx.ID().stream().map(t -> t.getText()).toList(),
+                ctx.expression(),
+                new SymbolTable(symbolTable)
+        );
+        return func;
     }
 
     @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) {
@@ -728,8 +699,10 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     
     private List<String> getParameters(timcParser.ParametersContext ctx) {
         List<String> res = new ArrayList<>();
-        for (TerminalNode node : ctx.ID()) {
-            res.add(node.getText());
+        if(ctx != null) {
+            for (TerminalNode node : ctx.ID()) {
+                res.add(node.getText());
+            }
         }
         return res;
     }
