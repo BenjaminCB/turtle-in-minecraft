@@ -1,0 +1,11 @@
+function fib(n) do
+  function _fib(a,b,m) do
+    if m == n do
+      return [a]
+    else do
+      return [a] ++ _fib(b, a+b, m +1)
+    end
+  end
+  return _fib(0,1,1)
+end
+print(fib(10))

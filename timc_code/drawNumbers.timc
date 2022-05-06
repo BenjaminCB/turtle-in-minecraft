@@ -1,0 +1,36 @@
+function drawNumbers(ns) do
+  foreach n in ns do
+    switch n % 4 do
+      case 0 do
+        turn(FRONT)
+      end
+      case 1 do
+        turn(RIGHT)
+      end
+      case 2 do
+        turn(LEFT)
+      end
+      default do
+        turn(BACK)
+      end
+    end
+    forward()
+  end
+end
+
+function fib(n) do
+  function _fib(a,b,m) do
+    if m == n do
+      return [a]
+    else do
+      return [a] ++ _fib(b, a+b, m +1)
+    end
+  end
+  return _fib(0,1,1)
+end
+
+forward(10)
+PLACING = true
+SPAWN = BLOCK:DIRT
+drawNumbers(fib(10))
+

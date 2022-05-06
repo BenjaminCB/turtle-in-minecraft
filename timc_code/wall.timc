@@ -1,0 +1,21 @@
+forward()
+
+function wall(height) do
+  cnt = 1
+  while true do
+    if cnt == height do
+      break
+    end
+    SPAWN = look(DOWN)
+    if SPAWN == BLOCK:AIR do
+      turn(BACK)
+      up()
+      cnt = cnt + 1
+    end
+    forward()
+  end
+end
+
+PLACING = true
+TIMEOUT = 50
+wall(20)
