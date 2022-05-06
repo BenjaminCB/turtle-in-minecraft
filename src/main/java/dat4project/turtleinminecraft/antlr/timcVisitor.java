@@ -185,6 +185,13 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCompExpr(timcParser.CompExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code BuildInFuncExpr}
+	 * labeled alternative in {@link timcParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuildInFuncExpr(timcParser.BuildInFuncExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code UnaryExpr}
 	 * labeled alternative in {@link timcParser#expression}.
 	 * @param ctx the parse tree
@@ -324,27 +331,6 @@ public interface timcVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code IdFuncApp}
-	 * labeled alternative in {@link timcParser#function_application}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitIdFuncApp(timcParser.IdFuncAppContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ConstFuncApp}
-	 * labeled alternative in {@link timcParser#function_application}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstFuncApp(timcParser.ConstFuncAppContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code BuildInFunc}
-	 * labeled alternative in {@link timcParser#function_application}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBuildInFunc(timcParser.BuildInFuncContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code ForwardFunc}
 	 * labeled alternative in {@link timcParser#build_in_func}.
