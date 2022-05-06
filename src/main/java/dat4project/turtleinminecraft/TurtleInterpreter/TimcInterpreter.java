@@ -1,39 +1,37 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
+import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 import dat4project.turtleinminecraft.antlr.timcLexer;
 import dat4project.turtleinminecraft.antlr.timcParser;
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonToken;
+import dat4project.turtleinminecraft.antlr.timcParser.StatementsContext;
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.UnbufferedCharStream;
 
-import java.util.UUID;
+public class TimcInterpreter implements Runnable {
+    private final StatementsContext tree;
+    private final ExecutionVisitor executor;
+    private final TurtleCommandBlockEntity tcbEntity;
 
-public class TimcInterpreter {
-    public final String prog;
-    public final timcLexer lexer;
-    public final timcParser parser;
-    public final ExecutionVisitor executer;
-    public final timcParser.StatementsContext tree;
-
-    public TimcInterpreter(String prog) {
-        this.prog = prog;
+    public TimcInterpreter(String prog, TurtleCommandBlockEntity tcbEntity) {
+        this.tcbEntity = tcbEntity;
+        executor = new ExecutionVisitor(tcbEntity);
 
         // could not recognize without the whole thing
         CharStream stream = org.antlr.v4.runtime.CharStreams.fromString(prog);
-
-        lexer = new timcLexer(stream);
+        timcLexer lexer = new timcLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        parser = new timcParser(tokens);
-        executer = new ExecutionVisitor();
+        timcParser parser = new timcParser(tokens);
         tree = parser.statements();
     }
 
-    public void execute() {
-        // TODO catch exceptions
-        executer.visit(tree);
+    @Override
+    public void run() {
+        try {
+            executor.visit(tree);
+        } catch (TimcException e) {
+            tcbEntity.print(e.getMessage());
+        }
     }
 
 }

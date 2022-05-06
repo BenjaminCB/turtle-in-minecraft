@@ -1,0 +1,279 @@
+// Check for how long we can make a string
+function Con_string(string) do
+    int counter = 1;
+    while (counter < 2000) {
+        string = string ++ string
+        counter += 1
+        if counter % 500 do
+            print(counter)
+        end
+    }
+    return string, counter
+end
+
+a,b = 2,3
+
+
+//Listing 3.2
+x = 10
+function f() do
+    return x
+end
+function g() do
+    x = 7
+    return f()
+end
+x = g()
+//Staticly scoped and the result is therefore 10
+
+// Listing 3.3
+x = 10
+while x >= 5 do
+    i = x^2
+    forward(i)
+    x -= 1
+end
+forward(x)
+forward(i)
+// 'i' is not acessable as it only excists in the scope of the while loop
+
+// Scope of function
+f = function (x,y) do
+    return x-y
+end
+
+a = f(1,2)
+
+function f(x,y) do
+    return x+y
+end
+//Declaration of the function must be before its use
+
+// Call by value or refrence
+function swap(a,b) do
+    return b,a
+end
+a,b = swap(a,b)
+//Everything is call by value
+
+//3.11 -> 3.14
+number_posetive = 2147483647
+number_negative = -2147483648
+// crash_number = numberPosetive + 1
+// crash_number = numberNegative - 1
+// crash_number = number_negative + 2*number_posetive    //should work??
+number_multiply = 10*20
+number_power = 10^10
+// number_power = 1000^10000 - 1000^1000     //should work?
+number_division = 45/-45
+// number_division = 1/0  //CRASH
+number_modulo = 10 % 5
+number_modulo = 5 % 10
+// number_modulo = 1 % 0 //CRASH
+
+// TYPE COMPARISON
+//TODO
+
+number_compare = 10 < 5     //false
+number_compare = 10 > 5
+number_compare = 10 < -5    //false
+number_compare = 10 > -5
+number_compare = -10 < -5   //false
+number_compare = -10 > -5
+number_compare = 10 <= 5    //false
+number_compare = 10 >= 5
+number_compare = 10 <= 10
+number_compare = 10 >= 10
+
+number_compare = 10 == 10
+number_compare = 10 == 5      //false
+number_compare = -10 == -5    //false
+number_compare = -10 == -10   
+number_compare = nothing == nothing
+
+//should all fail
+number_compare = "s" < "a"
+number_compare = "s" > "a"
+number_compare = "s" <= "a"
+number_compare = "s" >= "a"
+
+
+// 3.15
+string_con = "abc "
+string_con = string_con ++ string_con ++ string_con
+
+//3.16
+array_int1 = [1+1, 0]
+array_int2 = [-10, 8]
+array_string = ["a" ++ "a", "string"]
+array_string = array_string ++ "string"
+
+array_int1[1] = array_int2     //Don't think we allow multidimentional-arrays 
+// crash_array = [1+1, "1" ++ "1"]
+
+// 3.17
+array_int_con = array_int1 ++ array_int2
+// crash_array = array_int ++ array_string
+
+//3.18
+// array_string[10] = "10"  //crash
+// array_string[-1] //shall crash
+array_four = [0,1,2,3,4]
+array_four[5] = 1     //crash??
+four = array_four[4]
+four = array_four[1+1]
+f = function (a) do return a end
+four = array_four[f(1)]
+f = function (a,b) do return a,b end
+four = array_four[f(1,2)]   //crash
+four, five = array_four[f(1,2)]
+
+//3.20 Don't know
+
+//3.21
+number_negation = -100
+number_negation = -number_negation  // -- = +   ?
+number_negation = -number_negation
+
+//3.22 Too many possibilities
+parenthesis = (1+1)
+parenthesis = (1+1)*2
+parenthesis = (1+1)*(5*2)
+parenthesis = ( (5*2)*(1+1) )^2
+
+//3.23
+AND_FULL = true and true
+AND_FULL = true and false
+AND_FULL = true and (1 == 1)
+
+AND_FALSE = false and true
+AND_FALSE = false and false
+AND_FALSE = false and (1 == 1)
+
+NOT_TRUE = not true
+NOT_TRUE = - ture       //crash
+NOT_TRUE = not (1 == 1)
+
+NOT_FALSE = not false
+NOT_FALSE = - false     //crash
+NOT_FALSE = not (1 != 1)
+
+// 3.24
+OR = ture or ture
+OR = false or ture
+OR = true or false
+OR = false or false
+
+//3.25
+ANON_FUNC = function (x1,x2) do forward(x1) end
+ANON_FUNC(1,2)
+
+ANON_FUNC = ( function (x1,x2) do forward(x1) end )(1,2)   //Don't know
+
+LAMBDA_EX = fn x1 x2 -> x1 + x2
+
+//3.26 Don't get it
+
+//3.28
+a = 1
+b = "b"
+a = b     //Allowed?
+a = function (x) do return x end
+
+//Should get a new location as it is a list
+a = ["b"]
+
+ASSING_MULTI, a, b = 1,2,3    //Allowed?
+
+c = a[0]   //refrence to the array, or the value at the index
+
+//3.29
+
+//3.34
+if true do forward() else f = function (x) do forward() end
+f()
+
+if false do forward() else f = fn x1 x2 -> x1+x2 end
+f(1,2)
+    // Does the if do else, it has a scope of its own that f is trapped in?
+
+//3.36 -> 3.39
+i = 0
+while i<10 do i += 1 end
+i = 0
+while i<10 do i += 1 if i == 5 do break else forward() end end
+while i<10 do 
+    i += 1 
+    if i == 5 do 
+        break
+    else 
+        forward() 
+    end 
+end
+
+repeat 5 do
+    forward(5)
+end
+
+repeat (1+1) do
+    forward(5)
+end
+
+a = "stop"
+repeat a do    //crash
+end
+
+array = [1,2,3,0,0,1]
+foreach num in array do forward(num) end
+
+
+boolean = true
+boolean = false
+string = "abcdefghijklmnopqrstuvxyz"
+string,counter = Con_string(string)      //not so sure ablut this one
+
+nothing_ = nothing
+// crash_ID{_ = nothing
+// a_block = :air:  lav om
+up = UP
+down = DOWN
+front = FRONT
+back = BACK
+left = LEFT
+right = RIGHT
+north = NORTH
+south = SOUTH
+east = EAST
+west = WEST
+array_relative = [up, down, front, back, left, right]
+array_relative = array_relative ++ [up]
+array_relative = []
+array_relative = [north]  //Should not crash??
+array_relative = [int]    //Should not crash??
+// As they are enum, it is allowed
+if north > south do
+    north = south
+end
+
+
+function multiply(a,b) do 
+    return a+b
+end
+
+function multiplyWalk(a,b) do
+    c = a + b
+    forward(c)
+    return c
+end
+
+// functions acts as variables
+array_int = [function x() do a = 1+1 return a end, multiply(), multiplyWalk()]
+
+function funcbool() do
+    return true
+end
+array_bool = [false, funcbool(), funcbool]  //funcbool is a function type, and not a bool 'yet'
+
+array_func = [multiply, multiplyWalk, funcbool]
+
+

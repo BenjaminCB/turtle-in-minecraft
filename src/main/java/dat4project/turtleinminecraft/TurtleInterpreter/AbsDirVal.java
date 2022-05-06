@@ -14,11 +14,12 @@ public class AbsDirVal extends TimcVal {
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof AbsDirVal d) {
-            return val == d.getVal();
-        } else {
-            return false;
-        }
+        return (o instanceof AbsDirVal a) && val.equals(a.val);
+    }
+
+    @Override
+    protected String timcToString() {
+        return val.toString();
     }
 
     public static enum AbsDir {

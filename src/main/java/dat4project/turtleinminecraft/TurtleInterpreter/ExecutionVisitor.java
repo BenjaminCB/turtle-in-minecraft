@@ -1,23 +1,25 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
+import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
 import dat4project.turtleinminecraft.antlr.timcBaseVisitor;
 import dat4project.turtleinminecraft.antlr.timcParser;
-import dat4project.turtleinminecraft.antlr.timcLexer;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.checkerframework.checker.units.qual.A;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
+
+import com.ibm.icu.impl.UResource.Array;
 
 public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     private SymbolTable symbolTable;
     private boolean hasBreaked;
     private boolean hasReturned;
+    private final TurtleCommandBlockEntity tcbEntity;
 
-    public ExecutionVisitor() {
-        symbolTable = new SymbolTable();
+    public ExecutionVisitor(TurtleCommandBlockEntity tcbEntity) {
+        this.tcbEntity = tcbEntity;
+        symbolTable = new SymbolTable(tcbEntity);
     }
 
     @Override public TimcVal visitArray(timcParser.ArrayContext ctx) {
@@ -60,8 +62,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitRetStmt(timcParser.RetStmtContext ctx) {
-        ListVal values = new ListVal(getExpression_list(ctx.expression_list()));
-        symbolTable.ret = values;
+        List<TimcVal> vals = getExpression_list(ctx.expression_list());
+        if (vals.size() > 1) {
+            symbolTable.ret = new ListVal(vals);
+        } else {
+            symbolTable.ret = vals.get(0);
+        }
         hasReturned = true;
         return null;
     }
@@ -137,6 +143,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
        }
        return null;
     }
+    
     @Override public TimcVal visitForeachCtrl(timcParser.ForeachCtrlContext ctx) { 
         String identifier = ctx.ID().getText();
         TimcVal o = visit(ctx.expression());
@@ -156,7 +163,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null; 
     }
 
-    // maybe refactor into a version that does not copy arrays
+    // TODO: maybe refactor into a version that does not copy arrays
     @Override public TimcVal visitSwitchCtrl(timcParser.SwitchCtrlContext ctx) {
         TimcVal match = visit(ctx.expression(0));
 
@@ -189,7 +196,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return null;
     }
 
-    // TODO decide whether array index should be allowed in declaration, currently is not
+    // TODO: decide whether array index should be allowed in declaration, currently is not
     @Override public TimcVal visitSingleAssign(timcParser.SingleAssignContext ctx) {
         TimcVal assignee = visit(ctx.expression());
         if (assignee instanceof ListVal)
@@ -208,7 +215,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
         return null;
     }
-
+    // TODO: Compound assignment doesnt seem to work.
     @Override public TimcVal visitCompoundAssign(timcParser.CompoundAssignContext ctx) {
         String id = ctx.identifier().ID().getText();
         TimcVal v = symbolTable.get(id);
@@ -263,14 +270,16 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitIdentifier(timcParser.IdentifierContext ctx) { return visitChildren(ctx); }
+    
     @Override public TimcVal visitIdentifier_list(timcParser.Identifier_listContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitExpression_list(timcParser.Expression_listContext ctx) { return null; }
+    
     private List<TimcVal> getExpression_list(timcParser.Expression_listContext ctx) {
         return getExpression(ctx.expression());
     }
 
-    // TODO error handling
+    // TODO: error handling
     @Override public TimcVal visitTermExpr(timcParser.TermExprContext ctx) {
         TimcVal left = visit(ctx.expression(0));
         TimcVal right = visit(ctx.expression(1));
@@ -282,9 +291,12 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             res = NumberVal.operation(n1, n2, oper);
         } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
             res = StringVal.operation(s1, s2, oper);
-        } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
-            res = ArrayVal.operation(a1, a2, oper);
-        } else {
+ //       } else if (isConcat && left instanceof ArrayVal a1 && right instanceof ArrayVal a2) {
+  //          res = ArrayVal.operation(a1, a2, oper);
+        } else if (isConcat && left instanceof ArrayVal a1 && (right instanceof ArrayVal b1 || right.getType() == a1.getInnerType())) {
+            res= ArrayVal.operation(a1, right, oper);
+        }
+         else {
             throw new TimcException(ctx.getText() + ": type mismatch");
         }
         return res;
@@ -389,6 +401,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         
         if (visit(ctx.expression(0)) instanceof ArrayVal arr) {
             if (visit(ctx.expression(1)) instanceof NumberVal n) {
+                if (n.getVal() < 0) throw new TimcException("tried to access with negative index");
                 value = arr.getVal().get(n.getVal());
             } else {
                 throw new TimcException(ctx.expression(1).getText() + ": is not a number");
@@ -429,7 +442,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitNumberConst(timcParser.NumberConstContext ctx) {
-        return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
+        try {
+            return new NumberVal(Integer.parseInt(ctx.NUMBER().getText()));
+        } catch (NumberFormatException e) {
+            throw new TimcException(ctx.NUMBER().getText() + ": cannot parse as number");
+        }
     }
 
     @Override public TimcVal visitBoolConst(timcParser.BoolConstContext ctx) {
@@ -440,23 +457,14 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
     }
 
-    // might also be capturing the "" within the value
     @Override public TimcVal visitStringConst(timcParser.StringConstContext ctx) {
-        return new StringVal(ctx.STRING().getText());
+        String string = ctx.STRING().getText();
+        return new StringVal(string.substring(1, string.length()-1));
     }
 
     @Override public TimcVal visitBlockConst(timcParser.BlockConstContext ctx) {
-        TimcVal res;
-        switch(ctx.BLOCK().getText()) {
-            case "DIRT"  -> res = new BlockVal(BlockVal.BlockType.DIRT);
-            case "SAND"  -> res = new BlockVal(BlockVal.BlockType.SAND);
-            case "STONE" -> res = new BlockVal(BlockVal.BlockType.STONE);
-            case "BRICK" -> res = new BlockVal(BlockVal.BlockType.BRICK);
-            case "GLASS" -> res = new BlockVal(BlockVal.BlockType.GLASS);
-            case "WOOD"  -> res = new BlockVal(BlockVal.BlockType.WOOD);
-            default      -> res = new BlockVal(BlockVal.BlockType.PLANK);
-        }
-        return res;
+        String blockString = ctx.getText().replace("BLOCK:", "");
+        return new BlockVal(blockString);
     }
 
     @Override public TimcVal visitRelDirConst(timcParser.RelDirConstContext ctx) {
@@ -482,11 +490,8 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         }
         return res;
     }
-
-    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) {
-        return visit(ctx.array());
-    }
-
+    @Override public TimcVal visitArrayConst(timcParser.ArrayConstContext ctx) { return visit(ctx.array()); }
+    // return visit(ctx.array());
     @Override public TimcVal visitNothingConst(timcParser.NothingConstContext ctx) {
         return new NothingVal();
     }
@@ -495,11 +500,11 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return visit(ctx.anonymous_function());
     }
 
-    // TODO add return nothing to end
+    // TODO: add return nothing to end
     @Override public TimcVal visitDclFunc(timcParser.DclFuncContext ctx) {
         FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
 
-        // TODO don't think this solves the recursion problem
+        // TODO: don't think this solves the recursion problem
         func.getDeclarationTable().put(ctx.ID().getText(), func);
         return null;
     }
@@ -507,14 +512,17 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     @Override public TimcVal visitAnonFunc(timcParser.AnonFuncContext ctx) {
         return visit(ctx.anonymous_function());
     }
+
     @Override public TimcVal visitBuildInFunc(timcParser.BuildInFuncContext ctx) {
         return visit(ctx.build_in_func());
     }
+
     @Override public TimcVal visitStmtAnonFunc(timcParser.StmtAnonFuncContext ctx) {
         // Copy pasta from visitDclFunc, as they do the same
         FunctionVal func = new FunctionVal(getParameters(ctx.parameters()), ctx.statements(), symbolTable);
         return null;
     }
+
     @Override public TimcVal visitLambdaAnonFunc(timcParser.LambdaAnonFuncContext ctx) { return visitChildren(ctx); }
 
     @Override public TimcVal visitIdFuncApp(timcParser.IdFuncAppContext ctx) {
@@ -560,7 +568,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             if (params.size() != args.size())
                 throw new TimcException(ctx.getText() + ": too many or too few arguments applied");
 
-            // TODO check for recursion error
+            // TODO: check for recursion error
             symbolTable.enterScope();
             for (int i = 0; i < params.size(); i++) {
                 symbolTable.put(params.get(i), args.get(i));
@@ -575,16 +583,134 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
         return symbolTable.ret;
     }
 
-    @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { return visitChildren(ctx); }
-    @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { return visitChildren(ctx); }
+    @Override public TimcVal visitForwardFunc(timcParser.ForwardFuncContext ctx) {
+        RelDir dir = RelDir.FRONT;
 
+        if(ctx.expression() != null) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return new NothingVal();
+    }
+
+    @Override public TimcVal visitBackwardFunc(timcParser.BackwardFuncContext ctx) { 
+        RelDir dir = RelDir.BACK;
+
+        if(ctx.expression() != null) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return new NothingVal();
+    }
+
+    @Override public TimcVal visitUpFunc(timcParser.UpFuncContext ctx) { 
+        RelDir dir = RelDir.UP;
+
+        if(ctx.expression() != null) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return new NothingVal();
+    }
+
+    @Override public TimcVal visitDownFunc(timcParser.DownFuncContext ctx) { 
+        RelDir dir = RelDir.DOWN;
+
+        if(ctx.expression() != null) {
+            TimcVal val = visit(ctx.expression());
+            if (val instanceof NumberVal numVal) {
+                for (int i = 0; i < numVal.getVal(); i++) {
+                    tcbEntity.move(dir);
+                }
+            }
+            else {
+                throw new TimcException(ctx.expression().getText() + ": expected number");
+            }
+        }
+        else {
+            tcbEntity.move(dir);
+        }
+
+        return new NothingVal();
+    }
+
+    @Override public TimcVal visitLookFunc(timcParser.LookFuncContext ctx) {
+        TimcVal expr = visit(ctx.expression());
+        BlockVal val = null;
+        if(expr instanceof RelDirVal dir) {
+            val = new BlockVal(tcbEntity.look(dir.getVal()));
+        }
+        else {
+            throw new TimcException(ctx.expression().getText() + ": expected reldir");
+        }
+        return val; 
+    }
+
+    @Override public TimcVal visitTurnFunc(timcParser.TurnFuncContext ctx) {
+        TimcVal val = visit(ctx.expression());
+        if (val instanceof RelDirVal dir) {
+            tcbEntity.turn(dir.getVal());
+        } else if (val instanceof AbsDirVal dir) {
+            tcbEntity.turn(dir.getVal());
+        } else {
+            throw new TimcException(ctx.expression().getText() + ": expected absdir or reldir");
+        }
+        return new NothingVal();
+    }
+
+    @Override public TimcVal visitPrintFunc(timcParser.PrintFuncContext ctx) {
+        TimcVal val = visit(ctx.expression());
+        tcbEntity.print(val.toString());
+        return new NothingVal();
+    }
+
+    @Override public TimcVal visitFacingFunc(timcParser.FacingFuncContext ctx) { 
+        return new AbsDirVal(tcbEntity.facing()); 
+    }
+
+    @Override public TimcVal visitPositionFunc(timcParser.PositionFuncContext ctx) { 
+        BlockPos pos = tcbEntity.position();
+        ArrayVal posArr = new ArrayVal();
+
+        posArr.add(new NumberVal(pos.getX()));
+        posArr.add(new NumberVal(pos.getY()));
+        posArr.add(new NumberVal(pos.getZ()));
+        
+        return posArr; 
+    }
     
     @Override public TimcVal visitLengthFunc(timcParser.LengthFuncContext ctx) { 
         TimcVal o = visit(ctx.expression());
@@ -599,6 +725,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
     }
 
     @Override public TimcVal visitParameters(timcParser.ParametersContext ctx) { return null; }
+    
     private List<String> getParameters(timcParser.ParametersContext ctx) {
         List<String> res = new ArrayList<>();
         for (TerminalNode node : ctx.ID()) {

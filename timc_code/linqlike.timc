@@ -6,9 +6,9 @@ function map f xs do
     return ys
 end
 
-functino filter f xs do
+function filter(f xs) do
     ys = []
-    for x in xs do
+    foreach x in xs do
         if f x do
             ys = ys ++ [x]
         end
@@ -17,9 +17,9 @@ functino filter f xs do
 end
 
 // make foldr and foldl
-function fold f base xs do
+function fold(f base xs) do
     acc = base
-    for x in xs do
+    foreach x in xs do
         acc = f x acc
     end
     return acc
@@ -29,11 +29,11 @@ length = fn xs -> fold (fn a b -> b + 1) 0 xs
 sum = fn xs -> fold (fn a b -> a + b) 0 xs
 
 // make take and drop
-function take n xs do
+function take(n xs) do
     i = n
     ys = []
 
-    for x in xs do
+    foreach x in xs do
         if i > 0 do
             ys = ys ++ [x]
         end

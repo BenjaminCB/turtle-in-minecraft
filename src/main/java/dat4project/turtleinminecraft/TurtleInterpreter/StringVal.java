@@ -22,10 +22,11 @@ public class StringVal extends TimcVal {
 
     @Override
     protected boolean timcValEquals(TimcVal o) {
-        if (o instanceof StringVal s) {
-            return val.equals(s.getVal());
-        } else {
-            return false;
-        }
+        return (o instanceof StringVal s) && val.equals(s.val);
+    }
+
+    @Override
+    protected String timcToString() {
+        return val;
     }
 }

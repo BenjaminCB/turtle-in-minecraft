@@ -1,7 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
 import dat4project.turtleinminecraft.antlr.timcParser;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -26,9 +25,13 @@ public class FunctionVal extends TimcVal {
     public timcParser.StatementsContext getCtx() { return ctx; }
     public SymbolTable getDeclarationTable() { return declarationTable; }
 
-    // compare the reference
     @Override
     protected boolean timcValEquals(TimcVal o) {
         return o == this;
+    }
+
+    @Override
+    protected String timcToString() {
+        return "this is a function, for more information come back in a later version of TIMC";
     }
 }

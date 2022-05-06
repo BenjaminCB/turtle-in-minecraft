@@ -1,158 +1,306 @@
 package dat4project.turtleinminecraft;
 
-import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal;
-import dat4project.turtleinminecraft.TurtleInterpreter.BlockVal;
-import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal;
+import dat4project.turtleinminecraft.TurtleInterpreter.TimcInterpreter;
 import dat4project.turtleinminecraft.TurtleInterpreter.RelDirVal.RelDir;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import dat4project.turtleinminecraft.TurtleInterpreter.AbsDirVal.AbsDir;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.ServerStopping;
 import net.minecraft.block.Block;
-import org.jetbrains.annotations.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.MessageType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import java.util.Objects;
-
-public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory {
+public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, ImplementedInventory, ServerStopping {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    
+    private static int interpretThreadCounter = 1;
+    private Thread interpretThread;
+    private boolean rsLock;
 
-    private BlockPos turtlePos;
+    private BlockState activeBlockState;
+    private BlockState savedBlockState;
     private BlockState turtleState;
     private Direction turtleDirection;
-    private boolean latched = false;
+    private BlockPos turtlePos;
+    public boolean turtleBreaking;
+    public boolean turtlePlacing;
+    public int turtleTimeout;
 
     public TurtleCommandBlockEntity(BlockPos pos, BlockState state) {
         super(Timc.TurtleCommandBlockEntity, pos, state);
-        turtleDirection = state.get(TurtleCommandBlock.FACING);
-        turtlePos = pos.add(turtleDirection.getVector());
-        turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
+        ServerLifecycleEvents.SERVER_STOPPING.register(this);
     }
 
-    @Override
-    public void writeNbt(NbtCompound nbt) {
+    @Override public void writeNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, inventory);
+
+        // position to nbt
+        nbt.putLong("turtlePosition", turtlePos.asLong());
+
+        // direction to nbt
+        nbt.putInt("turtleDirection", turtleDirection.getId());
+
+        // timeout to nbt
+        nbt.putInt("turtleTimeout", turtleTimeout);
+
+        // blockstates to nbt
+        nbt.putInt("turtleState", Block.getRawIdFromState(turtleState));
+        nbt.putInt("savedBlockState", Block.getRawIdFromState(savedBlockState));
+        nbt.putInt("activeBlockState", Block.getRawIdFromState(activeBlockState));
+
+        // booleans to nbt
+        nbt.putBoolean("placing", turtlePlacing);
+        nbt.putBoolean("breaking", turtleBreaking);
+        nbt.putBoolean("rslock", rsLock);
+        
         super.writeNbt(nbt);
     }
 
-    @Override
-    public void readNbt(NbtCompound nbt) {
+    @Override public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
+
+        // position from nbt
+        turtlePos = BlockPos.fromLong(nbt.getLong("turtlePosition"));
+
+        // direction from nbt
+        turtleDirection = Direction.byId(nbt.getInt("turtleDirection"));
+
+        // timeout from nbt
+        turtleTimeout = nbt.getInt("turtleTimeout");
+
+        // blockstates from nbt
+        turtleState = Block.getStateFromRawId(nbt.getInt("turtleState"));
+        savedBlockState = Block.getStateFromRawId(nbt.getInt("savedBlockState"));
+        activeBlockState = Block.getStateFromRawId(nbt.getInt("activeBlockState"));
+
+        // booleans from nbt
+        turtlePlacing = nbt.getBoolean("placing");
+        turtleBreaking = nbt.getBoolean("breaking");
+        rsLock = nbt.getBoolean("rslock");
+
         Inventories.readNbt(nbt, inventory);
     }
 
-    @Override
-    public Text getDisplayName() {
+    @Override public Text getDisplayName() {
         return new LiteralText("Graphics Turtle");
+    }
+
+	@Override public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
+	}
+
+    @Override public void onServerStopping(MinecraftServer server) {
+        stopInterpretThread();
     }
 
     public DefaultedList<ItemStack> getItems() {
         return inventory;
     }
 
-	@Override
-	public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
-		return new TurtleCommandBlockGUI(syncId, inventory, ScreenHandlerContext.create(world, pos));
-	}
-    public static void move(World world,TurtleCommandBlockEntity entity){
-        if(world.getBlockState(entity.turtlePos) == entity.turtleState) {
-            world.removeBlock(entity.turtlePos, true);
-            world.setBlockState(entity.turtlePos, Blocks.STONE.getDefaultState());
-            entity.turtlePos = entity.turtlePos.add(entity.turtleDirection.getVector());
-            world.breakBlock(entity.turtlePos, true);
-        }
-        world.setBlockState(entity.turtlePos, entity.turtleState);
-    }
-    public static void rotate(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
-        if(world.getBlockState(entity.turtlePos) == entity.turtleState){
-            entity.turtleState = entity.turtleState.with(TurtleCommandBlock.FACING,absDirToMcDir(absDir));
-            entity.turtleDirection = absDirToMcDir(absDir);
-        }
-        world.setBlockState(entity.turtlePos, entity.turtleState);
-    }
-    public static void rotate(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
-        if(world.getBlockState(entity.turtlePos) == entity.turtleState){
-            entity.turtleState = entity.turtleState.with(TurtleCommandBlock.FACING,relDirToMcDir(entity,relDir));
-            entity.turtleDirection = relDirToMcDir(entity, relDir);
-        }
-        world.setBlockState(entity.turtlePos, entity.turtleState);
-    }
-    public static Direction absDirToMcDir(AbsDirVal.AbsDir absDir){
-        return switch (absDir){
-            case EAST -> Direction.EAST;
-            case WEST -> Direction.WEST;
-            case NORTH -> Direction.NORTH;
-            case SOUTH -> Direction.SOUTH;
-        };
-    }
-    public static Direction relDirToMcDir(TurtleCommandBlockEntity entity,RelDirVal.RelDir relDir){
-        return switch (relDir) {
-            case UP -> Direction.UP;
-            case DOWN -> Direction.DOWN;
-            case LEFT -> entity.turtleDirection.rotateYCounterclockwise();
-            case RIGHT -> entity.turtleDirection.rotateYClockwise();
-            case FRONT -> entity.turtleDirection;
-            case BACK -> entity.turtleDirection.getOpposite();
-        };
-    }
-
-    public static Block look(World world, TurtleCommandBlockEntity entity, AbsDirVal.AbsDir absDir){
-        entity.turtleDirection = absDirToMcDir(absDir);
-        return world.getBlockState(entity.turtlePos.add(entity.turtleDirection.getVector())).getBlock();
-    }
-    public static Block look(World world, TurtleCommandBlockEntity entity, RelDirVal.RelDir relDir){
-        return world.getBlockState(entity.turtlePos.add(relDirToMcDir(entity,relDir).getVector())).getBlock();
-    }
-
     public static void tick(World world, BlockPos pos, BlockState state, TurtleCommandBlockEntity entity) {
-        if(!world.isClient){
-        if (world.isReceivingRedstonePower(pos)) {
-            int redstone = world.getReceivedRedstonePower(pos);
-            if(!entity.latched) {
-                switch(redstone) {
-                    case 15:
-                    // bevæg turtle
-                        move(world, entity);
-                        break;
-                    case 14:
-                    // roter turtle
-                        rotate(world, entity, RelDir.RIGHT);
-                        break;
-                    case 13:
-                    // læs bog
-                        if(entity.getStack(0).getItem() == Items.WRITABLE_BOOK) {
-                            NbtList nbtList = entity.getStack(0).getNbt().getList("pages", 8);
-                            for (int i = 0; i < nbtList.size(); ++i) {
-                                String string = nbtList.getString(i);
-                                Timc.LOGGER.info(string);
-                            }
-                        }
-                    default:
-                        break;
-                }
+        if(!world.isClient) {
+            if(world.isReceivingRedstonePower(pos) && !entity.rsLock) {
+                entity.world = world;
+                entity.initializeTurtle(pos, state);
+                entity.startTurtle();
             }
-            entity.latched = true;
+            else if(!world.isReceivingRedstonePower(pos) && entity.rsLock) {
+                entity.stopInterpretThread();
+                world.setBlockState(entity.turtlePos, entity.savedBlockState);
+                entity.rsLock = false;
+            }
+        }
+    }
 
+    private void initializeTurtle(BlockPos pos, BlockState state) {
+        turtleDirection = state.get(TurtleCommandBlock.FACING);
+        turtlePos = pos.add(turtleDirection.getVector());
+        turtleState = Timc.GraphicsTurtleBlock.getDefaultState().with(TurtleCommandBlock.FACING, turtleDirection);
+        setActiveBlock(Blocks.AIR);
+        turtlePlacing = false;
+        turtleBreaking = false;
+        turtleTimeout = 500;
+    }
+
+    private void startTurtle() {
+        rsLock = true;
+        savedBlockState = world.getBlockState(turtlePos);
+        world.setBlockState(turtlePos, turtleState);
+
+        ItemStack item = getStack(0);
+        if(item.isOf(Items.WRITTEN_BOOK) || item.isOf(Items.WRITABLE_BOOK)) {
+            String prog = new String();
+            NbtList nbtList = item.getNbt().getList("pages", 8);
+            for (int i = 0; i < nbtList.size(); ++i) {
+                prog = prog.concat(nbtList.getString(i));
+            }
+
+            startInterpretThread(new TimcInterpreter(prog, this));
         }
         else {
-            entity.latched = false;
-        }
+            print("Insert a book with TIMC code to execute");
         }
     }
+
+    /**
+     * Creates, assigns and starts a new Thread with the Runnable {@link TimcInterpreter} task to {@link #interpretThread}
+     * @param timcInterpreter Interpreter instance to execute on separate thread
+     */
+    private void startInterpretThread(TimcInterpreter timcInterpreter) {
+        interpretThread = new Thread(timcInterpreter, "TIMC_INTERPRETER_" + interpretThreadCounter++);
+        interpretThread.start();
+    }
+
+    /**
+     * Stops the current {@link #interpretThread} if it exists and is running
+     */
+    private void stopInterpretThread() {
+        try {
+            if(interpretThread != null && interpretThread.isAlive()) {
+                interpretThread.stop();
+            }
+        } catch (Exception e) {
+            //TODO: handle exception
+        }
+    }
+
+    /**
+     * Sets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#turtlePlacing} is {@value true}
+     * @param block New active block
+     */
+    public void setActiveBlock(Block block) { activeBlockState = block.getDefaultState(); }
+
+    /**
+     * Gets the active block which will be placed by the Turtle if {@link TurtleCommandBlockEntity#turtlePlacing} is {@value true}
+     * @return Current active block
+     */
+    public Block getActiveBlock() { return activeBlockState.getBlock(); }
+
+    /**
+     * Moves the Turtle 1 block distance in the relative direction
+     * @param relDir Relative direction to move the turtle
+     */
+    public void move(RelDir relDir) {
+        timeout();
+
+        BlockPos newPos = turtlePos.add(TimcUtil.relDirToMcDir(turtleDirection, relDir).getVector());
+        if (turtlePlacing) {
+            // Place active block at current turtle position if placing is true
+            world.setBlockState(turtlePos, activeBlockState);
+        }
+        else {
+            // otherwise put back the currently saved blockstate
+            world.setBlockState(turtlePos, savedBlockState);
+        }
+        if (turtleBreaking) {
+            // Break next block at new position if breaking is true
+            world.breakBlock(newPos, true);
+        }
+        savedBlockState = world.getBlockState(newPos);
+        turtlePos = newPos;
+        world.setBlockState(newPos, turtleState);
+    }
+
+    /**
+     * Turns the Turtle to the given relative direction. Implementation does nothing for up or down directions
+     * @param relDir Relative direction to turn the Turtle to
+     */
+    public void turn(RelDir relDir) {
+        if(relDir != RelDir.UP && relDir != RelDir.DOWN) {
+            timeout();
+            turtleDirection = TimcUtil.relDirToMcDir(turtleDirection, relDir);
+            turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
+            world.setBlockState(turtlePos, turtleState);
+        }
+    }
+
+    /**
+     * Turns the Turtle to the given absolute direction
+     * @param absDir Absolute direction to turn the Turtle to
+     */
+    public void turn(AbsDir absDir) {
+        timeout();
+        turtleDirection = TimcUtil.absDirToMcDir(absDir);
+        turtleState = turtleState.with(TurtleCommandBlock.FACING, turtleDirection);
+        world.setBlockState(turtlePos, turtleState);
+    }
+
+    /**
+     * Looks at the block in the relative direction of the turtle and returns its type
+     * @param relDir Relative direction to look in
+     * @return The type of the looked at block
+     */
+    public Block look(RelDir relDir) {
+        Direction dir = TimcUtil.relDirToMcDir(turtleDirection, relDir);
+        return world.getBlockState(turtlePos.add(dir.getVector())).getBlock();
+    }
+
+    /**
+     * Gets the current direction the Turtle is facing
+     * @return AbsDir value of the Turtles direction
+     */
+    public AbsDir facing() {
+        return switch(turtleDirection) {
+            case EAST   -> AbsDir.EAST;
+            case WEST   -> AbsDir.WEST;
+            case NORTH  -> AbsDir.NORTH;
+            case SOUTH  -> AbsDir.SOUTH;
+            default     -> null;
+        };
+    }
+
+    /**
+     * Prints a message in the in-game chat
+     * @param s Message to print
+     */
+    public void print(String s) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        LiteralText message = new LiteralText("TIMC -> " + s);
+        mc.inGameHud.addChatMessage(MessageType.SYSTEM, message, Util.NIL_UUID);
+    }
+
+    /**
+     * Returns the current position of the Turtle
+     * @return Turtles position
+     */
+    public BlockPos position() {
+        return turtlePos;
+    }
+
+    /**
+     * Sleeps the {@link #interpretThread} for {@link #turtleTimeout} milliseconds
+     */
+    private void timeout() {
+        if(Thread.currentThread() == interpretThread && turtleTimeout > 0) {
+            try {
+                while(MinecraftClient.getInstance().isPaused()) {
+                    Thread.sleep(50);
+                }
+                Thread.sleep(turtleTimeout);
+            } catch (Exception e) {
+                //TODO: handle exception
+            }
+        }
+    }
+
 }

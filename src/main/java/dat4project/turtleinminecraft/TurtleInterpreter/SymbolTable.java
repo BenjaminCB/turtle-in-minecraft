@@ -1,5 +1,6 @@
 package dat4project.turtleinminecraft.TurtleInterpreter;
 
+import dat4project.turtleinminecraft.TurtleCommandBlockEntity;
 import dat4project.turtleinminecraft.TurtleInterpreter.Exception.TimcException;
 
 import java.util.*;
@@ -32,15 +33,18 @@ public class SymbolTable {
             "turn"
     );
 
-    private final List<String> builtVariables = Arrays.asList(
+    private final List<String> builtInVariables = Arrays.asList(
             "PLACING",
-            "EATING",
-            "ACTIVE_BLOCK"
+            "BREAKING",
+            "SPAWN",
+            "TIMEOUT"
     );
 
     public TimcVal ret;
+    private final TurtleCommandBlockEntity tcbEntity;
 
-    public SymbolTable() {
+    public SymbolTable(TurtleCommandBlockEntity tcbEntity) {
+        this.tcbEntity = tcbEntity;
         tables = new ArrayDeque<>();
         tables.push(new HashMap<>());
         ret = new NothingVal();
@@ -57,8 +61,38 @@ public class SymbolTable {
     public void put(String name, TimcVal val) {
         if (restrictedWords.contains(name)) {
             throw new TimcException(name + ": is a restricted word");
-        } else if (builtVariables.contains(name)) {
-            // TODO insert into command block
+        } else if (builtInVariables.contains(name)) {
+            switch (name) {
+                case "PLACING" -> {
+                    if (val instanceof BoolVal b) {
+                        tcbEntity.turtlePlacing = b.getVal();
+                    } else {
+                        throw new TimcException("Cannot assing PLACING to non-boolean value");
+                    }
+                }
+                case "BREAKING" -> {
+                    if (val instanceof BoolVal b) {
+                        tcbEntity.turtleBreaking = b.getVal();
+                    } else {
+                        throw new TimcException("Cannot assign BREAKING to non-boolean value");
+                    }
+                }
+                case "TIMEOUT" -> {
+                    if (val instanceof NumberVal n) {
+                        tcbEntity.turtleTimeout = n.getVal();
+                    }
+                    else {
+                        throw new TimcException("Cannot assign TIMEOUT to non-number value");
+                    }
+                }
+                default -> {
+                    if (val instanceof BlockVal b) {
+                        tcbEntity.setActiveBlock(b.getVal());;
+                    } else {
+                        throw new TimcException("Cannot assign SPAWN to non-block value");
+                    }
+                }
+            }
         } else {
             tables.peek().put(name, val);
         }
@@ -69,8 +103,21 @@ public class SymbolTable {
     public TimcVal get(String name) {
         TimcVal res = null;
 
-        if (builtVariables.contains(name)) {
-            // TODO get from command block
+        if (builtInVariables.contains(name)) {
+            switch (name) {
+                case "PLACING" -> {
+                    res = new BoolVal(tcbEntity.turtlePlacing);
+                }
+                case "BREAKING" -> {
+                    res = new BoolVal(tcbEntity.turtleBreaking);
+                }
+                case "TIMEOUT" -> {
+                    res = new NumberVal(tcbEntity.turtleTimeout);
+                }
+                default -> {
+                    res = new BlockVal(tcbEntity.getActiveBlock());
+                }
+            }
         } else {
             for (Map<String, TimcVal> table : tables) {
                 if (table.containsKey(name)) {
