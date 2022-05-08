@@ -158,7 +158,8 @@ public class TurtleCommandBlockEntity extends BlockEntity implements NamedScreen
                 if (item.isOf(Items.WRITTEN_BOOK)) {
                     page = Serializer.fromJson(page).asString();
                 }
-                prog = prog.concat(page);
+                // force a new line between pages, since these arent explicit
+                prog = prog.concat(page + "\n");
             }
             startInterpretThread(new TimcInterpreter(prog, this));
         }
