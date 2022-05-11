@@ -132,10 +132,10 @@ public class ArrayVal extends TimcVal {
                 temp.addAll(c.getVal());
                 return new ArrayVal(temp);
             } else if (leftNesting == (RightNesting - 1)) {
-                List<TimcVal> temp = new ArrayList<>(a.getVal().size + 1)
+                List<TimcVal> temp = new ArrayList<>(a.getVal().size() + 1);
                 temp.addAll(a.getVal());
                 temp.add(c);
-                return temp;
+                return new ArrayVal(temp);
             } else{
                 throw new TimcException("Not matching nesting in two arrays");
             }
