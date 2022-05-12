@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ArrayVal extends TimcVal {
     private List<TimcVal> val;
+    
     private TimcType elementType = null;
     private int nesting = 0;
 
