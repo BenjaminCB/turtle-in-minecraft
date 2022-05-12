@@ -294,7 +294,7 @@ public class ExecutionVisitor extends timcBaseVisitor<TimcVal> {
             res = NumberVal.operation(n1, n2, oper);
         } else if (isConcat && left instanceof StringVal s1 && right instanceof StringVal s2) {
             res = StringVal.operation(s1, s2, oper);
-        } else if (isConcat && left instanceof ArrayVal a1 && (right instanceof ArrayVal b1 || right.getType() == a1.getInnerType())) {
+        } else if (isConcat && left instanceof ArrayVal a1) {
             res= ArrayVal.operation(a1, right, oper);
         }
          else {
