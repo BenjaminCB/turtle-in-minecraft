@@ -143,8 +143,10 @@ public class ArrayVal extends TimcVal {
 
 
         } else {
-            a.add(b);
-            return a;
+            List<TimcVal> temp = new ArrayList<>(a.getVal().size() + 1);
+            temp.addAll(a.getVal());
+            temp.add(b);
+            return new ArrayVal(temp);
         }
     }
 
